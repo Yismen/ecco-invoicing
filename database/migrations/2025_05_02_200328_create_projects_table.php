@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(App\Models\Agent::class)
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

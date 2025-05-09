@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('reference')->nullable();
             $table->text('images')->nullable();
             $table->text('description')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

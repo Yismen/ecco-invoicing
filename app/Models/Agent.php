@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\Models\InteracstsWithModelCaching;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,10 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Agent extends Model
 {
+    use \App\Traits\Models\InteracstsWithModelCaching;
+
     /** @use HasFactory<\Database\Factories\AgentFactory> */
     use HasFactory;
 
-    use InteracstsWithModelCaching;
+    use \Illuminate\Database\Eloquent\SoftDeletes;
 
     protected $fillable = [
         'name',

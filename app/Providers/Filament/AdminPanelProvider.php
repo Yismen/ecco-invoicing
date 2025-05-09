@@ -91,7 +91,6 @@ class AdminPanelProvider extends PanelProvider
                         'MAIL_FROM_NAME',
                         'MAIL_MAILER',
                         'MAIL_ENCRYPTION',
-
                     ),
             ])
             ->authMiddleware([

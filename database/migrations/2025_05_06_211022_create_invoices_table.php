@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('template')->default('default');
             $table->string('notes')->nullable();
             $table->string('terms')->nullable();
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

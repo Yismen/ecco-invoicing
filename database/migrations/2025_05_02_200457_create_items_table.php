@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('brand')->nullable();
             $table->string('sku')->nullable();
             $table->string('barcode')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
