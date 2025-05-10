@@ -30,6 +30,6 @@ class AppServiceProvider extends ServiceProvider
         Model::preventAccessingMissingAttributes(! $this->app->isProduction());
         // Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
-        FilamentShield::prohibitDestructiveCommands($this->app->isProduction());
+        // FilamentShield::prohibitDestructiveCommands($this->app->isProduction());
     }
 }
