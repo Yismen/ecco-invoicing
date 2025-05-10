@@ -18,8 +18,8 @@ describe('Client Resource', function() {
         $this->routes = [
             'index' => ClientResource::getUrl('index'),
             'create' => ClientResource::getUrl('create'),
-            'edit' => ClientResource::getUrl('edit', ['record' => 1]),
-            'view' => ClientResource::getUrl('view', ['record' => 1]),
+            'edit' => ClientResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            'view' => ClientResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 

@@ -18,8 +18,8 @@ describe('Project Resource', function() {
         $this->routes = [
             'index' => ProjectResource::getUrl('index'),
             'create' => ProjectResource::getUrl('create'),
-            'edit' => ProjectResource::getUrl('edit', ['record' => 1]),
-            'view' => ProjectResource::getUrl('view', ['record' => 1]),
+            'edit' => ProjectResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            'view' => ProjectResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 

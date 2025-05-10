@@ -18,8 +18,8 @@ describe('Agent Resource', function() {
         $this->routes = [
             'index' => AgentResource::getUrl('index'),
             'create' => AgentResource::getUrl('create'),
-            'edit' => AgentResource::getUrl('edit', ['record' => 1]),
-            'view' => AgentResource::getUrl('view', ['record' => 1]),
+            'edit' => AgentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            'view' => AgentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 

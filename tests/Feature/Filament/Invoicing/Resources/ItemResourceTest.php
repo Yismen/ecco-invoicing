@@ -18,8 +18,8 @@ describe('Item Resource', function() {
         $this->routes = [
             'index' => ItemResource::getUrl('index'),
             'create' => ItemResource::getUrl('create'),
-            'edit' => ItemResource::getUrl('edit', ['record' => 1]),
-            'view' => ItemResource::getUrl('view', ['record' => 1]),
+            'edit' => ItemResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            'view' => ItemResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 

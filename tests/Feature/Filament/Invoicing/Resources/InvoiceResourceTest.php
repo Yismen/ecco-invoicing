@@ -18,8 +18,8 @@ describe('Invoice Resource', function() {
         $this->routes = [
             'index' => InvoiceResource::getUrl('index'),
             'create' => InvoiceResource::getUrl('create'),
-            'edit' => InvoiceResource::getUrl('edit', ['record' => 1]),
-            'view' => InvoiceResource::getUrl('view', ['record' => 1]),
+            'edit' => InvoiceResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            'view' => InvoiceResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
