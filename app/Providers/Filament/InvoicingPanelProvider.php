@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Invoicing\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,7 +33,7 @@ class InvoicingPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Invoicing/Resources'), for: 'App\\Filament\\Invoicing\\Resources')
             ->discoverPages(in: app_path('Filament/Invoicing/Pages'), for: 'App\\Filament\\Invoicing\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Invoicing/Widgets'), for: 'App\\Filament\\Invoicing\\Widgets')
             ->widgets([
