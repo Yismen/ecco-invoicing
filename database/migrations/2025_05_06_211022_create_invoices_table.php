@@ -14,18 +14,15 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('number')->unique();
             $table->date('date');
-            $table->foreignIdFor(Agent::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->string('number')->nullable()->unique();
+            $table->foreignIdFor(Agent::class)->constrained()->cascadeOnDelete();
             $table->json('data')->nullable();
             $table->decimal('subtotal_amount', 15, 2)->default(0);
             $table->decimal('tax_amount', 15, 2)->default(0);
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->enum('status', ['draft', 'sent', 'paid'])->default('draft');
             $table->date('due_date')->nullable();
-            $table->string('template')->default('default');
-            $table->string('notes')->nullable();
-            $table->string('terms')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

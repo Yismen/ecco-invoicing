@@ -11,6 +11,11 @@ it('save correct fields', function () {
     $this->assertDatabaseHas(Client::class, $data->only([
         'name',
         'address',
+        'tax_rate',
+        'invoice_template',
+        'invoice_notes',
+        'invoice_terms',
+        'invoice_net_days',
     ]));
 });
 

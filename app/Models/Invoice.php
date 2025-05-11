@@ -27,10 +27,30 @@ class Invoice extends Model
         'total_amount',
         'status',
         'due_date',
-        'template',
-        'notes',
-        'terms',
     ];
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $invoice) {
+            $invoice->due_date = now()->addDays($invoice->agent->client->invoice_net_days ?: 0)->format('Y-m-d');
+            // $invoice->number =
+            //     $invoice->agent->client->invoices()->count() + 1;
+        });
+
+        static::saved(function (self $invoice) {
+            $subtotal_amount = $invoice->items->sum('price') * $invoice->items->count();
+            $tax_amount = $subtotal_amount * ($invoice->agent->client->tax_rate ?: 0);
+            $total_amount = $subtotal_amount + $tax_amount;
+
+            $invoice->updateQuietly([
+                'subtotal_amount' => $subtotal_amount,
+                'tax_amount' => $tax_amount,
+                'total_amount' => $total_amount,
+            ]);
+        });
+    }
 
     public function agent(): BelongsTo
     {

@@ -15,6 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->text('address');
+            $table->double('tax_rate')->default(0);
+            $table->string('invoice_template')->default('default');
+            $table->string('invoice_notes')->nullable();
+            $table->string('invoice_terms')->nullable();
+            $table->integer('invoice_net_days')->default(0)->unsigned();
             $table->softDeletes();
             $table->timestamps();
         });

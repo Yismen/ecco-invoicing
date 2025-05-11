@@ -31,10 +31,38 @@ class ClientResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->autofocus()
                             ->required()
+                            ->columnSpanFull()
                             ->maxLength(255),
                         Forms\Components\RichEditor::make('address')
-                            ->columnSpanFull(),
-                    ]),
+                            ->columnSpanFull()
+                            ->required(),
+                        Forms\Components\TextInput::make('invoice_net_days')
+                            ->label('Invoice Net Days')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(30)
+                            ->required(),
+                        Forms\Components\TextInput::make('tax_rate')
+                            ->label('Tax Rate (%)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(1)
+                            ->step(0.01)
+                            ->default(0)
+                            ->required(),
+                        Forms\Components\TextInput::make('invoice_template')
+                            ->label('Invoice Template')
+                            ->required()
+                            ->default('default'),
+                        Forms\Components\Textarea::make('invoice_notes')
+                            ->label('Invoice Notes')
+                            ->maxLength(255)
+                            ->columns(2),
+                        Forms\Components\Textarea::make('invoice_terms')
+                            ->label('Invoice Terms')
+                            ->maxLength(255)
+                            ->columns(2),
+                    ])->columns(3),
             ]);
     }
 
@@ -50,6 +78,23 @@ class ClientResource extends Resource
                     ->html()
                     ->wrap()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('invoice_net_days'),
+                Tables\Columns\TextColumn::make('tax_rate')
+                    ->label('Tax Rate (%)')
+                    ->formatStateUsing(fn ($state) => $state * 100),
+                Tables\Columns\TextColumn::make('invoice_template'),
+                Tables\Columns\TextColumn::make('invoice_notes')
+                    ->limit(50)
+                    ->html()
+                    ->wrap()
+                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('invoice_terms')
+                    ->limit(50)
+                    ->html()
+                    ->wrap()
+                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('agents_count')
                     ->counts('agents')
                     ->badge()

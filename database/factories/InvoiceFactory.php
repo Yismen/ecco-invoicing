@@ -26,9 +26,6 @@ class InvoiceFactory extends Factory
             'total_amount' => $this->faker->randomFloat(2, 0, 1000),
             'status' => $this->faker->randomElement(['draft', 'sent', 'paid']),
             'due_date' => $this->faker->date(),
-            'template' => $this->faker->word(),
-            'notes' => $this->faker->text(),
-            'terms' => $this->faker->text(),
         ];
     }
 }
