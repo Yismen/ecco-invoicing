@@ -26,12 +26,18 @@ class ProjectResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Section::make()
+                    ->schema([Forms\Components\TextInput::make('name')
+                    ->autofocus()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('agent_id')
                     ->relationship('agent', 'name')
+                    ->searchable()
+                    ->preload(10)
                     ->required(),
+                ])
+                ->columns(2),
             ]);
     }
 
@@ -40,10 +46,11 @@ class ProjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('agent.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -58,7 +65,13 @@ class ProjectResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                // Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('agent.name')
+                    ->relationship('agent', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(10)
+                    ->placeholder('Select an agent'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -66,9 +79,9 @@ class ProjectResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\ForceDeleteBulkAction::make(),
+                    // Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }

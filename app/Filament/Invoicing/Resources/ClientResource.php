@@ -26,11 +26,15 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('address')
-                    ->columnSpanFull(),
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->autofocus()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\RichEditor::make('address')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -39,7 +43,22 @@ class ClientResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->limit(50)
+                    ->html()
+                    ->wrap()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('agents_count')
+                    ->counts('agents')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(),
+                // Tables\Columns\TextColumn::make('invoices_count')
+                //     ->counts('invoices')
+                //     ->sortable()
+                //     ->toggleable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -62,9 +81,9 @@ class ClientResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\ForceDeleteBulkAction::make(),
+                    // Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }

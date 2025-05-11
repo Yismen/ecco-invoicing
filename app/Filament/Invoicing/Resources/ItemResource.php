@@ -26,29 +26,44 @@ class ItemResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('project_id')
-                    ->relationship('project', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->prefix('$'),
-                Forms\Components\TextInput::make('description')
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image(),
-                Forms\Components\TextInput::make('category')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('brand')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('sku')
-                    ->label('SKU')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('barcode')
-                    ->maxLength(255),
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('project_id')
+                            ->relationship('project', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(10)
+                            ->placeholder('Select a project'),
+                        Forms\Components\TextInput::make('price')
+                            ->minValue(0)
+                            ->required()
+                            ->numeric()
+                            ->prefix('$'),
+
+                    ])
+                    ->columns(3),
+                Forms\Components\Section::make('Details')
+                    ->schema([
+                        Forms\Components\TextInput::make('description')
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('image')
+                            ->image(),
+                        Forms\Components\TextInput::make('category')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('brand')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('sku')
+                            ->label('SKU')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('barcode')
+                            ->maxLength(255),
+                    ])
+                    ->columns(2)
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 
@@ -65,17 +80,23 @@ class ItemResource extends Resource
                     ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\ImageColumn::make('image')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('category')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('brand')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('barcode')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -90,7 +111,13 @@ class ItemResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                // Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('project.name')
+                    ->relationship('project', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(10)
+                    ->placeholder('Select a project'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -98,9 +125,9 @@ class ItemResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\ForceDeleteBulkAction::make(),
+                    // Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
