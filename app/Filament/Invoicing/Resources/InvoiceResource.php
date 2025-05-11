@@ -3,7 +3,6 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers;
 use App\Models\Invoice;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,6 +15,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
+
+    protected static ?string $navigationGroup = 'Invoicing';
+
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

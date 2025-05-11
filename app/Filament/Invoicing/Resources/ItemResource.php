@@ -3,7 +3,6 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Invoicing\Resources\ItemResource\Pages;
-use App\Filament\Invoicing\Resources\ItemResource\RelationManagers;
 use App\Models\Item;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,10 @@ class ItemResource extends Resource
     protected static ?string $model = Item::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationGroup = 'Invoicing';
+
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

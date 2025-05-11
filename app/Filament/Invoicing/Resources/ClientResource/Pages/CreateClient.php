@@ -3,7 +3,6 @@
 namespace App\Filament\Invoicing\Resources\ClientResource\Pages;
 
 use App\Filament\Invoicing\Resources\ClientResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateClient extends CreateRecord

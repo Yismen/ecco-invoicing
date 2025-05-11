@@ -3,7 +3,6 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Invoicing\Resources\ClientResource\Pages;
-use App\Filament\Invoicing\Resources\ClientResource\RelationManagers;
 use App\Models\Client;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,7 +16,11 @@ class ClientResource extends Resource
 {
     protected static ?string $model = Client::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+
+    protected static ?string $navigationGroup = 'Invoicing';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

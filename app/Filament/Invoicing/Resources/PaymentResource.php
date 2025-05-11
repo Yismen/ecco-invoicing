@@ -3,7 +3,6 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Invoicing\Resources\PaymentResource\Pages;
-use App\Filament\Invoicing\Resources\PaymentResource\RelationManagers;
 use App\Models\Payment;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,6 +17,10 @@ class PaymentResource extends Resource
     protected static ?string $model = Payment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationGroup = 'Invoicing';
+
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {

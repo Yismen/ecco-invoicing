@@ -1,16 +1,15 @@
 <?php
 
 use App\Filament\Admin\Resources\UserResource;
-use Tests\TestCase;
 use App\Models\User;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class)->in('Feature/Filament');
 
 beforeEach(function () {
-    $this->resource = new UserResource();
+    $this->resource = new UserResource;
     $this->user = User::factory()->create();
 });
 
@@ -26,7 +25,7 @@ describe('guest user', function () {
         foreach ($routes as $route) {
             $uri = route($route, ['record' => $this->user->getKey()]);
             $this->get($uri)
-                 ->assertRedirect(route('filament.admin.auth.login'));
+                ->assertRedirect(route('filament.admin.auth.login'));
         }
     });
 });
@@ -43,8 +42,8 @@ describe('unauthorized user', function () {
         foreach ($routes as $route) {
             $uri = route($route, ['record' => $this->user->getKey()]);
             $this->actingAs($this->user)
-                 ->get($uri)
-                 ->assertForbidden();
+                ->get($uri)
+                ->assertForbidden();
         }
     });
 });
@@ -73,8 +72,7 @@ describe('authorized user with permission', function () {
 
         // Index
         $this->get(route('filament.admin.resources.users.index'))
-             ->assertOk()
-             ->assertSeeText('Users');
+            ->assertOk()
+            ->assertSeeText('Users');
     });
 });
-

@@ -1,12 +1,12 @@
 <?php
 
-use App\Models\User;
+use App\Filament\Invoicing\Resources\ClientResource;
 use App\Models\Client;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
-use App\Filament\Invoicing\Resources\ClientResource;
 
-describe('Client Resource', function() {
+describe('Client Resource', function () {
     beforeEach(function () {
         Filament::setCurrentPanel(
             Filament::getPanel('invoicing')
@@ -23,7 +23,7 @@ describe('Client Resource', function() {
         ];
     });
 
-    it('redirects guests to login page', function ( $route) {
+    it('redirects guests to login page', function ($route) {
         $this->get($this->routes[$route])
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
@@ -33,7 +33,7 @@ describe('Client Resource', function() {
         'view',
     ]);
 
-    it('forbids unauthorized users to access', function ( $route) {
+    it('forbids unauthorized users to access', function ($route) {
         $this->actingAs($this->user)
             ->get($this->routes[$route])
             ->assertForbidden();
@@ -44,7 +44,7 @@ describe('Client Resource', function() {
         'view',
     ]);
 
-    describe('authorized users', function() {
+    describe('authorized users', function () {
         beforeEach(function () {
 
             $permissions = [
@@ -63,7 +63,7 @@ describe('Client Resource', function() {
             }
         });
 
-        it('can access client resource endpoints', function ( $route) {
+        it('can access client resource endpoints', function ($route) {
             $this->actingAs($this->user)
                 ->get($this->routes[$route])
                 ->assertOk();
@@ -74,6 +74,14 @@ describe('Client Resource', function() {
             'view',
         ]);
     });
+
+    it('shows correct navigation sort', function () {
+        expect(
+            ClientResource::getNavigationSort()
+        )->toBe(1)
+            ->and(
+                ClientResource::getNavigationGroup()
+            )->toBe('Invoicing');
+    });
+
 });
-
-

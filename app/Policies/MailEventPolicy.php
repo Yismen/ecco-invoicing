@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Vormkracht10\Mails\Models\MailEvent;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Vormkracht10\Mails\Models\MailEvent;
 
 class MailEventPolicy
 {
