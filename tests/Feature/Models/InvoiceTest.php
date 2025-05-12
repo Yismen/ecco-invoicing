@@ -14,7 +14,9 @@ it('save correct fields', function () {
     $this->assertDatabaseHas(Invoice::class, $data->only([
         'number',
         'date',
+        'client_id',
         'agent_id',
+        'project_id',
         'data',
         // 'subtotal_amount',
         // 'tax_amount',
@@ -22,6 +24,19 @@ it('save correct fields', function () {
         // 'status',
         // 'due_date',
     ]));
+});
+
+it('belongs to a client', function () {
+    $data = Invoice::factory()->make();
+
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
+        $data->client()
+    );
+    $this->assertInstanceOf(
+        \App\Models\Client::class,
+        $data->agent->client
+    );
 });
 
 it('belongs to an agent', function () {
@@ -40,11 +55,9 @@ it('belongs to an agent', function () {
 });
 
 it('belongs to a project', function () {
-    $agent = Agent::factory()
-        ->hasProjects()
-        ->create();
     $data = Invoice::factory()
-        ->create(['agent_id' => $agent->id]);
+        ->forProject()
+        ->create();
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
@@ -52,24 +65,9 @@ it('belongs to a project', function () {
     );
     $this->assertInstanceOf(
         \App\Models\Project::class,
-        $data->agent->projects->first()
+        $data->project
     );
 });
-
-// it('belongs to a client', function () {
-//     $data = Invoice::factory()->make();
-
-//     dd($data->agent->toArray());
-
-//     $this->assertInstanceOf(
-//         \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-//         $data->client()
-//     );
-//     $this->assertInstanceOf(
-//         \App\Models\Client::class,
-//         $data->agent->client
-//     );
-// });
 
 // it('has many payments', function () {
 //     $data = Invoice::factory()->make();
@@ -165,13 +163,8 @@ it('updates the due date based on client net terms', function () {
     $client = Client::factory()
         ->create(['invoice_net_days' => 30]);
     $data = Invoice::factory()
-        ->for(
-            Agent::factory()
-                ->state([
-                    'client_id' => $client->id,
-                ])
-        )
         ->create([
+            'client_id' => $client->id,
             'date' => now(),
             'due_date' => null,
         ]);
@@ -188,13 +181,7 @@ it('calculates subtotal, taxt amount and total amount', function () {
         ->count(3)
         ->create();
     $data = Invoice::factory()
-        ->for(
-            Agent::factory()
-                ->state([
-                    'client_id' => $client->id,
-                ])
-        )
-        ->create();
+        ->create(['client_id' => $client->id]);
 
     $data->items()->sync($items->pluck('id'));
     $data->update([]);

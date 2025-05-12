@@ -44,3 +44,19 @@ it('has many items', function () {
         $data->items->first()
     );
 });
+
+it('has many invoices', function () {
+    $data = Project::factory()
+        ->hasInvoices()
+        ->create();
+
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\HasMany::class,
+        $data->invoices()
+    );
+
+    $this->assertInstanceOf(
+        \App\Models\Invoice::class,
+        $data->invoices->first()
+    );
+});

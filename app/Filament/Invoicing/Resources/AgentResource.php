@@ -2,15 +2,18 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Invoicing\Resources\AgentResource\Pages;
-use App\Models\Agent;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Agent;
+use App\Models\Client;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Services\Filament\Forms\ClientForm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Invoicing\Resources\AgentResource\Pages;
+use App\Services\Filament\Forms\AgentForm;
 
 class AgentResource extends Resource
 {
@@ -27,24 +30,7 @@ class AgentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->autofocus()
-                            ->maxLength(255),
-                        Forms\Components\Select::make('client_id')
-                            ->relationship('client', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->placeholder('Select a client')
-                            ->required(),
-                        Forms\Components\TextInput::make('phone')
-                            ->tel()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->maxLength(255),
-                    ])
+                    ->schema(AgentForm::make())
                     ->columns(2),
             ]);
     }

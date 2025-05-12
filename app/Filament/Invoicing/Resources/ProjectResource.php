@@ -4,6 +4,7 @@ namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Invoicing\Resources\ProjectResource\Pages;
 use App\Models\Project;
+use App\Services\Filament\Forms\ProjectForm;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -27,16 +28,7 @@ class ProjectResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                    ->schema([Forms\Components\TextInput::make('name')
-                    ->autofocus()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('agent_id')
-                    ->relationship('agent', 'name')
-                    ->searchable()
-                    ->preload(10)
-                    ->required(),
-                ])
+                    ->schema(ProjectForm::make())
                 ->columns(2),
             ]);
     }

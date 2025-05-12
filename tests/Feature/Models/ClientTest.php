@@ -37,18 +37,18 @@ it('has many agents', function () {
 
 it('has many invoices', function () {
     $data = Client::factory()
-        ->hasAgents(Agent::factory()->hasInvoices(1))
+        ->hasInvoices()
         ->create();
 
     $this->assertInstanceOf(
-        \Illuminate\Database\Eloquent\Relations\HasManyThrough::class,
+        \Illuminate\Database\Eloquent\Relations\HasMany::class,
         $data->invoices()
     );
 
-    // $this->assertInstanceOf(
-    //     \App\Models\Invoice::class,
-    //     $data->invoices()->first()
-    // );
+    $this->assertInstanceOf(
+        \App\Models\Invoice::class,
+        $data->invoices()->first()
+    );
 });
 
 // it('has many payments', function () {

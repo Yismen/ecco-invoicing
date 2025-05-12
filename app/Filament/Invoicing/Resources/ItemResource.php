@@ -2,15 +2,16 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Invoicing\Resources\ItemResource\Pages;
-use App\Models\Item;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\Item;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Services\Filament\Forms\ItemForm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Invoicing\Resources\ItemResource\Pages;
 
 class ItemResource extends Resource
 {
@@ -27,23 +28,7 @@ class ItemResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Select::make('project_id')
-                            ->relationship('project', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload(10)
-                            ->placeholder('Select a project'),
-                        Forms\Components\TextInput::make('price')
-                            ->minValue(0)
-                            ->required()
-                            ->numeric()
-                            ->prefix('$'),
-
-                    ])
+                    ->schema(ItemForm::make())
                     ->columns(3),
                 Forms\Components\Section::make('Details')
                     ->schema([

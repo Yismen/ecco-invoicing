@@ -37,8 +37,8 @@ class Client extends Model
         return $this->hasMany(Project::class);
     }
 
-    public function invoices(): HasManyThrough
+    public function invoices(): HasMany
     {
-        return $this->hasManyThrough(Invoice::class, Agent::class);
+        return $this->hasMany(Invoice::class);
     }
 }
