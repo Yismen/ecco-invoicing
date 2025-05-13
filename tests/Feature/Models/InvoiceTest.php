@@ -3,6 +3,7 @@
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Item;
 use App\Models\Project;
 
@@ -183,10 +184,17 @@ it('calculates subtotal, taxt amount and total amount', function () {
     $data = Invoice::factory()
         ->create(['client_id' => $client->id]);
 
-    $data->items()->sync($items->pluck('id'));
-    $data->update([]);
+   foreach ($items as $item) {
+        $data->invoiceItems()->create([
+            'item_id' => $item->id,
+            'item_price' => 10,
+            'quantity' => 4,
+    ]);
+   }
 
-    $subtotal = $data->items->sum('price') * $data->items->count();
+   $data->touch();
+
+    $subtotal = 3 * 10 * 4; // 3 items at 10 times 4 quantity
     $tax = $subtotal * $client->tax_rate;
     $total = $subtotal + $tax;
 
@@ -194,42 +202,3 @@ it('calculates subtotal, taxt amount and total amount', function () {
     $this->assertEquals($data->tax_amount, $tax);
     $this->assertEquals($data->total_amount, $total);
 });
-//calculates tax based on subtotal and client tax rate
-// it('calculates tax based on subtotal and client tax rate', function () {
-//     $client = Client::factory()
-//         ->create(['tax_rate' => 0.2]);
-//     $data = Invoice::factory()
-//         ->for(
-//             Agent::factory()
-//                 ->state([
-//                     'client_id' => $client->id,
-//                 ])
-//         )
-//         ->hasItems(3)
-//         ->create();
-
-//     $subtotal = $data->items->sum('price');
-//     $tax = $subtotal * $client->tax_rate;
-
-//     $this->assertEquals($data->tax_amount, $tax);
-// });
-//calculates total based on subtotal and tax
-// it('calculates total based on subtotal and tax', function () {
-//     $client = Client::factory()
-//         ->create(['tax_rate' => 0.2]);
-//     $data = Invoice::factory()
-//         ->for(
-//             Agent::factory()
-//                 ->state([
-//                     'client_id' => $client->id,
-//                 ])
-//         )
-//         ->hasItems(3)
-//         ->create();
-
-//     $subtotal = $data->items->sum('price');
-//     $tax = $subtotal * $client->tax_rate;
-//     $total = $subtotal + $tax;
-
-//     $this->assertEquals($data->total_amount, $total);
-// });

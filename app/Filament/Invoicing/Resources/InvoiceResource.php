@@ -22,6 +22,7 @@ use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\InvoiceItem;
+use Illuminate\Support\Number;
 
 class InvoiceResource extends Resource
 {
@@ -87,6 +88,18 @@ class InvoiceResource extends Resource
                         ->maxDate(now()->format('Y-m-d'))
                         ->required(),
                ])->columns(7),
+               Forms\Components\Section::make()
+                    ->visible(fn($record) => $record)
+                    ->schema([
+                        Forms\Components\Placeholder::make('')
+                            ->content(function($record) {
+                                $record->load(['client', 'agent', 'project', 'items']);
+
+                                return view('filament.partials.invoice-company-details', [
+                                    'invoice' => $record
+                                ]);
+                            }),
+                    ]),
                 Forms\Components\Section::make('Invoice Items')
                     ->schema([
                         Forms\Components\Repeater::make('invoiceItems')
@@ -149,15 +162,31 @@ class InvoiceResource extends Resource
                                     ->default(1)
                                     ->required(),
                                 Forms\Components\TextInput::make('item_price')
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->dehydrated(),
                                 Forms\Components\TextInput::make('subtotal')
                                     ->disabled()
-                                    ->formatStateUsing(function(InvoiceItem $record) {
-                                        return $record->item_price * $record->quantity;
+                                    ->formatStateUsing(function(?InvoiceItem $record) {
+                                        $subtotal = $record?->item_price * $record?->quantity;
+
+                                        return Number::currency($subtotal);
                                     })
                                 ,
                             ])
                             ->columns(5),
+                    ]),
+
+                Forms\Components\Section::make()
+                    ->visible(fn($record) => $record)
+                    ->schema([
+                        Forms\Components\Placeholder::make('')
+                            ->content(function($record) {
+                                $record->load(['client', 'agent', 'project', 'items']);
+
+                                return view('filament.partials.invoice-summary', [
+                                    'invoice' => $record
+                                ]);
+                            }),
                     ]),
             ]);
     }

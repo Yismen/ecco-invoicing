@@ -37,12 +37,16 @@ class Invoice extends Model
         parent::boot();
 
         static::creating(function (self $invoice) {
-            // $invoice->number =
-            //     $invoice->agent->client->invoices()->count() + 1;
+            // $invoice->number = $invoice->client->invoices->count() + 1;
         });
 
         static::saved(function (self $invoice) {
-            $subtotal_amount = $invoice->items->sum('price') * $invoice->items->count();
+            $subtotal_amount = 0;
+
+            foreach ($invoice->invoiceItems as $item) {
+                $subtotal_amount += $item->item_price * $item->quantity;
+            }
+
             $tax_amount = $subtotal_amount * ($invoice->client->tax_rate ?: 0);
             $due_date = now()->addDays($invoice->client->invoice_net_days ?: 0)->format('Y-m-d');
             $total_amount = $subtotal_amount + $tax_amount;

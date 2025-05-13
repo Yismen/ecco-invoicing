@@ -13,6 +13,15 @@ class InvoiceItem extends Model
 
     public $incrementing = true;
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::saved(function (self $invoice_item) {
+            $invoice_item->invoice->touch();
+        });
+    }
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
