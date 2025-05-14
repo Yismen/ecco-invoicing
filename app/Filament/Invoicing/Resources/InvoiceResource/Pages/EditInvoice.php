@@ -2,9 +2,10 @@
 
 namespace App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 
-use App\Filament\Invoicing\Resources\InvoiceResource;
+use App\Filament\Actions\RecordActions\PayInvoiceHeaderAction;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Invoicing\Resources\InvoiceResource;
 
 class EditInvoice extends EditRecord
 {
@@ -14,6 +15,8 @@ class EditInvoice extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
+
+            PayInvoiceHeaderAction::make(),
             // Actions\DeleteAction::make(),
             // Actions\ForceDeleteAction::make(),
             // Actions\RestoreAction::make(),

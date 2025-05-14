@@ -2,14 +2,15 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
 use App\Models\Invoice;
+use Illuminate\Contracts\Validation\Rule;
 
 class PreventOverpayment implements Rule
 {
     protected int $invoiceId;
 
-    public function __construct(int $invoiceId)
+    public function __construct(int|Closure $invoiceId)
     {
         $this->invoiceId = $invoiceId;
     }

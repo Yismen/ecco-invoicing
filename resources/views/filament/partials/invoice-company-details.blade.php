@@ -24,15 +24,28 @@
 
     <!-- Details -->
     <div class="px-6 py-4">
-      <h3 class="text-gray-00 font-medium">
-        Invoice #
-      </h3>
-      <p class="text-gray-900 font-bold">
-        {{ $invoice->number }}
-      </p>
-      <p class="text-sm text-gray-500">
-        {{-- {{ $invoice->agent->title }} --}}
-      </p>
+      <div>
+        <h3 class="text-gray-00 font-medium">
+            Invoice #
+        </h3>
+        <p class="text-gray-900 font-bold">
+            {{ $invoice->number }}
+        </p>
+        <p class="text-sm text-gray-500">
+            {{-- {{ $invoice->agent->title }} --}}
+        </p>
+      </div>
+      <div>
+        <h3 class="text-gray-00 font-medium">
+            Invoice Status
+        </h3>
+        <p class="text-gray-900 font-bold bg-{{ $invoice->status->getColor() }} rounded p-1">
+            {{ str($invoice->status->name)->headline() }}
+        </p>
+        <p class="text-sm text-gray-500">
+            {{-- {{ $invoice->agent->title }} --}}
+        </p>
+      </div>
     </div>
   </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceStatuses;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,18 @@ class Payment extends Model
 
         static::saved(function($payment) {
             $payment->invoice->touch();
+
+            if ($payment->invoice->balance_pending > 0) {
+                $payment->invoice->updateQuietly([
+                    'status' => InvoiceStatuses::PartiallyPaid
+                ]);
+            }
+
+            if ($payment->invoice->balance_pending == 0) {
+                $payment->invoice->updateQuietly([
+                    'status' => InvoiceStatuses::Paid
+                ]);
+            }
         });
     }
 

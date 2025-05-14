@@ -46,6 +46,7 @@ class Invoice extends Model
         static::creating(function (self $invoice) {
             $invoice->number = $invoice->client->invoice_prefix . '-' . str($invoice->client->invoices->count() + 1)->padLeft(8, 0);
             $invoice->due_date = now()->addDays($invoice->client->invoice_net_days ?: 0);
+            $invoice->status = InvoiceStatuses::Pending;
         });
 
         static::saved(function (self $invoice) {
@@ -57,7 +58,7 @@ class Invoice extends Model
 
             $tax_amount = $subtotal_amount * ($invoice->client->tax_rate ?: 0);
             $total_amount = $subtotal_amount + $tax_amount;
-            $status = $invoice->due_date->isPast() ? InvoiceStatuses::Overdue : $invoice->status;
+            $status = $invoice->due_date->isPast() ? InvoiceStatuses::Overdue : InvoiceStatuses::Pending;
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,

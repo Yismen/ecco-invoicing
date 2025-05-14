@@ -5,6 +5,7 @@ namespace App\Enums;
 enum InvoiceStatuses: string
 {
     case Pending = 'pending';
+    case PartiallyPaid = 'partially_paid';
     case Paid = 'paid';
     case Overdue = 'overdue';
     case Cancelled = 'cancelled';
@@ -15,9 +16,10 @@ enum InvoiceStatuses: string
     public function getColor(): string
     {
         return match ($this) {
-            self::Pending => 'yellow',
+            self::Pending => 'warning',
+            self::PartiallyPaid => 'info',
             self::Paid => 'green',
-            self::Overdue => 'red',
+            self::Overdue => 'danger',
             self::Cancelled => 'gray',
         };
     }

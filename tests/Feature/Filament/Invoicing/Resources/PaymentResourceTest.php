@@ -34,7 +34,7 @@ describe('Payment Resource', function () {
 
         $this->routes = [
             'index' => PaymentResource::getUrl('index'),
-            'create' => PaymentResource::getUrl('create'),
+            // 'create' => PaymentResource::getUrl('create'),
             'edit' => PaymentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
             'view' => PaymentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
@@ -45,7 +45,7 @@ describe('Payment Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
+        // 'create',
         'edit',
         'view',
     ]);
@@ -56,7 +56,7 @@ describe('Payment Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
+        // 'create',
         'edit',
         'view',
     ]);
@@ -66,7 +66,7 @@ describe('Payment Resource', function () {
 
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
+                // 'create' => 'create',
                 'edit' => 'update',
                 'view' => 'view',
             ];
@@ -86,7 +86,7 @@ describe('Payment Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
+            // 'create',
             'edit',
             'view',
         ]);

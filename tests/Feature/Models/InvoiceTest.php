@@ -87,27 +87,6 @@ it('has many invoice items', function () {
         $data->items->first()
     );
 });
-
-it('has status pending by default', function() {
-    $data = Invoice::factory()->create();
-
-    expect($data->status)
-        ->toBe(InvoiceStatuses::Pending);
-});
-
-it('has status overdue when it hasnt been paid and due day has passed', function() {
-    $data = Invoice::factory()
-        ->for(Client::factory()->state(['invoice_net_days' => 10]))
-        ->create(['status' => InvoiceStatuses::Pending]);
-
-    $this->travel(15)->days();
-
-    $data->touch();
-
-    expect($data->status)
-        ->toBe(InvoiceStatuses::Overdue);
-});
-
 it('updates the due date based on client net terms', function () {
     $client = Client::factory()
         ->create(['invoice_net_days' => 30]);
@@ -253,3 +232,68 @@ it('prevents a payment that exceeds invoice total', function () {
         'amount' => 200.00,
     ]);
 })->throws(\Exception::class);
+
+it('has status pending by default', function() {
+    $data = Invoice::factory()->create();
+
+    expect($data->status)
+        ->toBe(InvoiceStatuses::Pending);
+});
+
+it('has status overdue when it hasnt been paid and due day has passed', function() {
+    $data = Invoice::factory()
+        ->for(Client::factory()->state(['invoice_net_days' => 10]))
+        ->create(['status' => InvoiceStatuses::Pending]);
+
+    $this->travel(15)->days();
+
+    $data->touch();
+
+    expect($data->status)
+        ->toBe(InvoiceStatuses::Overdue);
+});
+
+it('has status partially paid when payment is created but invoice still have some balance', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 200,
+    ]);
+
+    $invoice->refresh();
+
+    expect($invoice->status)->toBe(InvoiceStatuses::PartiallyPaid);
+});
+
+
+it('has status paid when payment is created and balance is 0', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 300,
+    ]);
+
+    $invoice->refresh();
+
+    expect($invoice->status)->toBe(InvoiceStatuses::Paid);
+});
