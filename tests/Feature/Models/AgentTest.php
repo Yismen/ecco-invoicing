@@ -2,6 +2,7 @@
 
 use App\Models\Agent;
 use App\Models\Client;
+use App\Models\Invoice;
 
 it('save correct fields', function () {
     $data = Agent::factory()->make();
@@ -46,14 +47,17 @@ it('has many projects', function () {
 });
 
 it('has many invoices', function () {
-    $data = Agent::factory()->make();
+    $data = Agent::factory()
+        ->hasInvoices(2)
+        ->create();
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\HasMany::class,
         $data->invoices()
     );
-    // $this->assertEquals(
-    //     $data->getForeignKeyName(),
-    //     $data->invoices()->getForeignKeyName()
-    // );
+
+    $this->assertInstanceOf(
+        \App\Models\Invoice::class,
+        $data->invoices->first()
+    );
 });
