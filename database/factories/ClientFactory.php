@@ -19,7 +19,7 @@ class ClientFactory extends Factory
         return [
             'name' => $this->faker->company,
             'address' => $this->faker->address,
-            'tax_rate' => $this->faker->randomFloat(2, 0, 100),
+            'tax_rate' => 0,
             'invoice_template' => $this->faker->randomElement(['template1', 'template2']),
             'invoice_notes' => $this->faker->text(100),
             'invoice_terms' => $this->faker->text(100),

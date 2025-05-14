@@ -1,12 +1,13 @@
 <?php
 
-use App\Enums\InvoiceStatuses;
+use App\Models\Item;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Item;
+use App\Models\Payment;
 use App\Models\Project;
+use App\Models\InvoiceItem;
+use App\Enums\InvoiceStatuses;
 
 it('save correct fields', function () {
     $data = Invoice::factory()->make();
@@ -159,17 +160,96 @@ it('updates the number based on the client', function() {
         ->toBe('SOMERN-00000001');
 });
 
-// it('has many payments', function () {
-//     $data = Invoice::factory()->make();
+it('has many payments', function () {
+    $data = Invoice::factory()
+        ->has(Payment::factory(state: ['amount' => 0]))
+        ->create();
 
-//     $this->assertInstanceOf(
-//         \Illuminate\Database\Eloquent\Relations\HasMany::class,
-//         $data->payments()
-//     );
-//     $this->assertEquals(
-//         \App\Models\Payment::class,
-//         $data->payments()->first()
-//     );
-// });
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\HasMany::class,
+        $data->payments()
+    );
+    $this->assertInstanceOf(
+        Payment::class,
+        $data->payments->first()
+    );
+});
 
+it('allows partial payments and calculates total paid', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
 
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    expect($invoice->total_paid)->toBe(200.00);
+});
+
+it('allows partial payments and calculates remaining balance', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    $invoice->touch();
+
+    $totalPaid = $invoice->fresh()->total_paid;
+
+    expect($totalPaid)->toBe(200.00);
+
+    expect($invoice->balance_pending)->toBe(100.00);
+});
+
+it('prevents a payment that exceeds invoice total', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 200.00,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 200.00,
+    ]);
+})->throws(\Exception::class);

@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\Models\InteracstsWithModelCaching;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceItem extends Model
 {
+    use InteracstsWithModelCaching;
+    use SoftDeletes;
+
     public $table = 'invoice_item';
 
     public $fillable = ['item_id', 'invoice_id', 'quantity', 'item_price'];

@@ -25,6 +25,26 @@ class Payment extends Model
         'description',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($payment) {
+            $invoice = $payment->invoice;
+            $totalPaid = $invoice->payments()->sum('amount');
+
+            $attempt = $totalPaid + $payment->amount;
+
+            if ($attempt > $invoice->total_amount) {
+                throw new \Exception("Payment exceeds invoice total");
+            }
+        });
+
+        static::saved(function($payment) {
+            $payment->invoice->touch();
+        });
+    }
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
