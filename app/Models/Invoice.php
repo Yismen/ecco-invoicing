@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceStatuses;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,12 +33,18 @@ class Invoice extends Model
         'due_date',
     ];
 
+    protected $casts = [
+        'status' => InvoiceStatuses::class,
+        'due_date' => 'date',
+    ];
+
     public static function boot(): void
     {
         parent::boot();
 
         static::creating(function (self $invoice) {
-            // $invoice->number = $invoice->client->invoices->count() + 1;
+            $invoice->number = $invoice->client->invoice_prefix . '-' . str($invoice->client->invoices->count() + 1)->padLeft(8, 0);
+            $invoice->due_date = now()->addDays($invoice->client->invoice_net_days ?: 0);
         });
 
         static::saved(function (self $invoice) {
@@ -48,14 +55,14 @@ class Invoice extends Model
             }
 
             $tax_amount = $subtotal_amount * ($invoice->client->tax_rate ?: 0);
-            $due_date = now()->addDays($invoice->client->invoice_net_days ?: 0)->format('Y-m-d');
             $total_amount = $subtotal_amount + $tax_amount;
+            $status = $invoice->due_date->isPast() ? InvoiceStatuses::Overdue : $invoice->status;
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
-                'due_date' => $due_date,
+                'status' => $status,
             ]);
         });
     }

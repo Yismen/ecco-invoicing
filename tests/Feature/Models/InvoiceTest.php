@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\InvoiceStatuses;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Invoice;
@@ -13,7 +14,7 @@ it('save correct fields', function () {
     Invoice::create($data->toArray());
 
     $this->assertDatabaseHas(Invoice::class, $data->only([
-        'number',
+        // 'number',
         'date',
         'client_id',
         'agent_id',
@@ -70,19 +71,6 @@ it('belongs to a project', function () {
     );
 });
 
-// it('has many payments', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertInstanceOf(
-//         \Illuminate\Database\Eloquent\Relations\HasMany::class,
-//         $data->payments()
-//     );
-//     $this->assertEquals(
-//         \App\Models\Payment::class,
-//         $data->payments()->first()
-//     );
-// });
-
 it('has many invoice items', function () {
     $data = Invoice::factory()
         ->hasItems()
@@ -99,66 +87,25 @@ it('has many invoice items', function () {
     );
 });
 
-// it('change status when paid', function () {
-//     $data = Invoice::factory()->make();
+it('has status pending by default', function() {
+    $data = Invoice::factory()->create();
 
-//     $this->assertEquals('unpaid', $data->status);
+    expect($data->status)
+        ->toBe(InvoiceStatuses::Pending);
+});
 
-//     $data->markAsPaid();
+it('has status overdue when it hasnt been paid and due day has passed', function() {
+    $data = Invoice::factory()
+        ->for(Client::factory()->state(['invoice_net_days' => 10]))
+        ->create(['status' => InvoiceStatuses::Pending]);
 
-//     $this->assertEquals('paid', $data->status);
-// });
+    $this->travel(15)->days();
 
-// it('change status when unpaid', function () {
-//     $data = Invoice::factory()->make();
+    $data->touch();
 
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsPaid();
-//     $this->assertEquals('paid', $data->status);
-
-//     $data->markAsUnpaid();
-//     $this->assertEquals('unpaid', $data->status);
-// });
-
-// it('change status when partially paid', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsPaid();
-//     $this->assertEquals('paid', $data->status);
-
-//     $data->markAsPartiallyPaid();
-//     $this->assertEquals('partially_paid', $data->status);
-// });
-
-// it('change status when cancelled', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsCancelled();
-//     $this->assertEquals('cancelled', $data->status);
-// });
-
-// it('change status when draft', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsDraft();
-//     $this->assertEquals('draft', $data->status);
-// });
-
-// it('change status when sent', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsSent();
-//     $this->assertEquals('sent', $data->status);
-// });
+    expect($data->status)
+        ->toBe(InvoiceStatuses::Overdue);
+});
 
 it('updates the due date based on client net terms', function () {
     $client = Client::factory()
@@ -170,8 +117,7 @@ it('updates the due date based on client net terms', function () {
             'due_date' => null,
         ]);
 
-    // Assuming the client has net terms set
-    $this->assertEquals($data->due_date, now()->addDays(30)->format('Y-m-d'));
+    $this->assertEquals($data->due_date, today()->addDays(30));
 });
 
 
@@ -202,3 +148,28 @@ it('calculates subtotal, taxt amount and total amount', function () {
     $this->assertEquals($data->tax_amount, $tax);
     $this->assertEquals($data->total_amount, $total);
 });
+
+it('updates the number based on the client', function() {
+    $data = Invoice::factory()
+        ->for(Client::factory()->state(['name' => 'Some Random Name']))
+        ->create();
+
+
+    expect($data->number)
+        ->toBe('SOMERN-00000001');
+});
+
+// it('has many payments', function () {
+//     $data = Invoice::factory()->make();
+
+//     $this->assertInstanceOf(
+//         \Illuminate\Database\Eloquent\Relations\HasMany::class,
+//         $data->payments()
+//     );
+//     $this->assertEquals(
+//         \App\Models\Payment::class,
+//         $data->payments()->first()
+//     );
+// });
+
+

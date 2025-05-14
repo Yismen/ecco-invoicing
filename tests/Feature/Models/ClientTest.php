@@ -51,6 +51,13 @@ it('has many invoices', function () {
     );
 });
 
+it('gather invoice prefix name', function() {
+    $data = Client::factory()->create(['name' => 'Some random name']);
+
+    expect($data->invoice_prefix)
+        ->toBe('SOMERN');
+});
+
 // it('has many payments', function () {
 //     $data = Client::factory()
 //         ->hasPayments()

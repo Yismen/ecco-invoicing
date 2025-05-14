@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\InvoiceStatuses;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,7 +27,7 @@ class InvoiceFactory extends Factory
             'subtotal_amount' => $this->faker->randomFloat(2, 0, 1000),
             'tax_amount' => $this->faker->randomFloat(2, 0, 1000),
             'total_amount' => $this->faker->randomFloat(2, 0, 1000),
-            'status' => $this->faker->randomElement(['draft', 'sent', 'paid']),
+            'status' =>InvoiceStatuses::Pending,
             'due_date' => $this->faker->date(),
         ];
     }
