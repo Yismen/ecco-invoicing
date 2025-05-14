@@ -2,6 +2,7 @@
 
 namespace App\Filament\Invoicing\Resources;
 
+use App\Filament\Actions\TableActions\PayInvoiceRowAction;
 use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
@@ -22,6 +23,8 @@ use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\InvoiceItem;
+use App\Models\Payment;
+use App\Rules\PreventOverpayment;
 use Illuminate\Support\Number;
 
 class InvoiceResource extends Resource
@@ -43,7 +46,9 @@ class InvoiceResource extends Resource
                     Forms\Components\Select::make('client_id')
                         ->relationship('client', 'name')
                         ->options(function() : array {
-                            return Client::query()->pluck('name', 'id')->all();
+                            return Client::query()
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->afterStateUpdated(fn(Set $set) => $set('agent_id', null))
                         ->autofocus(fn (string $operation) => in_array($operation, ['create', 'edit']))
@@ -205,23 +210,33 @@ class InvoiceResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subtotal_amount')
                     ->numeric()
+                    ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tax_amount')
                     ->numeric()
+                    ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
+                    ->sortable()
+                    ->money(),
+                Tables\Columns\TextColumn::make('status')
+                    ->formatStateUsing(fn($state) => $state->name)
+                    ->badge()
+                    ->color(fn($state) => $state->getColor())
+                    ,
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('template')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('notes')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('terms')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -241,12 +256,13 @@ class InvoiceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                PayInvoiceRowAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\ForceDeleteBulkAction::make(),
+                    // Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }

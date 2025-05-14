@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\Item;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Item;
+use App\Models\Payment;
 use App\Models\Project;
+use App\Models\InvoiceItem;
+use App\Enums\InvoiceStatuses;
 
 it('save correct fields', function () {
     $data = Invoice::factory()->make();
@@ -13,7 +15,7 @@ it('save correct fields', function () {
     Invoice::create($data->toArray());
 
     $this->assertDatabaseHas(Invoice::class, $data->only([
-        'number',
+        // 'number',
         'date',
         'client_id',
         'agent_id',
@@ -70,19 +72,6 @@ it('belongs to a project', function () {
     );
 });
 
-// it('has many payments', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertInstanceOf(
-//         \Illuminate\Database\Eloquent\Relations\HasMany::class,
-//         $data->payments()
-//     );
-//     $this->assertEquals(
-//         \App\Models\Payment::class,
-//         $data->payments()->first()
-//     );
-// });
-
 it('has many invoice items', function () {
     $data = Invoice::factory()
         ->hasItems()
@@ -98,68 +87,6 @@ it('has many invoice items', function () {
         $data->items->first()
     );
 });
-
-// it('change status when paid', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsPaid();
-
-//     $this->assertEquals('paid', $data->status);
-// });
-
-// it('change status when unpaid', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsPaid();
-//     $this->assertEquals('paid', $data->status);
-
-//     $data->markAsUnpaid();
-//     $this->assertEquals('unpaid', $data->status);
-// });
-
-// it('change status when partially paid', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsPaid();
-//     $this->assertEquals('paid', $data->status);
-
-//     $data->markAsPartiallyPaid();
-//     $this->assertEquals('partially_paid', $data->status);
-// });
-
-// it('change status when cancelled', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsCancelled();
-//     $this->assertEquals('cancelled', $data->status);
-// });
-
-// it('change status when draft', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsDraft();
-//     $this->assertEquals('draft', $data->status);
-// });
-
-// it('change status when sent', function () {
-//     $data = Invoice::factory()->make();
-
-//     $this->assertEquals('unpaid', $data->status);
-
-//     $data->markAsSent();
-//     $this->assertEquals('sent', $data->status);
-// });
-
 it('updates the due date based on client net terms', function () {
     $client = Client::factory()
         ->create(['invoice_net_days' => 30]);
@@ -170,8 +97,7 @@ it('updates the due date based on client net terms', function () {
             'due_date' => null,
         ]);
 
-    // Assuming the client has net terms set
-    $this->assertEquals($data->due_date, now()->addDays(30)->format('Y-m-d'));
+    $this->assertEquals($data->due_date, today()->addDays(30));
 });
 
 
@@ -201,4 +127,173 @@ it('calculates subtotal, taxt amount and total amount', function () {
     $this->assertEquals($data->subtotal_amount, $subtotal);
     $this->assertEquals($data->tax_amount, $tax);
     $this->assertEquals($data->total_amount, $total);
+});
+
+it('updates the number based on the client', function() {
+    $data = Invoice::factory()
+        ->for(Client::factory()->state(['name' => 'Some Random Name']))
+        ->create();
+
+
+    expect($data->number)
+        ->toBe('SOMERN-00000001');
+});
+
+it('has many payments', function () {
+    $data = Invoice::factory()
+        ->has(Payment::factory(state: ['amount' => 0]))
+        ->create();
+
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\HasMany::class,
+        $data->payments()
+    );
+    $this->assertInstanceOf(
+        Payment::class,
+        $data->payments->first()
+    );
+});
+
+it('allows partial payments and calculates total paid', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    expect($invoice->total_paid)->toBe(200.00);
+});
+
+it('allows partial payments and calculates remaining balance', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 100.00,
+    ]);
+
+    $invoice->touch();
+
+    $totalPaid = $invoice->fresh()->total_paid;
+
+    expect($totalPaid)->toBe(200.00);
+
+    expect($invoice->balance_pending)->toBe(100.00);
+});
+
+it('prevents a payment that exceeds invoice total', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 200.00,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 200.00,
+    ]);
+})->throws(\Exception::class);
+
+it('has status pending by default', function() {
+    $data = Invoice::factory()->create();
+
+    expect($data->status)
+        ->toBe(InvoiceStatuses::Pending);
+});
+
+it('has status overdue when it hasnt been paid and due day has passed', function() {
+    $data = Invoice::factory()
+        ->for(Client::factory()->state(['invoice_net_days' => 10]))
+        ->create(['status' => InvoiceStatuses::Pending]);
+
+    $this->travel(15)->days();
+
+    $data->touch();
+
+    expect($data->status)
+        ->toBe(InvoiceStatuses::Overdue);
+});
+
+it('has status partially paid when payment is created but invoice still have some balance', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 200,
+    ]);
+
+    $invoice->refresh();
+
+    expect($invoice->status)->toBe(InvoiceStatuses::PartiallyPaid);
+});
+
+
+it('has status paid when payment is created and balance is 0', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 300,
+    ]);
+
+    $invoice->refresh();
+
+    expect($invoice->status)->toBe(InvoiceStatuses::Paid);
 });

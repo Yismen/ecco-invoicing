@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\InvoiceStatuses;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Invoice extends Model
 {
@@ -32,12 +34,19 @@ class Invoice extends Model
         'due_date',
     ];
 
+    protected $casts = [
+        'status' => InvoiceStatuses::class,
+        'due_date' => 'date',
+    ];
+
     public static function boot(): void
     {
         parent::boot();
 
         static::creating(function (self $invoice) {
-            // $invoice->number = $invoice->client->invoices->count() + 1;
+            $invoice->number = $invoice->client->invoice_prefix . '-' . str($invoice->client->invoices->count() + 1)->padLeft(8, 0);
+            $invoice->due_date = now()->addDays($invoice->client->invoice_net_days ?: 0);
+            $invoice->status = InvoiceStatuses::Pending;
         });
 
         static::saved(function (self $invoice) {
@@ -48,14 +57,14 @@ class Invoice extends Model
             }
 
             $tax_amount = $subtotal_amount * ($invoice->client->tax_rate ?: 0);
-            $due_date = now()->addDays($invoice->client->invoice_net_days ?: 0)->format('Y-m-d');
             $total_amount = $subtotal_amount + $tax_amount;
+            $status = $invoice->due_date->isPast() ? InvoiceStatuses::Overdue : InvoiceStatuses::Pending;
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
-                'due_date' => $due_date,
+                'status' => $status,
             ]);
         });
     }
@@ -83,5 +92,20 @@ class Invoice extends Model
     public function invoiceItems(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function getTotalPaidAttribute()
+    {
+        return (float)$this->payments()->sum('amount');
+    }
+
+    public function getBalancePendingAttribute()
+    {
+        return (float)($this->total_amount - $this->total_paid);
     }
 }

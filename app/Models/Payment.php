@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceStatuses;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,38 @@ class Payment extends Model
         'images',
         'description',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($payment) {
+            $invoice = $payment->invoice;
+            $totalPaid = $invoice->payments()->sum('amount');
+
+            $attempt = $totalPaid + $payment->amount;
+
+            if ($attempt > $invoice->total_amount) {
+                throw new \Exception("Payment exceeds invoice total");
+            }
+        });
+
+        static::saved(function($payment) {
+            $payment->invoice->touch();
+
+            if ($payment->invoice->balance_pending > 0) {
+                $payment->invoice->updateQuietly([
+                    'status' => InvoiceStatuses::PartiallyPaid
+                ]);
+            }
+
+            if ($payment->invoice->balance_pending == 0) {
+                $payment->invoice->updateQuietly([
+                    'status' => InvoiceStatuses::Paid
+                ]);
+            }
+        });
+    }
 
     public function invoice(): BelongsTo
     {

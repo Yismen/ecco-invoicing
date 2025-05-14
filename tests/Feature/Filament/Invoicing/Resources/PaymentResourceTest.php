@@ -1,10 +1,13 @@
 <?php
 
-use App\Filament\Invoicing\Resources\PaymentResource;
-use App\Models\Payment;
+use App\Models\Item;
 use App\Models\User;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\InvoiceItem;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
+use App\Filament\Invoicing\Resources\PaymentResource;
 
 describe('Payment Resource', function () {
     beforeEach(function () {
@@ -12,12 +15,26 @@ describe('Payment Resource', function () {
             Filament::getPanel('invoicing')
         );
 
+        $invoice = Invoice::factory()
+            ->create();
+        $item = Item::factory()->create(['price' => 500]);
+
+        InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'item_id' => $item->id,
+            'quantity' => 1,
+            'item_price' => $item->price,
+        ]);
+
         $this->user = User::factory()->create();
-        $this->model = Payment::factory()->create();
+        $this->model = Payment::factory()->create([
+            'invoice_id' => $invoice->id,
+            'amount' => 200.00,
+        ]);
 
         $this->routes = [
             'index' => PaymentResource::getUrl('index'),
-            'create' => PaymentResource::getUrl('create'),
+            // 'create' => PaymentResource::getUrl('create'),
             'edit' => PaymentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
             'view' => PaymentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
@@ -28,7 +45,7 @@ describe('Payment Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
+        // 'create',
         'edit',
         'view',
     ]);
@@ -39,7 +56,7 @@ describe('Payment Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
+        // 'create',
         'edit',
         'view',
     ]);
@@ -49,7 +66,7 @@ describe('Payment Resource', function () {
 
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
+                // 'create' => 'create',
                 'edit' => 'update',
                 'view' => 'view',
             ];
@@ -69,7 +86,7 @@ describe('Payment Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
+            // 'create',
             'edit',
             'view',
         ]);

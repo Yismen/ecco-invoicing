@@ -1,13 +1,32 @@
 <?php
 
+use App\Models\Item;
+use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\InvoiceItem;
+
+beforeEach(function() {
+
+        $invoice = Invoice::factory()
+            ->create();
+        $item = Item::factory()->create(['price' => 500]);
+
+        InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'item_id' => $item->id,
+            'quantity' => 1,
+            'item_price' => $item->price,
+        ]);
+
+        $this->payment = Payment::factory()->create([
+            'invoice_id' => $invoice->id,
+            'amount' => 200.00,
+        ]);
+});
 
 it('save correct fields', function () {
-    $data = Payment::factory()->make();
 
-    Payment::create($data->toArray());
-
-    $this->assertDatabaseHas(Payment::class, $data->only([
+    $this->assertDatabaseHas(Payment::class, $this->payment->only([
         'invoice_id',
         'amount',
         'date',
@@ -18,14 +37,12 @@ it('save correct fields', function () {
 });
 
 it('belongs to an invoice', function () {
-    $data = Payment::factory()->make();
-
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-        $data->invoice()
+        $this->payment->invoice()
     );
     $this->assertInstanceOf(
         \App\Models\Invoice::class,
-        $data->invoice()->getRelated()
+        $this->payment->invoice()->getRelated()
     );
 });

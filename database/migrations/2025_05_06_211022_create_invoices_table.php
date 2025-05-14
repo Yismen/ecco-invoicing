@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\InvoiceStatuses;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Project;
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->decimal('subtotal_amount', 15, 2)->default(0);
             $table->decimal('tax_amount', 15, 2)->default(0);
             $table->decimal('total_amount', 15, 2)->default(0);
-            $table->enum('status', ['draft', 'sent', 'paid'])->default('draft');
+            $table->string('status')->nullable()->default(InvoiceStatuses::Pending->value);
             $table->date('due_date')->nullable();
             $table->softDeletes();
             $table->timestamps();

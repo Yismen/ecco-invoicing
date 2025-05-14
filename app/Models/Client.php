@@ -27,6 +27,10 @@ class Client extends Model
         'invoice_net_days',
     ];
 
+    protected $appends = [
+        'invoice_prefix'
+    ];
+
     public function agents(): HasMany
     {
         return $this->hasMany(Agent::class);
@@ -40,5 +44,17 @@ class Client extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function getinvoicePrefixAttribute()
+    {
+
+        $name = str($this->attributes['name'])->upper()->replace(['-', '_', '/', ',', '\''], ' ');
+
+        $name = preg_replace('/s+/', ' ', $name);
+
+        $name = explode(" ", $name, 3);
+
+        return $name[0] . (str($name[1] ?? '')->substr(0, 1)) . (str($name[2] ?? '')->substr(0, 1));
     }
 }
