@@ -47,6 +47,7 @@ class InvoiceResource extends Resource
                         ->relationship('client', 'name')
                         ->options(function() : array {
                             return Client::query()
+                                ->orderBy('name')
                                 ->pluck('name', 'id')
                                 ->all();
                         })
@@ -63,7 +64,11 @@ class InvoiceResource extends Resource
                         ->relationship('agent', 'name')
                         ->options(function(Get $get) : array|null {
                             $client_id = $get('client_id');
-                            return Agent::query()->where('client_id', $client_id)->pluck('name', 'id')->toArray();
+                            return Agent::query()
+                                ->where('client_id', $client_id)
+                                ->orderBy('name')
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->afterStateUpdated(fn(Set $set) => $set('project_id', null))
                         ->required()
@@ -82,7 +87,11 @@ class InvoiceResource extends Resource
                         ->createOptionModalHeading('Create Project')
                         ->options(function(Get $get) : array|null {
                             $agent_id = $get('agent_id');
-                            return Project::query()->where('agent_id', $agent_id)->pluck('name', 'id')->toArray();
+                            return Project::query()
+                                ->orderBy('name')
+                                ->where('agent_id', $agent_id)
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->preload(10)
                         ->disabled(fn(Get $get) => ! $get('agent_id'))
@@ -186,7 +195,7 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Placeholder::make('')
                             ->content(function($record) {
-                                $record->load(['client', 'agent', 'project', 'items']);
+                                // $record->load(['client', 'agent', 'project', 'items']);
 
                                 return view('filament.partials.invoice-summary', [
                                     'invoice' => $record
