@@ -18,7 +18,7 @@ enum InvoiceStatuses: string
         return match ($this) {
             self::Pending => 'warning',
             self::PartiallyPaid => 'info',
-            self::Paid => 'green',
+            self::Paid => 'success',
             self::Overdue => 'danger',
             self::Cancelled => 'gray',
         };
