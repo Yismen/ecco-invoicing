@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Models\HasNamePrefix;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,8 +15,8 @@ class Client extends Model
 
     /** @use HasFactory<\Database\Factories\ClientFactory> */
     use HasFactory;
-
     use SoftDeletes;
+    use HasNamePrefix;
 
     protected $fillable = [
         'name',
@@ -44,17 +45,5 @@ class Client extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
-    }
-
-    public function getinvoicePrefixAttribute()
-    {
-
-        $name = str($this->attributes['name'])->upper()->replace(['-', '_', '/', ',', '\''], ' ');
-
-        $name = preg_replace('/s+/', ' ', $name);
-
-        $name = explode(" ", $name, 3);
-
-        return $name[0] . (str($name[1] ?? '')->substr(0, 1)) . (str($name[2] ?? '')->substr(0, 1));
     }
 }

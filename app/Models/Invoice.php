@@ -44,7 +44,11 @@ class Invoice extends Model
         parent::boot();
 
         static::creating(function (self $invoice) {
-            $invoice->number = $invoice->client->invoice_prefix . '-' . str($invoice->client->invoices->count() + 1)->padLeft(8, 0);
+            $invoice->number = join('-', [
+                $invoice->client->invoice_prefix,
+                // $invoice->project->invoice_prefix,
+                str($invoice->client->invoices->count() + 1)->padLeft(8, 0)
+            ]);
             $invoice->due_date = now()->addDays($invoice->client->invoice_net_days ?: 0);
             $invoice->status = InvoiceStatuses::Pending;
         });
