@@ -14,6 +14,13 @@ class ClientForm
                 ->required()
                 ->columnSpanFull()
                 ->maxLength(255),
+            Forms\Components\Select::make('parent_client_id')
+                ->relationship('parentClient', 'name')
+                ->searchable()
+                ->preload()
+                ->placeholder('Select a parent client')
+                ->createOptionModalHeading('Create a new client')
+                ->required(),
             Forms\Components\RichEditor::make('address')
                 ->columnSpanFull()
                 ->required(),

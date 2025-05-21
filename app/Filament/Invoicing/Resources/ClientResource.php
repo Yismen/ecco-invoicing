@@ -41,6 +41,9 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('parentClient.name')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->limit(50)
                     ->html()

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ParentClient;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,7 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->foreignIdFor(ParentClient::class);
             $table->text('address');
             $table->double('tax_rate')->default(0);
             $table->string('invoice_template')->default('default');

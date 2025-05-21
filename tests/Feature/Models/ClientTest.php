@@ -2,6 +2,7 @@
 
 use App\Models\Agent;
 use App\Models\Client;
+use App\Models\ParentClient;
 
 it('save correct fields', function () {
     $data = Client::factory()->make();
@@ -12,6 +13,7 @@ it('save correct fields', function () {
         'name',
         'address',
         'tax_rate',
+        'parent_client_id',
         'invoice_template',
         'invoice_notes',
         'invoice_terms',
@@ -32,6 +34,22 @@ it('has many agents', function () {
     $this->assertInstanceOf(
         Agent::class,
         $data->agents->first()
+    );
+});
+
+it('belongs to parent client', function () {
+    $data = Client::factory()
+        ->forParentClient()
+        ->create();
+
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
+        $data->parentClient()
+    );
+
+    $this->assertInstanceOf(
+        ParentClient::class,
+        $data->parentClient->first()
     );
 });
 

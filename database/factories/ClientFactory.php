@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ParentClient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,7 @@ class ClientFactory extends Factory
     {
         return [
             'name' => $this->faker->company,
+            'parent_client_id' => ParentClient::factory(),
             'address' => $this->faker->address,
             'tax_rate' => 0,
             'invoice_template' => $this->faker->randomElement(['template1', 'template2']),

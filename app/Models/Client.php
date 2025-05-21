@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\Models\HasNamePrefix;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,6 +21,7 @@ class Client extends Model
 
     protected $fillable = [
         'name',
+        'parent_client_id',
         'address',
         'tax_rate',
         'invoice_template',
@@ -31,6 +33,11 @@ class Client extends Model
     protected $appends = [
         'invoice_prefix'
     ];
+
+    public function parentClient(): BelongsTo
+    {
+        return $this->belongsTo(ParentClient::class);
+    }
 
     public function agents(): HasMany
     {
