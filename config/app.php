@@ -122,4 +122,17 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    'company' => [
+        'name' => env('COMPANY_NAME', 'Ecco Outsourcing Group'),
+        'address' => env('COMPANY_ADDRESS', '1840 NW 125TH TERRACE \n PEMBROKE PINES, FL 33028'),
+        'phone' => env('COMPANY_PHONE', '1-809-583-1171'),
+        'email' => env('COMPANY_EMAIL', 'yismen.jorge@gmail.com'),
+        'account' => [
+            'bank' => env('COMPANY_BANK_NAME'),
+            'number' => env('COMPANY_BANK_NUMBER'),
+            'routing' => env('COMPANY_BANK_ROUTING'),
+            'wire' => env('COMPANY_BANK_WIRE'),
+        ]
+    ],
 ];
