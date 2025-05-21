@@ -125,6 +125,7 @@ return [
 
     'company' => [
         'name' => env('COMPANY_NAME', 'Ecco Outsourcing Group'),
+        'short_name' => env('COMPANY_SHORT_NAME', 'ECCO'),
         'address' => env('COMPANY_ADDRESS', '1840 NW 125TH TERRACE \n PEMBROKE PINES, FL 33028'),
         'phone' => env('COMPANY_PHONE', '1-809-583-1171'),
         'email' => env('COMPANY_EMAIL', 'yismen.jorge@gmail.com'),
