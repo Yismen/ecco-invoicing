@@ -1,5 +1,5 @@
 <div class="bg-white rounded-lg overflow-hidden flex flex-row justify-end">
-    <!-- Company Info -->
+    @if ($invoice)
     <table class="">
         <tbody class="text-right">
           <tr class="text-right">
@@ -16,5 +16,8 @@
           </tr>
         </tbody>
       </table>
-  </div>
+    @else
+      <span>Subtotal: </span><strong>{{ \Illuminate\Support\Number::currency($subtotal) }}</strong>
+    @endif
+</div>
 

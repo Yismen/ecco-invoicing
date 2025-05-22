@@ -191,14 +191,17 @@ class InvoiceResource extends Resource
                     ]),
 
                 Forms\Components\Section::make()
-                    ->visible(fn($record) => $record)
                     ->schema([
                         Forms\Components\Placeholder::make('')
-                            ->content(function($record) {
-                                // $record->load(['client', 'agent', 'project', 'items']);
+                            ->content(function($record, $get) {
+                                $subtotal = 0;
 
+                                foreach($get('invoiceItems') as $item) {
+                                    $subtotal += (float)$item['subtotal'] ?? 0;
+                                }
                                 return view('filament.partials.invoice-summary', [
-                                    'invoice' => $record
+                                    'invoice' => $record,
+                                    'subtotal' => $subtotal,
                                 ]);
                             }),
                     ]),
