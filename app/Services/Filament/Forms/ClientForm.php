@@ -2,6 +2,7 @@
 
 namespace App\Services\Filament\Forms;
 
+use App\Services\InvoiceTemplatesService;
 use Filament\Forms;
 
 class ClientForm
@@ -37,7 +38,10 @@ class ClientForm
                 ->step(0.01)
                 ->default(0)
                 ->required(),
-            Forms\Components\TextInput::make('invoice_template')
+            Forms\Components\Select::make('invoice_template')
+                ->options(InvoiceTemplatesService::make())
+                ->searchable()
+                ->preload()
                 ->label('Invoice Template')
                 ->required()
                 ->default('default'),
