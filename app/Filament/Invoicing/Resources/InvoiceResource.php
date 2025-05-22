@@ -2,30 +2,31 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Actions\TableActions\PayInvoiceRowAction;
 use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
+use App\Models\Agent;
+use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Project;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\InvoiceItem;
+use Illuminate\Support\Number;
 use Filament\Resources\Resource;
+use App\Rules\PreventOverpayment;
+use Filament\Notifications\Notification;
 use App\Services\Filament\Forms\ItemForm;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Filament\Forms\AgentForm;
 use App\Services\Filament\Forms\ClientForm;
 use App\Services\Filament\Forms\ProjectForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Actions\TableActions\PayInvoiceRowAction;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use App\Models\Agent;
-use App\Models\Client;
-use App\Models\InvoiceItem;
-use App\Models\Payment;
-use App\Rules\PreventOverpayment;
-use Illuminate\Support\Number;
 
 class InvoiceResource extends Resource
 {
@@ -118,6 +119,7 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Repeater::make('invoiceItems')
                             ->relationship()
+                            ->visible(fn($get) =>  $get('project_id'))
                             ->label('Items')
                             ->defaultItems(1)
                             ->reorderable()
@@ -132,37 +134,50 @@ class InvoiceResource extends Resource
 
                                         return $project?->items?->pluck('name', 'id')->toArray();
                                     })
+                                    ->searchable()
+                                    ->preload(10)
                                     ->distinct()
                                     ->afterStateUpdated(function($state, Get $get, Set $set) {
                                         $item = Item::find($state);
+
                                         if($item) {
                                             $set('item_price', $item->price);
                                             $set('subtotal', $item->price * (float) $get('quantity'));
                                         }
                                     } )
                                     ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
-                                            ->required()
-                                            ->maxLength(255),
-                                        Forms\Components\Select::make('project')
-                                            ->options(
-                                                Project::query()
-                                                    ->orderBy('name')
-                                                    ->pluck('name', 'id')
-                                                    ->toArray()
-                                            )
-                                            ->required()
-                                            ->searchable()
-                                            ->createOptionForm(ProjectForm::make())
-                                            ->createOptionModalHeading('Create Project')
-                                            ->preload(10)
-                                            ->placeholder('Select a project'),
-                                        Forms\Components\TextInput::make('price')
-                                            ->minValue(0)
-                                            ->required()
-                                            ->numeric()
-                                            ->prefix('$'),
+                                        Forms\Components\Section::make()
+                                            ->columns(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->required(),
+                                                Forms\Components\TextInput::make('price')
+                                                    ->minValue(0)
+                                                    ->required()
+                                                    ->numeric()
+                                                    ->prefix('$'),
+                                            ])
                                     ])
+                                    ->createOptionUsing(function (array $data, $get): int {
+                                        $data['project_id'] = $get('../../project_id');
+                                        // dd($action);
+
+                                        if ($data['project_id'] === null) {
+                                            Notification::make()
+                                                ->title('Invalid Project')
+                                                ->danger()
+                                                ->persistent()
+                                                ->body('Please select a project to which this project belongs.')
+                                                ->send();
+                                            return 0;
+                                        } else {
+
+
+                                            $item = Item::create($data);
+
+                                            return $item->id;
+                                        }
+                                    })
                                     ->columnSpan(2)
                                     ->required()
                                     ->live(),
