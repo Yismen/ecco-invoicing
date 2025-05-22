@@ -12,7 +12,6 @@ class ClientForm
             Forms\Components\TextInput::make('name')
                 ->autofocus()
                 ->required()
-                ->columnSpanFull()
                 ->maxLength(255),
             Forms\Components\Select::make('parent_client_id')
                 ->relationship('parentClient', 'name')
