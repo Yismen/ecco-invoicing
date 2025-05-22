@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\Project;
 use App\Models\InvoiceItem;
 use App\Enums\InvoiceStatuses;
+use App\Models\ParentClient;
 
 it('save correct fields', function () {
     $data = Invoice::factory()->make();
@@ -132,12 +133,18 @@ it('calculates subtotal, taxt amount and total amount', function () {
 it('updates the number based on the client', function() {
     config()->set('app.company.short_name', 'ECC');
     $data = Invoice::factory()
-        ->for(Client::factory()->state(['name' => 'Some Random Name']))
+        ->for(
+            Client::factory()
+                ->state(['name' => 'Some Random Name'])
+                ->for(
+                    ParentClient::factory()
+                        ->state(['name' => 'Parent Client'])
+                )
+        )
         ->create();
 
-
     expect($data->number)
-        ->toBe('ECC-SOMERN-00000001');
+        ->toBe('ECC-PARENTC-SOMERN-00000001');
 });
 
 it('has many payments', function () {
