@@ -21,7 +21,7 @@ class AgentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?string $navigationGroup = 'Invoicing';
+    // protected static ?string $navigationGroup = 'Invoicing';
 
     protected static ?int $navigationSort = 3;
 

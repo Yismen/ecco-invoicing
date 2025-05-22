@@ -19,7 +19,7 @@ class ItemResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
 
-    protected static ?string $navigationGroup = 'Invoicing';
+    // protected static ?string $navigationGroup = 'Invoicing';
 
     protected static ?int $navigationSort = 5;
 

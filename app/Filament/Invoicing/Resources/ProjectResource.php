@@ -19,7 +19,7 @@ class ProjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $navigationGroup = 'Invoicing';
+    // protected static ?string $navigationGroup = 'Invoicing';
 
     protected static ?int $navigationSort = 4;
 

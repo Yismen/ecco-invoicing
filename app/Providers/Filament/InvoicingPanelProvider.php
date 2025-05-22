@@ -30,6 +30,7 @@ class InvoicingPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->login()
+            ->topNavigation()
             ->discoverResources(in: app_path('Filament/Invoicing/Resources'), for: 'App\\Filament\\Invoicing\\Resources')
             ->discoverPages(in: app_path('Filament/Invoicing/Pages'), for: 'App\\Filament\\Invoicing\\Pages')
             ->pages([

@@ -31,7 +31,7 @@ class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $navigationGroup = 'Invoicing';
+    // protected static ?string $navigationGroup = 'Invoicing';
 
     protected static ?int $navigationSort = 6;
 
