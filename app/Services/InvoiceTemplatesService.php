@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class InvoiceTemplatesService
@@ -26,16 +27,18 @@ class InvoiceTemplatesService
 
     public function getFiles(): array
     {
-        $files = [];
+        return Cache::remember('invoice_template_services', now()->addMinutes(15), function () {
+            $files = [];
 
-        foreach( Storage::build([
-            'driver' => 'local',
-            'root' => $this->path,
-        ])->allFiles('') as $file) {
-            $file = str($file)->before('.blade.php')->toString();
-            $files[$file] = $file;
-        }
+            foreach( Storage::build([
+                'driver' => 'local',
+                'root' => $this->path,
+            ])->allFiles('') as $file) {
+                $file = str($file)->before('.blade.php')->toString();
+                $files[$file] = $file;
+            }
 
-        return $files;
+            return $files;
+        });
     }
 }
