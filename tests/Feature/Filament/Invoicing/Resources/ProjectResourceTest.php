@@ -1,25 +1,25 @@
 <?php
 
-use App\Filament\Invoicing\Resources\ClientResource;
-use App\Models\Client;
+use App\Filament\Invoicing\Resources\ProjectResource;
+use App\Models\Project;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
 
-describe('Client Resource', function () {
+describe('Project Resource', function () {
     beforeEach(function () {
         Filament::setCurrentPanel(
             Filament::getPanel('invoicing')
         );
 
         $this->user = User::factory()->create();
-        $this->model = Client::factory()->create();
+        $this->model = Project::factory()->create();
 
         $this->routes = [
-            'index' => ClientResource::getUrl('index'),
-            'create' => ClientResource::getUrl('create'),
-            'edit' => ClientResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            'view' => ClientResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            'index' => ProjectResource::getUrl('index'),
+            'create' => ProjectResource::getUrl('create'),
+            'edit' => ProjectResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => ProjectResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -30,7 +30,7 @@ describe('Client Resource', function () {
         'index',
         'create',
         'edit',
-        'view',
+        // 'view',
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
@@ -41,7 +41,7 @@ describe('Client Resource', function () {
         'index',
         'create',
         'edit',
-        'view',
+        // 'view',
     ]);
 
     describe('authorized users', function () {
@@ -51,7 +51,7 @@ describe('Client Resource', function () {
                 'index' => 'viewAny',
                 'create' => 'create',
                 'edit' => 'update',
-                'view' => 'view',
+                // 'view' => 'view',
             ];
 
             foreach ($permissions as $route => $permission) {
@@ -71,16 +71,16 @@ describe('Client Resource', function () {
             'index',
             'create',
             'edit',
-            'view',
+            // 'view',
         ]);
     });
 
     it('shows correct navigation sort', function () {
         expect(
-            ClientResource::getNavigationSort()
-        )->toBe(1)
+            ProjectResource::getNavigationSort()
+        )->toBe(2)
         // ->and(
-        //     ClientResource::getNavigationGroup()
+        //     ProjectResource::getNavigationGroup()
         // )->toBe('Invoicing')
         ;
     });

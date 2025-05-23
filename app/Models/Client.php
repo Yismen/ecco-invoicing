@@ -21,36 +21,25 @@ class Client extends Model
 
     protected $fillable = [
         'name',
-        'parent_client_id',
-        'address',
-        'tax_rate',
         'invoice_template',
-        'invoice_notes',
-        'invoice_terms',
-        'invoice_net_days',
     ];
 
     protected $appends = [
         'invoice_prefix'
     ];
 
-    public function parentClient(): BelongsTo
+    public function projects(): HasMany
     {
-        return $this->belongsTo(ParentClient::class);
+        return $this->hasMany(Project::class);
     }
 
-    public function agents(): HasMany
-    {
-        return $this->hasMany(Agent::class);
-    }
+    // public function campaigns(): HasMany
+    // {
+    //     return $this->hasMany(Campaign::class);
+    // }
 
-    public function campaigns(): HasMany
+    public function invoices(): HasManyThrough
     {
-        return $this->hasMany(Campaign::class);
-    }
-
-    public function invoices(): HasMany
-    {
-        return $this->hasMany(Invoice::class);
+        return $this->hasManyThrough(Invoice::class, Project::class);
     }
 }

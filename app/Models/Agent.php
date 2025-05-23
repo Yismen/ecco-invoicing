@@ -18,14 +18,14 @@ class Agent extends Model
 
     protected $fillable = [
         'name',
-        'client_id',
+        'project_id',
         'phone',
         'email',
     ];
 
-    public function client(): BelongsTo
+    public function project(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Project::class);
     }
 
     public function campaigns(): HasMany

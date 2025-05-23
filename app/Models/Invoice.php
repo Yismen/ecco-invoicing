@@ -23,7 +23,7 @@ class Invoice extends Model
     protected $fillable = [
         'number',
         'date',
-        'client_id',
+        'project_id',
         'agent_id',
         'campaign_id',
         'data',
@@ -46,12 +46,11 @@ class Invoice extends Model
         static::creating(function (self $invoice) {
             $invoice->number = join('-', [
                 config('app.company.short_name'),
-                $invoice->client->parentClient->invoice_prefix,
-                $invoice->client->invoice_prefix,
-                // $invoice->campaign->invoice_prefix,
-                str($invoice->client->invoices->count() + 1)->padLeft(8, 0)
+                $invoice->project->client->invoice_prefix,
+                $invoice->project->invoice_prefix,
+                str($invoice->project->invoices->count() + 1)->padLeft(8, 0)
             ]);
-            $invoice->due_date = now()->addDays($invoice->client->invoice_net_days ?: 0);
+            $invoice->due_date = now()->addDays($invoice->project->invoice_net_days ?: 0);
             $invoice->status = InvoiceStatuses::Pending;
         });
 
@@ -62,7 +61,7 @@ class Invoice extends Model
                 $subtotal_amount += $item->item_price * $item->quantity;
             }
 
-            $tax_amount = $subtotal_amount * ($invoice->client->tax_rate ?: 0);
+            $tax_amount = $subtotal_amount * ($invoice->project->tax_rate ?: 0);
             $total_amount = $subtotal_amount + $tax_amount;
             $status = $invoice->due_date->isPast() ? InvoiceStatuses::Overdue : InvoiceStatuses::Pending;
 
@@ -85,9 +84,9 @@ class Invoice extends Model
         return $this->belongsTo(Campaign::class);
     }
 
-    public function client(): BelongsTo
+    public function project(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Project::class);
     }
 
     public function items(): BelongsToMany

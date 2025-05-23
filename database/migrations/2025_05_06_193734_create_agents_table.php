@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->foreignIdFor(\App\Models\Client::class)
+            $table->foreignIdFor(\App\Models\Project::class)
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('phone')->nullable();

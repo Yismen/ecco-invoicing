@@ -8,7 +8,7 @@ use App\Models\Payment;
 use App\Models\Campaign;
 use App\Models\InvoiceItem;
 use App\Enums\InvoiceStatuses;
-use App\Models\ParentClient;
+use App\Models\Project;
 
 it('save correct fields', function () {
     $data = Invoice::factory()->make();
@@ -18,28 +18,29 @@ it('save correct fields', function () {
     $this->assertDatabaseHas(Invoice::class, $data->only([
         // 'number',
         'date',
-        'client_id',
+        'project_id',
         'agent_id',
         'campaign_id',
-        'data',
-        // 'subtotal_amount',
-        // 'tax_amount',
-        // 'total_amount',
-        // 'status',
-        // 'due_date',
+    //     'data',
+    //     'subtotal_amount',
+    //     'tax_amount',
+    //     'total_amount',
+    //     'status',
+    //     'due_date',
     ]));
 });
 
-it('belongs to a client', function () {
+it('belongs to a project', function () {
     $data = Invoice::factory()->make();
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-        $data->client()
+        $data->project()
     );
+
     $this->assertInstanceOf(
-        \App\Models\Client::class,
-        $data->agent->client
+        \App\Models\Project::class,
+        $data->agent->project
     );
 });
 
@@ -73,7 +74,7 @@ it('belongs to a campaign', function () {
     );
 });
 
-it('has many invoice items', function () {
+it('belongs to many items', function () {
     $data = Invoice::factory()
         ->hasItems()
         ->create();
@@ -88,12 +89,30 @@ it('has many invoice items', function () {
         $data->items->first()
     );
 });
-it('updates the due date based on client net terms', function () {
-    $client = Client::factory()
+
+it('has many invoice items', function () {
+    $data = Invoice::factory()
+        ->hasItems()
+        ->create();
+
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\HasMany::class,
+        $data->invoiceItems()
+    );
+
+    $this->assertInstanceOf(
+        \App\Models\InvoiceItem::class,
+        $data->invoiceItems->first()
+    );
+});
+
+it('updates the due date based on project net terms', function () {
+    $project = Project::factory()
         ->create(['invoice_net_days' => 30]);
+
     $data = Invoice::factory()
         ->create([
-            'client_id' => $client->id,
+            'project_id' => $project->id,
             'date' => now(),
             'due_date' => null,
         ]);
@@ -103,13 +122,13 @@ it('updates the due date based on client net terms', function () {
 
 
 it('calculates subtotal, taxt amount and total amount', function () {
-    $client = Client::factory()
+    $project = Project::factory()
         ->create(['tax_rate' => 0.2]);
     $items = Item::factory()
         ->count(3)
         ->create();
     $data = Invoice::factory()
-        ->create(['client_id' => $client->id]);
+        ->create(['project_id' => $project->id]);
 
    foreach ($items as $item) {
         $data->invoiceItems()->create([
@@ -121,8 +140,8 @@ it('calculates subtotal, taxt amount and total amount', function () {
 
    $data->touch();
 
-    $subtotal = 3 * 10 * 4; // 3 items at 10 times 4 quantity
-    $tax = $subtotal * $client->tax_rate;
+    $subtotal = 3 * 10 * 4;
+    $tax = $subtotal * $project->tax_rate;
     $total = $subtotal + $tax;
 
     $this->assertEquals($data->subtotal_amount, $subtotal);
@@ -130,21 +149,21 @@ it('calculates subtotal, taxt amount and total amount', function () {
     $this->assertEquals($data->total_amount, $total);
 });
 
-it('updates the number based on the client', function() {
+it('updates the number based on the project', function() {
     config()->set('app.company.short_name', 'ECC');
     $data = Invoice::factory()
         ->for(
-            Client::factory()
-                ->state(['name' => 'Some Random Name'])
+            Project::factory()
+                ->state(['name' => 'Project Name one'])
                 ->for(
-                    ParentClient::factory()
-                        ->state(['name' => 'Parent Client'])
+                    Client::factory()
+                        ->state(['name' => 'cLIENT number one'])
                 )
         )
         ->create();
 
     expect($data->number)
-        ->toBe('ECC-PARENTC-SOMERN-00000001');
+        ->toBe('ECC-CLIENTNO-PROJECTNO-00000001');
 });
 
 it('has many payments', function () {
@@ -250,7 +269,7 @@ it('has status pending by default', function() {
 
 it('has status overdue when it hasnt been paid and due day has passed', function() {
     $data = Invoice::factory()
-        ->for(Client::factory()->state(['invoice_net_days' => 10]))
+        ->for(Project::factory()->state(['invoice_net_days' => 10]))
         ->create(['status' => InvoiceStatuses::Pending]);
 
     $this->travel(15)->days();

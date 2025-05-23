@@ -42,7 +42,7 @@ class AgentResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('client.name')
+                Tables\Columns\TextColumn::make('project.name')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
@@ -64,8 +64,8 @@ class AgentResource extends Resource
             ])
             ->filters([
                 // Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\SelectFilter::make('client.name')
-                    ->placeholder('Select a client')
+                Tables\Filters\SelectFilter::make('project.name')
+                    ->placeholder('Select a project')
                     ->multiple()
                     ->preload()
                     ->searchable(),

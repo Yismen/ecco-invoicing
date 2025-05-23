@@ -21,7 +21,7 @@ class ClientResource extends Resource
 
     // protected static ?string $navigationGroup = 'Invoicing';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -30,7 +30,7 @@ class ClientResource extends Resource
                 Forms\Components\Section::make()
                     ->schema(
                         ClientForm::make()
-                    )->columns(3),
+                    )->columns(2),
             ]);
     }
 
@@ -41,40 +41,8 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('parentClient.name')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->limit(50)
-                    ->html()
-                    ->wrap()
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('invoice_net_days'),
-                Tables\Columns\TextColumn::make('tax_rate')
-                    ->label('Tax Rate (%)')
-                    ->formatStateUsing(fn ($state) => $state * 100),
+
                 Tables\Columns\TextColumn::make('invoice_template'),
-                Tables\Columns\TextColumn::make('invoice_notes')
-                    ->limit(50)
-                    ->html()
-                    ->wrap()
-                    ->toggleable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('invoice_terms')
-                    ->limit(50)
-                    ->html()
-                    ->wrap()
-                    ->toggleable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('agents_count')
-                    ->counts('agents')
-                    ->badge()
-                    ->sortable()
-                    ->toggleable(),
-                // Tables\Columns\TextColumn::make('invoices_count')
-                //     ->counts('invoices')
-                //     ->sortable()
-                //     ->toggleable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

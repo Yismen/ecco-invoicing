@@ -20,7 +20,7 @@ class InvoiceFactory extends Factory
         return [
             'number' => $this->faker->unique()->numerify('INV-#####'),
             'date' => $this->faker->date(),
-            'client_id' => \App\Models\Client::factory(),
+            'project_id' => \App\Models\Project::factory(),
             'agent_id' => \App\Models\Agent::factory(),
             'campaign_id' => \App\Models\Campaign::factory(),
             'data' => $this->faker->text(),

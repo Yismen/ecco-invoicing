@@ -33,7 +33,7 @@ it('belongs to a campaign', function () {
     );
 });
 
-it('has many invoices', function () {
+it('belogns to many invoices', function () {
     $data = Item::factory()
         ->hasInvoices()
         ->create();

@@ -13,13 +13,13 @@ class AgentForm
                 ->required()
                 ->autofocus()
                 ->maxLength(255),
-            Forms\Components\Select::make('client_id')
-                ->relationship('client', 'name')
+            Forms\Components\Select::make('project_id')
+                ->relationship('project', 'name')
                 ->searchable()
                 ->preload()
-                ->placeholder('Select a client')
+                ->placeholder('Select a project')
                 ->createOptionForm(ClientForm::make())
-                ->createOptionModalHeading('Create a new client')
+                ->createOptionModalHeading('Create a new project')
                 ->required(),
             Forms\Components\TextInput::make('phone')
                 ->tel()

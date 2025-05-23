@@ -6,7 +6,7 @@ use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
 use App\Models\Agent;
-use App\Models\Client;
+use App\Models\Project;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Campaign;
@@ -22,7 +22,7 @@ use Filament\Notifications\Notification;
 use App\Services\Filament\Forms\ItemForm;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Filament\Forms\AgentForm;
-use App\Services\Filament\Forms\ClientForm;
+use App\Services\Filament\Forms\ProjectForm;
 use App\Services\Filament\Forms\CampaignForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Actions\TableActions\PayInvoiceRowAction;
@@ -44,10 +44,10 @@ class InvoiceResource extends Resource
             ->schema([
                Forms\Components\Section::make()
                 ->schema([
-                    Forms\Components\Select::make('client_id')
-                        ->relationship('client', 'name')
+                    Forms\Components\Select::make('project_id')
+                        ->relationship('project', 'name')
                         ->options(function() : array {
-                            return Client::query()
+                            return Project::query()
                                 ->orderBy('name')
                                 ->pluck('name', 'id')
                                 ->all();
@@ -56,17 +56,17 @@ class InvoiceResource extends Resource
                         ->autofocus(fn (string $operation) => in_array($operation, ['create', 'edit']))
                         ->searchable()
                         ->required()
-                        ->createOptionForm(ClientForm::make())
-                        ->createOptionModalHeading('Create Client')
+                        ->createOptionForm(ProjectForm::make())
+                        ->createOptionModalHeading('Create Project')
                         ->preload(10)
                         ->columnSpan(2)
                         ->live(),
                     Forms\Components\Select::make('agent_id')
                         ->relationship('agent', 'name')
                         ->options(function(Get $get) : array|null {
-                            $client_id = $get('client_id');
+                            $project_id = $get('project_id');
                             return Agent::query()
-                                ->where('client_id', $client_id)
+                                ->where('project_id', $project_id)
                                 ->orderBy('name')
                                 ->pluck('name', 'id')
                                 ->all();
@@ -74,7 +74,7 @@ class InvoiceResource extends Resource
                         ->afterStateUpdated(fn(Set $set) => $set('campaign_id', null))
                         ->required()
                         ->searchable()
-                        ->disabled(fn(Get $get) => ! $get('client_id'))
+                        ->disabled(fn(Get $get) => ! $get('project_id'))
                         ->createOptionForm(AgentForm::make())
                         ->createOptionModalHeading('Create Agent')
                         ->preload(10)
@@ -108,7 +108,7 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Placeholder::make('')
                             ->content(function($record) {
-                                $record->load(['client', 'agent', 'campaign', 'items']);
+                                $record->load(['project', 'agent', 'campaign', 'items']);
 
                                 return view('filament.partials.invoice-company-details', [
                                     'invoice' => $record
@@ -171,8 +171,6 @@ class InvoiceResource extends Resource
                                                 ->send();
                                             return 0;
                                         } else {
-
-
                                             $item = Item::create($data);
 
                                             return $item->id;

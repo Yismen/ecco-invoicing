@@ -2,10 +2,10 @@
     <!-- Company Info -->
     <div class="px-6 py-4">
       <h2 class="text-xl font-semibold text-gray-800 mb-2">
-        {{ $invoice?->client->name }}
+        {{ $invoice?->project->name }}
       </h2>
       <p class="text-gray-600">
-        {!! $invoice->client->address !!}
+        {!! $invoice->project->address !!}
       </p>
     </div>
 

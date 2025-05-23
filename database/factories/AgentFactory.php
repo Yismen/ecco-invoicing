@@ -20,7 +20,7 @@ class AgentFactory extends Factory
             'name' => $this->faker->name(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
-            'client_id' => \App\Models\Client::factory(),
+            'project_id' => \App\Models\Project::factory(),
         ];
     }
 }

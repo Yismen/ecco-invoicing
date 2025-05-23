@@ -2,9 +2,10 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Invoicing\Resources\ParentClientResource\Pages;
-use App\Filament\Invoicing\Resources\ParentClientResource\RelationManagers;
-use App\Models\ParentClient;
+use App\Filament\Invoicing\Resources\ProjectResource\Pages;
+use App\Filament\Invoicing\Resources\ProjectResource\RelationManagers;
+use App\Models\Project;
+use App\Services\Filament\Forms\ProjectForm;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,27 +14,24 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ParentClientResource extends Resource
+class ProjectResource extends Resource
 {
-    protected static ?string $model = ParentClient::class;
+    protected static ?string $model = Project::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
     // protected static ?string $navigationGroup = 'Invoicing';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                ])
-            ]);
+                    ->columns(2)
+                    ->schema(ProjectForm::make())
+                ]);
     }
 
     public static function table(Table $table): Table
@@ -42,6 +40,39 @@ class ParentClientResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('client.name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->limit(50)
+                    ->html()
+                    ->wrap()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('invoice_net_days'),
+                Tables\Columns\TextColumn::make('tax_rate')
+                    ->label('Tax Rate (%)')
+                    ->formatStateUsing(fn ($state) => $state * 100),
+                Tables\Columns\TextColumn::make('invoice_notes')
+                    ->limit(50)
+                    ->html()
+                    ->wrap()
+                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('invoice_terms')
+                    ->limit(50)
+                    ->html()
+                    ->wrap()
+                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('agents_count')
+                    ->counts('agents')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('invoices_count')
+                    ->counts('invoices')
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -80,9 +111,9 @@ class ParentClientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListParentClients::route('/'),
-            'create' => Pages\CreateParentClient::route('/create'),
-            'edit' => Pages\EditParentClient::route('/{record}/edit'),
+            'index' => Pages\ListProjects::route('/'),
+            'create' => Pages\CreateProject::route('/create'),
+            'edit' => Pages\EditProject::route('/{record}/edit'),
         ];
     }
 
