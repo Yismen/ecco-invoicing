@@ -25,7 +25,7 @@ class Invoice extends Model
         'date',
         'client_id',
         'agent_id',
-        'project_id',
+        'campaign_id',
         'data',
         'subtotal_amount',
         'tax_amount',
@@ -48,7 +48,7 @@ class Invoice extends Model
                 config('app.company.short_name'),
                 $invoice->client->parentClient->invoice_prefix,
                 $invoice->client->invoice_prefix,
-                // $invoice->project->invoice_prefix,
+                // $invoice->campaign->invoice_prefix,
                 str($invoice->client->invoices->count() + 1)->padLeft(8, 0)
             ]);
             $invoice->due_date = now()->addDays($invoice->client->invoice_net_days ?: 0);
@@ -80,9 +80,9 @@ class Invoice extends Model
         return $this->belongsTo(Agent::class);
     }
 
-    public function project(): BelongsTo
+    public function campaign(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Campaign::class);
     }
 
     public function client(): BelongsTo

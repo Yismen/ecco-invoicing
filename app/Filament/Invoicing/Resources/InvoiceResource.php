@@ -9,7 +9,7 @@ use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Project;
+use App\Models\Campaign;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
@@ -23,7 +23,7 @@ use App\Services\Filament\Forms\ItemForm;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Filament\Forms\AgentForm;
 use App\Services\Filament\Forms\ClientForm;
-use App\Services\Filament\Forms\ProjectForm;
+use App\Services\Filament\Forms\CampaignForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Actions\TableActions\PayInvoiceRowAction;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
@@ -71,7 +71,7 @@ class InvoiceResource extends Resource
                                 ->pluck('name', 'id')
                                 ->all();
                         })
-                        ->afterStateUpdated(fn(Set $set) => $set('project_id', null))
+                        ->afterStateUpdated(fn(Set $set) => $set('campaign_id', null))
                         ->required()
                         ->searchable()
                         ->disabled(fn(Get $get) => ! $get('client_id'))
@@ -80,15 +80,15 @@ class InvoiceResource extends Resource
                         ->preload(10)
                         ->columnSpan(2)
                         ->live(),
-                    Forms\Components\Select::make('project_id')
-                        ->relationship('project', 'name')
+                    Forms\Components\Select::make('campaign_id')
+                        ->relationship('campaign', 'name')
                         ->required()
                         ->searchable()
-                        ->createOptionForm(ProjectForm::make())
-                        ->createOptionModalHeading('Create Project')
+                        ->createOptionForm(CampaignForm::make())
+                        ->createOptionModalHeading('Create Campaign')
                         ->options(function(Get $get) : array|null {
                             $agent_id = $get('agent_id');
-                            return Project::query()
+                            return Campaign::query()
                                 ->orderBy('name')
                                 ->where('agent_id', $agent_id)
                                 ->pluck('name', 'id')
@@ -108,7 +108,7 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Placeholder::make('')
                             ->content(function($record) {
-                                $record->load(['client', 'agent', 'project', 'items']);
+                                $record->load(['client', 'agent', 'campaign', 'items']);
 
                                 return view('filament.partials.invoice-company-details', [
                                     'invoice' => $record
@@ -119,7 +119,7 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Repeater::make('invoiceItems')
                             ->relationship()
-                            ->visible(fn($get) =>  $get('project_id'))
+                            ->visible(fn($get) =>  $get('campaign_id'))
                             ->label('Items')
                             ->defaultItems(1)
                             ->reorderable()
@@ -129,10 +129,10 @@ class InvoiceResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('item_id')
                                     ->options(function(Get $get) : array|null {
-                                        $project_id = $get('../../project_id');
-                                        $project = $project_id ? Project::with(['items'])->findOrFail($project_id): null;
+                                        $campaign_id = $get('../../campaign_id');
+                                        $campaign = $campaign_id ? Campaign::with(['items'])->findOrFail($campaign_id): null;
 
-                                        return $project?->items?->pluck('name', 'id')->toArray();
+                                        return $campaign?->items?->pluck('name', 'id')->toArray();
                                     })
                                     ->searchable()
                                     ->preload(10)
@@ -159,15 +159,15 @@ class InvoiceResource extends Resource
                                             ])
                                     ])
                                     ->createOptionUsing(function (array $data, $get): int {
-                                        $data['project_id'] = $get('../../project_id');
+                                        $data['campaign_id'] = $get('../../campaign_id');
                                         // dd($action);
 
-                                        if ($data['project_id'] === null) {
+                                        if ($data['campaign_id'] === null) {
                                             Notification::make()
-                                                ->title('Invalid Project')
+                                                ->title('Invalid Campaign')
                                                 ->danger()
                                                 ->persistent()
-                                                ->body('Please select a project to which this project belongs.')
+                                                ->body('Please select a campaign to which this campaign belongs.')
                                                 ->send();
                                             return 0;
                                         } else {

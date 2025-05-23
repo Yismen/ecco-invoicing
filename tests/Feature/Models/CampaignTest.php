@@ -1,20 +1,20 @@
 <?php
 
-use App\Models\Project;
+use App\Models\Campaign;
 
 it('save correct fields', function () {
-    $data = Project::factory()->make();
+    $data = Campaign::factory()->make();
 
-    Project::create($data->toArray());
+    Campaign::create($data->toArray());
 
-    $this->assertDatabaseHas(Project::class, $data->only([
+    $this->assertDatabaseHas(Campaign::class, $data->only([
         'name',
         'agent_id',
     ]));
 });
 
 it('belongs to an agent', function () {
-    $data = Project::factory()
+    $data = Campaign::factory()
         ->forAgent()
         ->make();
 
@@ -30,7 +30,7 @@ it('belongs to an agent', function () {
 });
 
 it('has many items', function () {
-    $data = Project::factory()
+    $data = Campaign::factory()
         ->hasItems()
         ->create();
 
@@ -46,7 +46,7 @@ it('has many items', function () {
 });
 
 it('has many invoices', function () {
-    $data = Project::factory()
+    $data = Campaign::factory()
         ->hasInvoices()
         ->create();
 

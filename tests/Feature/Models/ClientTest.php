@@ -91,17 +91,17 @@ it('gather invoice prefix name', function() {
 //     );
 // });
 
-// it('has many projects', function () {
+// it('has many campaigns', function () {
 //     $data = Client::factory()
-//         ->hasProjects()
+//         ->hasCampaigns()
 //         ->create();
 
 //     $this->assertInstanceOf(
 //         \Illuminate\Database\Eloquent\Relations\HasMany::class,
-//         $data->projects()
+//         $data->campaigns()
 //     );
 //     $this->assertEquals(
 //         $data->getForeignKeyName(),
-//         $data->projects()->getForeignKeyName()
+//         $data->campaigns()->getForeignKeyName()
 //     );
 // });

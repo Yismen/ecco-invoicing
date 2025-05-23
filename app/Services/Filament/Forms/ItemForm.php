@@ -12,14 +12,14 @@ class ItemForm
             Forms\Components\TextInput::make('name')
                 ->required()
                 ->maxLength(255),
-            Forms\Components\Select::make('project_id')
-                ->relationship('project', 'name')
+            Forms\Components\Select::make('campaign_id')
+                ->relationship('campaign', 'name')
                 ->required()
                 ->searchable()
-                ->createOptionForm(ProjectForm::make())
-                ->createOptionModalHeading('Create Project')
+                ->createOptionForm(CampaignForm::make())
+                ->createOptionModalHeading('Create Campaign')
                 ->preload(10)
-                ->placeholder('Select a project'),
+                ->placeholder('Select a campaign'),
             Forms\Components\TextInput::make('price')
                 ->minValue(0)
                 ->required()

@@ -18,7 +18,7 @@ class ItemFactory extends Factory
     {
         return [
             'name' => $this->faker->unique()->word(),
-            'project_id' => \App\Models\Project::factory(),
+            'campaign_id' => \App\Models\Campaign::factory(),
             'price' => $this->faker->randomFloat(2, 1, 1000),
             'description' => $this->faker->sentence(),
             'image' => $this->faker->imageUrl(),

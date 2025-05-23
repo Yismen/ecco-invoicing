@@ -4,7 +4,7 @@ namespace App\Services\Filament\Forms;
 
 use Filament\Forms;
 
-class ProjectForm
+class CampaignForm
 {
     public static function make(): array
     {

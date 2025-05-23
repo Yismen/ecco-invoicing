@@ -9,7 +9,7 @@ it('save correct fields', function () {
 
     $this->assertDatabaseHas(Item::class, $data->only([
         'name',
-        'project_id',
+        'campaign_id',
         'price',
         'description',
         'image',
@@ -20,16 +20,16 @@ it('save correct fields', function () {
     ]));
 });
 
-it('belongs to a project', function () {
+it('belongs to a campaign', function () {
     $data = Item::factory()->make();
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-        $data->project()
+        $data->campaign()
     );
     $this->assertInstanceOf(
-        \App\Models\Project::class,
-        $data->project
+        \App\Models\Campaign::class,
+        $data->campaign
     );
 });
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Invoicing\Resources\ProjectResource\Pages;
+namespace App\Filament\Invoicing\Resources\CampaignResource\Pages;
 
-use App\Filament\Invoicing\Resources\ProjectResource;
+use App\Filament\Invoicing\Resources\CampaignResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditProject extends EditRecord
+class EditCampaign extends EditRecord
 {
-    protected static string $resource = ProjectResource::class;
+    protected static string $resource = CampaignResource::class;
 
     protected function getHeaderActions(): array
     {

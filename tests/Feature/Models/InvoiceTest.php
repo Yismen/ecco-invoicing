@@ -5,7 +5,7 @@ use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Project;
+use App\Models\Campaign;
 use App\Models\InvoiceItem;
 use App\Enums\InvoiceStatuses;
 use App\Models\ParentClient;
@@ -20,7 +20,7 @@ it('save correct fields', function () {
         'date',
         'client_id',
         'agent_id',
-        'project_id',
+        'campaign_id',
         'data',
         // 'subtotal_amount',
         // 'tax_amount',
@@ -58,18 +58,18 @@ it('belongs to an agent', function () {
     );
 });
 
-it('belongs to a project', function () {
+it('belongs to a campaign', function () {
     $data = Invoice::factory()
-        ->forProject()
+        ->forCampaign()
         ->create();
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
-        $data->project()
+        $data->campaign()
     );
     $this->assertInstanceOf(
-        \App\Models\Project::class,
-        $data->project
+        \App\Models\Campaign::class,
+        $data->campaign
     );
 });
 

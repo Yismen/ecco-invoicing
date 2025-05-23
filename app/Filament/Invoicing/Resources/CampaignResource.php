@@ -2,9 +2,9 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Invoicing\Resources\ProjectResource\Pages;
-use App\Models\Project;
-use App\Services\Filament\Forms\ProjectForm;
+use App\Filament\Invoicing\Resources\CampaignResource\Pages;
+use App\Models\Campaign;
+use App\Services\Filament\Forms\CampaignForm;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ProjectResource extends Resource
+class CampaignResource extends Resource
 {
-    protected static ?string $model = Project::class;
+    protected static ?string $model = Campaign::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
@@ -28,7 +28,7 @@ class ProjectResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make()
-                    ->schema(ProjectForm::make())
+                    ->schema(CampaignForm::make())
                 ->columns(2),
             ]);
     }
@@ -88,10 +88,10 @@ class ProjectResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProjects::route('/'),
-            'create' => Pages\CreateProject::route('/create'),
-            'view' => Pages\ViewProject::route('/{record}'),
-            'edit' => Pages\EditProject::route('/{record}/edit'),
+            'index' => Pages\ListCampaigns::route('/'),
+            'create' => Pages\CreateCampaign::route('/create'),
+            'view' => Pages\ViewCampaign::route('/{record}'),
+            'edit' => Pages\EditCampaign::route('/{record}/edit'),
         ];
     }
 

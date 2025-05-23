@@ -31,18 +31,18 @@ it('belongs to a client', function () {
     );
 });
 
-it('has many projects', function () {
+it('has many campaigns', function () {
     $data = Agent::factory()
-        ->hasProjects(1)
+        ->hasCampaigns(1)
         ->create();
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\HasMany::class,
-        $data->projects()
+        $data->campaigns()
     );
     $this->assertInstanceOf(
-        \App\Models\Project::class,
-        $data->projects->first()
+        \App\Models\Campaign::class,
+        $data->campaigns->first()
     );
 });
 

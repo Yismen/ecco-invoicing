@@ -1,25 +1,25 @@
 <?php
 
-use App\Filament\Invoicing\Resources\ProjectResource;
-use App\Models\Project;
+use App\Filament\Invoicing\Resources\CampaignResource;
+use App\Models\Campaign;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
 
-describe('Project Resource', function () {
+describe('Campaign Resource', function () {
     beforeEach(function () {
         Filament::setCurrentPanel(
             Filament::getPanel('invoicing')
         );
 
         $this->user = User::factory()->create();
-        $this->model = Project::factory()->create();
+        $this->model = Campaign::factory()->create();
 
         $this->routes = [
-            'index' => ProjectResource::getUrl('index'),
-            'create' => ProjectResource::getUrl('create'),
-            'edit' => ProjectResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            'view' => ProjectResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            'index' => CampaignResource::getUrl('index'),
+            'create' => CampaignResource::getUrl('create'),
+            'edit' => CampaignResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            'view' => CampaignResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -77,10 +77,10 @@ describe('Project Resource', function () {
 
     it('shows correct navigation sort', function () {
         expect(
-            ProjectResource::getNavigationSort()
+            CampaignResource::getNavigationSort()
         )->toBe(4)
         // ->and(
-        //     ProjectResource::getNavigationGroup()
+        //     CampaignResource::getNavigationGroup()
         // )->toBe('Invoicing')
         ;
     });

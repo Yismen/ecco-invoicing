@@ -44,9 +44,9 @@ class Client extends Model
         return $this->hasMany(Agent::class);
     }
 
-    public function projects(): HasMany
+    public function campaigns(): HasMany
     {
-        return $this->hasMany(Project::class);
+        return $this->hasMany(Campaign::class);
     }
 
     public function invoices(): HasMany

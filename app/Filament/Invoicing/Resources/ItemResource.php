@@ -58,7 +58,7 @@ class ItemResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('project.name')
+                Tables\Columns\TextColumn::make('campaign.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
@@ -97,12 +97,12 @@ class ItemResource extends Resource
             ])
             ->filters([
                 // Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\SelectFilter::make('project.name')
-                    ->relationship('project', 'name')
+                Tables\Filters\SelectFilter::make('campaign.name')
+                    ->relationship('campaign', 'name')
                     ->multiple()
                     ->searchable()
                     ->preload(10)
-                    ->placeholder('Select a project'),
+                    ->placeholder('Select a campaign'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

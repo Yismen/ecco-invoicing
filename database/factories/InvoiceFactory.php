@@ -22,7 +22,7 @@ class InvoiceFactory extends Factory
             'date' => $this->faker->date(),
             'client_id' => \App\Models\Client::factory(),
             'agent_id' => \App\Models\Agent::factory(),
-            'project_id' => \App\Models\Project::factory(),
+            'campaign_id' => \App\Models\Campaign::factory(),
             'data' => $this->faker->text(),
             'subtotal_amount' => $this->faker->randomFloat(2, 0, 1000),
             'tax_amount' => $this->faker->randomFloat(2, 0, 1000),

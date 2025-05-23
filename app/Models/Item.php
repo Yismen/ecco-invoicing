@@ -19,7 +19,7 @@ class Item extends Model
 
     protected $fillable = [
         'name',
-        'project_id',
+        'campaign_id',
         'price',
         'description',
         'image',
@@ -29,9 +29,9 @@ class Item extends Model
         'barcode',
     ];
 
-    public function project(): BelongsTo
+    public function campaign(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Campaign::class);
     }
 
     public function invoices(): BelongsToMany
