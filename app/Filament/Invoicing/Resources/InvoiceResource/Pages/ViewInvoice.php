@@ -2,6 +2,7 @@
 
 namespace App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 
+use App\Filament\Actions\RecordActions\DownloadInvoiceAction;
 use App\Filament\Actions\RecordActions\PayInvoiceHeaderAction;
 use App\Filament\Invoicing\Resources\InvoiceResource;
 use Filament\Actions;
@@ -16,6 +17,7 @@ class ViewInvoice extends ViewRecord
         return [
             Actions\EditAction::make(),
             PayInvoiceHeaderAction::make(),
+            DownloadInvoiceAction::make(),
         ];
     }
 }
