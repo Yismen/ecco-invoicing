@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use Illuminate\Http\Request;
+use App\Services\GenerateInvoiceService;
 use LaravelDaily\Invoices\Classes\Party;
 use LaravelDaily\Invoices\Invoice as PrintInvoice;
 use LaravelDaily\Invoices\Classes\InvoiceItem as PrintItem;
@@ -13,6 +12,11 @@ class GenerateInvoiceController extends Controller
 {
     public function __invoke(Invoice $invoice)
     {
+        $invoice->load([
+            'project.client',
+            'invoiceItems.item',
+        ]);
+
         $client = new Party([
             'name'          => 'Roosevelt Lloyd',
             'phone'         => '(520) 318-9486',
@@ -23,8 +27,9 @@ class GenerateInvoiceController extends Controller
         ]);
 
         $customer = new Party([
-            'name'          => 'Ashley Medina',
-            'address'       => 'The Green Street 12',
+            'name'          => $invoice->agent->name,
+            'company'       => $invoice->project->name,
+            'address'       => $invoice->project->address,
             'code'          => '#22663214',
             'custom_fields' => [
                 'order number' => '> 654321 <',
@@ -46,11 +51,13 @@ class GenerateInvoiceController extends Controller
 
         $notes = implode("<br>", $notes);
 
-        $pdf = PrintInvoice::make('Invoice')
+        $pdf = GenerateInvoiceService::make('Invoice')
             ->series($invoice->number)
+            ->model($invoice)
+            // ->extraData(['model' => $invoice])
             // ability to include translated invoice status
             // in case it was paid
-            ->status(__('invoices::invoice.paid'))
+            ->status($invoice->status->value)
             // ->sequence(667)
             // ->serialNumberFormat('{SEQUENCE}/{SERIES}')
             ->seller($client)
@@ -65,9 +72,9 @@ class GenerateInvoiceController extends Controller
             ->currencyDecimalPoint('.')
             ->filename($invoice->number)
             ->addItems($items)
-            ->template($invoice->project->client->invoice_template)
+            ->template('publishing')
             ->notes($notes)
-            // ->logo(public_path('vendor/invoices/ecco-logo.png'))
+            ->logo(public_path('img/ecco-logo.png'))
             // You can additionally save generated invoice to configured disk
             ->save('public');
         // Then send email to party with link
