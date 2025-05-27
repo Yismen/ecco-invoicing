@@ -20,7 +20,7 @@ class InvoicePaymentForm
                             ->maxValue(fn($record) => $record->balance_pending)
                             ->default(fn($record) => $record->balance_pending)
                             ->rule(static function ($record) {
-                                return new PreventOverpayment($record->id ?? null);
+                                return new PreventOverpayment(invoice: $record);
                             }),
                         Forms\Components\DatePicker::make('date')
                             ->required()
@@ -29,7 +29,11 @@ class InvoicePaymentForm
                             ->maxDate(today()),
                         Forms\Components\TextInput::make('reference')
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('images')
+                        Forms\Components\FileUpload::make('images')
+                            ->image()
+                            ->imageEditor()
+                            ->multiple()
+                            ->maxSize(1024)
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('description')
                             ->columnSpanFull(),

@@ -2,15 +2,16 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Invoicing\Resources\PaymentResource\Pages;
-use App\Models\Payment;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Payment;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Rules\PreventOverpayment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Invoicing\Resources\PaymentResource\Pages;
 
 class PaymentResource extends Resource
 {
@@ -26,20 +27,32 @@ class PaymentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('invoice_id')
-                    ->relationship('invoice', 'id')
-                    ->required(),
-                Forms\Components\TextInput::make('amount')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\DatePicker::make('date')
-                    ->required(),
-                Forms\Components\TextInput::make('reference')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('images')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
+                Forms\Components\Section::make()
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Placeholder::make('Invoice Number')
+                            ->content(fn($record) => $record->invoice->number),
+                        Forms\Components\TextInput::make('amount')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            // ->maxValue(fn($record) => $record->balance_pending)
+                            ->default(fn($record) => $record->invoice->balance_pending)
+                            ->rule(static function ($record) {
+                                return new PreventOverpayment(invoice: $record->invoice, payment: $record);
+                            }),
+                        Forms\Components\DatePicker::make('date')
+                            ->required(),
+                        Forms\Components\TextInput::make('reference')
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('images')
+                            ->image()
+                            ->openable()
+                            ->downloadable()
+                            ->imageEditor()
+                            ->multiple(),
+                        Forms\Components\Textarea::make('description'),
+                    ])
             ]);
     }
 
@@ -47,7 +60,7 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('invoice.id')
+                Tables\Columns\TextColumn::make('invoice.number')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
@@ -56,6 +69,11 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('images')
+                    ->circular()
+                    ->checkFileExistence(false)
+                    ->disk('local')
+                    ->stacked(),
                 Tables\Columns\TextColumn::make('reference')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')

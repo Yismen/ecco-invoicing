@@ -4,40 +4,24 @@ namespace App\Rules;
 
 use Closure;
 use App\Models\Invoice;
-use Illuminate\Contracts\Validation\Rule;
+use App\Models\Payment;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class PreventOverpayment implements Rule
+class PreventOverpayment implements ValidationRule
 {
-    protected int $invoiceId;
 
-    public function __construct(int|Closure $invoiceId)
+    public function __construct(protected null|Invoice $invoice = null, protected null|Payment $payment = null)
     {
-        $this->invoiceId = $invoiceId;
     }
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string  $attribute  The field name (e.g. 'amount')
-     * @param  mixed   $value      The attempted payment amount
-     * @return bool
-     */
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $invoice = Invoice::with('payments')->findOrFail($this->invoiceId);
-        $paidSoFar = $invoice->payments->sum('amount');
+        $paidSoFar = $this->invoice->payments()->where('id', '!=', $this->payment?->id)->sum('amount');
+        $attempt = $paidSoFar + $value;
+        $amountPending = $this->invoice->balance_pending;
 
-        // Allow only if new total ≤ invoice total
-        return ($paidSoFar + $value) <= $invoice->total_amount;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return 'The payment would exceed the invoice total.';
+        if ($attempt > $amountPending) {
+            $fail('The :attribute would exceed the invoice total pending of ' . $amountPending . '.');
+        }
     }
 }

@@ -26,13 +26,20 @@ class Payment extends Model
         'description',
     ];
 
+    protected $casts = [
+        'date' => 'datetime',
+        'images' => 'array',
+    ];
+
     public static function boot()
     {
         parent::boot();
 
         static::saving(function ($payment) {
             $invoice = $payment->invoice;
-            $totalPaid = $invoice->payments()->sum('amount');
+            $totalPaid = $invoice->payments()
+                ->where('id', '!=', $payment->id) // Exclude current payment if updating
+                ->sum('amount');
 
             $attempt = $totalPaid + $payment->amount;
 
@@ -42,8 +49,6 @@ class Payment extends Model
         });
 
         static::saved(function($payment) {
-            $payment->invoice->touch();
-
             if ($payment->invoice->balance_pending > 0) {
                 $payment->invoice->updateQuietly([
                     'status' => InvoiceStatuses::PartiallyPaid
@@ -55,6 +60,8 @@ class Payment extends Model
                     'status' => InvoiceStatuses::Paid
                 ]);
             }
+            // $payment->invoice->touch();
+
         });
     }
 
