@@ -74,7 +74,7 @@ class GenerateInvoiceController extends Controller
             ->addItems($items)
             ->template($invoice->project->client->invoice_template)
             ->notes($notes)
-            ->logo(public_path('img/ecco-logo.png'))
+            ->logo(public_path(config('app.company.logo')))
             // You can additionally save generated invoice to configured disk
             ->save('public');
         // Then send email to party with link

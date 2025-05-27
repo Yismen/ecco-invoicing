@@ -124,12 +124,14 @@ return [
     ],
 
     'company' => [
+        'invoice_length' => env('COMPANY_INVOICE_LENGTH', 4),
         'name' => env('COMPANY_NAME', 'Ecco Outsourcing Group'),
         'short_name' => env('COMPANY_SHORT_NAME', 'ECCO'),
         'address' => env('COMPANY_ADDRESS', '1840 NW 125TH TERRACE <br>
             PEMBROKE PINES, FL 33028'),
         'phone' => env('COMPANY_PHONE', '1-809-583-1171'),
         'email' => env('COMPANY_EMAIL', 'yismen.jorge@gmail.com'),
+        'logo' => env('COMPANY_LOGO', 'img/ecco-logo.png'),
         'account' => [
             'bank' => env('COMPANY_BANK_NAME', 'TD Bank, NA. West Palm Beach, FL'),
             'number' => env('COMPANY_BANK_NUMBER'),

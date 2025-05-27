@@ -49,7 +49,7 @@ class Invoice extends Model
                 config('app.company.short_name'),
                 $invoice->project->client->invoice_prefix,
                 $invoice->project->invoice_prefix,
-                str($invoice->project->invoices->count() + 1)->padLeft(8, 0)
+                str($invoice->project->invoices->count() + 1)->padLeft(config('app.company.invoice_length', 8), 0)
             ]);
             $invoice->due_date = now()->addDays($invoice->project->invoice_net_days ?: 0);
             $invoice->status = InvoiceStatuses::Pending;
