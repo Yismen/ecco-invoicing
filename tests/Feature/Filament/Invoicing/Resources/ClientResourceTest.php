@@ -73,6 +73,18 @@ describe('Client Resource', function () {
             'edit',
             'view',
         ]);
+
+        it('show the correct table', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['index'])
+                ->assertSeeText('Clients')
+                ->assertSeeText($this->model->name);
+        });
+        it('shows the create form', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['create'])
+                ->assertSeeText('Create Client');
+        });
     });
 
     it('shows correct navigation sort', function () {

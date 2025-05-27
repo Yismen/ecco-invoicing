@@ -73,6 +73,20 @@ describe('Agent Resource', function () {
             'edit',
             'view',
         ]);
+
+        it('show the correct table', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['index'])
+                ->assertSeeText('Agents')
+                ->assertSeeText($this->model->name)
+                ->assertSeeText($this->model->email)
+                ->assertSeeText($this->model->phone);
+        });
+        it('shows the create form', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['create'])
+                ->assertSeeText('Create Agent');
+        });
     });
 
     it('shows correct navigation sort', function () {

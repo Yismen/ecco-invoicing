@@ -73,6 +73,28 @@ describe('Project Resource', function () {
             'edit',
             // 'view',
         ]);
+
+        it('show the correct table', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['index'])
+                ->assertSeeText('Projects')
+                ->assertSeeText($this->model->name)
+                ->assertSeeText($this->model->client->name)
+                // ->assertSeeText($this->model->address)
+                // ->assertSeeText($this->model->phone)
+                // ->assertSeeText($this->model->email)
+                // ->assertSeeText($this->model->tax_rate) // Assuming tax_rate is stored as a decimal;
+                // ->assertSeeText($this->model->invoce_net_days)
+                // ->assertSeeText($this->model->invoices_count)
+                // ->assertSeeText($this->model->invoice_notes)
+                // ->assertSeeText($this->model->invoice_terms)
+                ;
+        });
+        it('shows the create form', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['create'])
+                ->assertSeeText('Create Project');
+        });
     });
 
     it('shows correct navigation sort', function () {

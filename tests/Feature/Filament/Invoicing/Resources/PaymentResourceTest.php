@@ -90,6 +90,17 @@ describe('Payment Resource', function () {
             'edit',
             'view',
         ]);
+
+        it('show the correct table', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['index'])
+                ->assertSeeText('Payments')
+                ->assertSeeText($this->model->invoice->number)
+                ->assertSeeText($this->model->amount)
+                // ->assertSeeText($this->model->date)
+                ->assertSeeText($this->model->reference)
+                ;
+        });
     });
 
     it('shows correct navigation sort', function () {

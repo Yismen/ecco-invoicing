@@ -73,6 +73,19 @@ describe('Campaign Resource', function () {
             'edit',
             'view',
         ]);
+
+        it('show the correct table', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['index'])
+                ->assertSeeText('Campaigns')
+                ->assertSeeText($this->model->name)
+                ->assertSeeText($this->model->description);
+        });
+        it('shows the create form', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['create'])
+                ->assertSeeText('Create Campaign');
+        });
     });
 
     it('shows correct navigation sort', function () {

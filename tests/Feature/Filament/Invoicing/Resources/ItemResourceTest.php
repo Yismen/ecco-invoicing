@@ -73,6 +73,22 @@ describe('Item Resource', function () {
             'edit',
             'view',
         ]);
+
+        it('show the correct table', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['index'])
+                ->assertSeeText('Items')
+                ->assertSeeText($this->model->name)
+                ->assertSeeText($this->model->campaign->name)
+                ->assertSeeText($this->model->price)
+                // ->assertSeeText($this->model->description)
+                ;
+        });
+        it('shows the create form', function () {
+            $this->actingAs($this->user)
+                ->get($this->routes['create'])
+                ->assertSeeText('Create Item');
+        });
     });
 
     it('shows correct navigation sort', function () {
