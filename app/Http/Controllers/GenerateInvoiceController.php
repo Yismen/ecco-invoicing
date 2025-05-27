@@ -72,7 +72,7 @@ class GenerateInvoiceController extends Controller
             ->currencyDecimalPoint('.')
             ->filename($invoice->number)
             ->addItems($items)
-            ->template('publishing')
+            ->template($invoice->project->client->invoice_template)
             ->notes($notes)
             ->logo(public_path('img/ecco-logo.png'))
             // You can additionally save generated invoice to configured disk
