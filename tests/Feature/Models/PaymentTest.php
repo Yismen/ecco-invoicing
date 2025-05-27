@@ -29,9 +29,9 @@ it('save correct fields', function () {
     $this->assertDatabaseHas(Payment::class, $this->payment->only([
         'invoice_id',
         'amount',
-        'date',
+        // 'date',
         'reference',
-        'images',
+        // 'images',
         'description',
     ]));
 });

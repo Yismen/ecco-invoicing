@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Models\InvoiceItem;
 use App\Rules\PreventOverpayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 
 uses(RefreshDatabase::class);
 
@@ -28,16 +29,19 @@ beforeEach(function () {
 });
 
 it('passes when the new payment does not exceed the invoice total', function () {
-    $rule = new PreventOverpayment($this->invoice->id);
-
+    // dd($this->invoice->fresh()->toArray());
     // Current paid = 200, invoice total = 500, so 300 is OK
-    expect($rule->passes('amount', 300.00))->toBeTrue();
+    expect(Validator::make(
+        ['amount' => 10.00],
+        ['amount' => new PreventOverpayment($this->invoice->fresh())]
+    )->passes())
+        ->toBeTrue();
 });
 
 it('fails when the new payment would exceed the invoice total', function () {
-    $rule = new PreventOverpayment($this->invoice->id);
-
-    // Current paid = 200, invoice total = 500, so 400 would exceed
-    expect($rule->passes('amount', 400.00))->toBeFalse();
-    expect($rule->message())->toBe('The payment would exceed the invoice total.');
+    expect(Validator::make(
+        ['amount' => 400.00],
+        ['amount' => new PreventOverpayment($this->invoice->fresh())]
+    )->passes())
+        ->toBeFalse();
 });

@@ -28,6 +28,7 @@ class Payment extends Model
 
     protected $casts = [
         'date' => 'datetime',
+        'amount' => 'float',
         'images' => 'array',
     ];
 
