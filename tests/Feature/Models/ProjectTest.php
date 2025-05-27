@@ -73,5 +73,5 @@ it('gather invoice prefix name', function() {
     $data = Project::factory()->create(['name' => 'Some random name']);
 
     expect($data->invoice_prefix)
-        ->toBe('SOMERN');
+        ->toBe('SOME');
 });

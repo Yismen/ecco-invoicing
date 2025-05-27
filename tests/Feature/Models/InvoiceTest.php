@@ -151,6 +151,7 @@ it('calculates subtotal, taxt amount and total amount', function () {
 
 it('updates the number based on the project', function() {
     config()->set('app.company.short_name', 'ECC');
+    config()->set('app.company.invoice_length', 8);
     $data = Invoice::factory()
         ->for(
             Project::factory()
@@ -163,7 +164,7 @@ it('updates the number based on the project', function() {
         ->create();
 
     expect($data->number)
-        ->toBe('ECC-CLIENTNO-PROJECTNO-00000001');
+        ->toBe('ECC-CLIENT-PROJECT-00000001');
 });
 
 it('has many payments', function () {
