@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Filament\Actions\TableActions;
+namespace App\Filament\Actions;
 
-use Filament\Forms;
 use App\Models\Invoice;
-use App\Rules\PreventOverpayment;
-use Filament\Support\Colors\Color;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use App\Services\Filament\Forms\InvoicePaymentForm;
+use Filament\Support\Colors\Color;
 
-class PayInvoiceRowAction
+class PayInvoiceAction
 {
     public static function make(): Action
     {
         return Action::make('Pay')
             ->visible(fn($record) => $record->balance_pending > 0)
             ->color(Color::Purple)
+            ->icon('heroicon-s-credit-card')
             ->form(InvoicePaymentForm::make())
             ->action(function (array $data, Invoice $record): void {
                 $record->payments()->create($data);
