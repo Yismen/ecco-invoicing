@@ -39,7 +39,7 @@ class PaymentResource extends Resource
                             // ->maxValue(fn($record) => $record->balance_pending)
                             ->default(fn($record) => $record->invoice->balance_pending)
                             ->rule(static function ($record) {
-                                return new PreventOverpayment(invoice: $record->invoice, payment: $record);
+                                return new PreventOverpayment($record);
                             }),
                         Forms\Components\DatePicker::make('date')
                             ->required(),

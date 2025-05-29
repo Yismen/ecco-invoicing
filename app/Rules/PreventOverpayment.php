@@ -6,22 +6,37 @@ use Closure;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Model;
 
 class PreventOverpayment implements ValidationRule
 {
 
-    public function __construct(protected null|Invoice $invoice = null, protected null|Payment $payment = null)
+    public function __construct(protected Invoice|Payment $model)
     {
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $paidSoFar = $this->invoice->payments()->where('id', '!=', $this->payment?->id)->sum('amount');
-        $attempt = $paidSoFar + $value;
-        $amountPending = $this->invoice->balance_pending;
+        $paidSoFar = 0;
+        $total = 0;
 
-        if ($attempt > $amountPending) {
-            $fail('The :attribute would exceed the invoice total pending of ' . $amountPending . '.');
+        if ($this->model instanceof Invoice) {
+            $paidSoFar = $this->model->payments()->sum('amount');
+            $total = $this->model->total_amount ?? 0;
         }
+
+        if ($this->model instanceof Payment) {
+            $paidSoFar = $this->model->invoice->payments()->sum('amount') - $this->model->amount;
+            $total = $this->model->invoice->total_amount ?? 0;
+        }
+
+        if ($paidSoFar + $value > $total) {
+            $fail("The payment amount exceeds the invoice pending of {$total}.");
+        }
+
+        if ($value <= 0) {
+            $fail('The payment amount must be greater than zero.');
+        }
+
     }
 }

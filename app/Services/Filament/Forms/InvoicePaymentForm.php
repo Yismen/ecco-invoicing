@@ -20,7 +20,7 @@ class InvoicePaymentForm
                             ->maxValue(fn($record) => $record->balance_pending)
                             ->default(fn($record) => $record->balance_pending)
                             ->rule(static function ($record) {
-                                return new PreventOverpayment(invoice: $record);
+                                return new PreventOverpayment($record);
                             }),
                         Forms\Components\DatePicker::make('date')
                             ->required()

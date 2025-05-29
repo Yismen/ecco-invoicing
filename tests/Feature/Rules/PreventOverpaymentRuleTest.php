@@ -21,24 +21,60 @@ beforeEach(function () {
         'quantity' => 1,
         'item_price' => $item->price,
     ]);
-
-    Payment::factory()->create([
-        'invoice_id' => $this->invoice->id,
-        'amount' => 200.00,
-    ]);
 });
 
-it('passes when the new payment does not exceed the invoice total', function () {
-    // dd($this->invoice->fresh()->toArray());
-    // Current paid = 200, invoice total = 500, so 300 is OK
+it('passes when the new payment less than invoice total', function () {
     expect(Validator::make(
-        ['amount' => 10.00],
+        ['amount' => 500],
         ['amount' => new PreventOverpayment($this->invoice->fresh())]
     )->passes())
         ->toBeTrue();
 });
 
+it('passes when the new payment is equal or less to the invoice total', function () {
+    Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 200.00,
+    ]);
+
+    expect(Validator::make(
+        ['amount' => 300],
+        ['amount' => new PreventOverpayment($this->invoice->fresh())]
+    )->passes())
+        ->toBeTrue();
+});
+
+it('passes when editing a payment lower or equal invoice total', function () {
+    $payment = Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 200,
+    ]);
+
+    expect(Validator::make(
+        ['amount' => 500],
+        ['amount' => new PreventOverpayment($payment)]
+    )->passes())
+        ->toBeTrue();
+});
+
+it('fails when editing a payment higher than invoice total', function () {
+    $payment = Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 500,
+    ]);
+
+    expect(Validator::make(
+        ['amount' => 700],
+        ['amount' => new PreventOverpayment($payment)]
+    )->fails())
+        ->toBeTrue();
+});
+
 it('fails when the new payment would exceed the invoice total', function () {
+    Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 200.00,
+    ]);
     expect(Validator::make(
         ['amount' => 400.00],
         ['amount' => new PreventOverpayment($this->invoice->fresh())]
