@@ -72,6 +72,9 @@ class Invoice extends Model
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
+            ]);
+
+            $invoice->updateQuietly([
                 'status' => $invoice->getStatus(),
             ]);
         });
