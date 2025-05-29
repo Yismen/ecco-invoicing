@@ -40,6 +40,11 @@ class Invoice extends Model
         'status' => InvoiceStatuses::class,
         'due_date' => 'date',
         'date' => 'date',
+        'total_amount' => 'float',
+        'subtotal_amount' => 'float',
+        'tax_amount' => 'float',
+        'total_paid' => 'float',
+        'balance_pending' => 'float',
     ];
 
     public static function boot(): void
@@ -129,12 +134,19 @@ class Invoice extends Model
 
     protected function getStatus(): InvoiceStatuses
     {
-        if ($this->total_paid > 0 && $this->balance_pending > 0) {
-            return InvoiceStatuses::PartiallyPaid;
-        }
+        $balance = $this->balance_pending;
+        // dd($this->total_amount, $this->total_paid,(float)$this->total_amount- (float)$this->total_paid, $balance);
 
-        if ($this->balance_pending == 0) {
-            return InvoiceStatuses::Paid;
+        // if ($this->total_paid > 0 && $balance > 0) {
+        //     return InvoiceStatuses::PartiallyPaid;
+        // }
+
+        // if ($this->total_amount > 0 && $balance == 0) {
+        //     dd("adsf");
+        //     return InvoiceStatuses::Paid;
+        // }
+        if ($this->total_paid > 0) {
+            return $balance > 0 ? InvoiceStatuses::PartiallyPaid : InvoiceStatuses::Paid;
         }
 
         if ($this->due_date->isPast()) {

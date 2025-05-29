@@ -61,10 +61,11 @@ class PaymentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('invoice.number')
-                    ->numeric()
+                    ->copyable()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->numeric()
+                    ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
                     ->date()

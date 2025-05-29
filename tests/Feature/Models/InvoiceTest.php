@@ -204,7 +204,7 @@ it('allows partial payments and calculates total paid', function () {
         'amount' => 100.00,
     ]);
 
-    expect($invoice->total_paid)->toBe(200.00);
+    expect($invoice->total_paid)->toBe(200);
 });
 
 it('allows partial payments and calculates remaining balance', function () {
@@ -233,7 +233,7 @@ it('allows partial payments and calculates remaining balance', function () {
 
     $totalPaid = $invoice->fresh()->total_paid;
 
-    expect($totalPaid)->toBe(200.00);
+    expect($totalPaid)->toBe(200);
 
     expect($invoice->balance_pending)->toBe(100.00);
 });
@@ -263,7 +263,7 @@ it('prevents a payment that exceeds invoice total', function () {
 
 it('has status pending by default', function() {
     $data = Invoice::factory()->create();
-
+    
     expect($data->status)
         ->toBe(InvoiceStatuses::Pending);
 });

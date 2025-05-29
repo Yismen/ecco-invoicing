@@ -28,6 +28,7 @@ use App\Filament\Actions\DownloadInvoiceAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 use App\Services\Filament\Forms\InvoicePaymentForm;
+use Filament\Tables\Columns\Summarizers\Sum;
 
 class InvoiceResource extends Resource
 {
@@ -233,6 +234,8 @@ class InvoiceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
+                    ->sortable()
+                    ->copyable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('date')
                     ->date()
@@ -243,17 +246,27 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('subtotal_amount')
                     ->numeric()
                     ->money()
+                    ->summarize(Sum::make())
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tax_amount')
                     ->numeric()
                     ->money()
+                    ->summarize(Sum::make())
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable()
+                    ->summarize(Sum::make())
                     ->money(),
+                Tables\Columns\TextColumn::make('balance_pending')
+                    ->numeric()
+                    // ->summarize(Sum::make())
+                    // ->money()
+                    ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : '')
+                    // ->sortable()
+                    ,
                 Tables\Columns\TextColumn::make('status')
                     ->formatStateUsing(fn($state) => $state->name)
                     ->badge()
@@ -286,6 +299,27 @@ class InvoiceResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('project_id')
+                    ->label('Project')
+                    ->options(Project::query()
+                        ->orderBy('name')
+                        ->pluck('name', 'id')
+                        ->toArray()
+                ),
+                Tables\Filters\SelectFilter::make('agent_id')
+                    ->label('Agent')
+                    ->options(Agent::query()
+                        ->orderBy('name')
+                        ->pluck('name', 'id')
+                        ->toArray()
+                    ),
+                Tables\Filters\SelectFilter::make('campaign_id')
+                    ->label('Campaign')
+                    ->options(Campaign::query()
+                        ->orderBy('name')
+                        ->pluck('name', 'id')
+                        ->toArray()
+                    ),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
