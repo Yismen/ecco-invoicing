@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use LDAP\Result;
 use App\Enums\InvoiceStatuses;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -52,11 +54,12 @@ class Invoice extends Model
                 str($invoice->project->invoices->count() + 1)->padLeft(config('app.company.invoice_length', 8), 0)
             ]);
             $invoice->due_date = now()->addDays($invoice->project->invoice_net_days ?: 0);
-            $invoice->status = InvoiceStatuses::Pending;
         });
 
         static::saved(function (self $invoice) {
             $subtotal_amount = 0;
+
+            $invoice->load(['invoiceItems', 'project']);
 
             foreach ($invoice->invoiceItems as $item) {
                 $subtotal_amount += $item->item_price * $item->quantity;
@@ -64,13 +67,12 @@ class Invoice extends Model
 
             $tax_amount = $subtotal_amount * ($invoice->project->tax_rate ?: 0);
             $total_amount = $subtotal_amount + $tax_amount;
-            $status = $invoice->due_date->isPast() ? InvoiceStatuses::Overdue : InvoiceStatuses::Pending;
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
-                'status' => $status,
+                'status' => $invoice->getStatus(),
             ]);
         });
     }
@@ -107,11 +109,35 @@ class Invoice extends Model
 
     public function getTotalPaidAttribute()
     {
-        return (float)$this->payments()->sum('amount');
+        return $this->payments()->sum('amount');
+        // return Cache::remember(
+        //     'invoice_total_paid_' . $this->id,
+        //     60 * 60, // Cache for 1 hour
+        //     function () {
+        //         return $this->payments()->sum('amount');
+        //     }
+        // );
     }
 
     public function getBalancePendingAttribute()
     {
         return (float)($this->total_amount - $this->total_paid);
+    }
+
+    protected function getStatus(): InvoiceStatuses
+    {
+        if ($this->total_paid > 0 && $this->balance_pending > 0) {
+            return InvoiceStatuses::PartiallyPaid;
+        }
+
+        if ($this->balance_pending == 0) {
+            return InvoiceStatuses::Paid;
+        }
+
+        if ($this->due_date->isPast()) {
+            return InvoiceStatuses::Overdue;
+        }
+
+        return InvoiceStatuses::Pending;
     }
 }

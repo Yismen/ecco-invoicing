@@ -6,26 +6,26 @@ use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
 use App\Models\Agent;
-use App\Models\Project;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Campaign;
+use App\Models\Project;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use App\Models\Campaign;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\InvoiceItem;
 use Illuminate\Support\Number;
 use Filament\Resources\Resource;
-use App\Rules\PreventOverpayment;
+use Illuminate\Support\Facades\Cache;
 use Filament\Notifications\Notification;
-use App\Services\Filament\Forms\ItemForm;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Actions\PayInvoiceAction;
 use App\Services\Filament\Forms\AgentForm;
 use App\Services\Filament\Forms\ProjectForm;
 use App\Services\Filament\Forms\CampaignForm;
+use App\Filament\Actions\DownloadInvoiceAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Actions\TableActions\PayInvoiceRowAction;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 
 class InvoiceResource extends Resource
@@ -130,9 +130,15 @@ class InvoiceResource extends Resource
                                 Forms\Components\Select::make('item_id')
                                     ->options(function(Get $get) : array|null {
                                         $campaign_id = $get('../../campaign_id');
-                                        $campaign = $campaign_id ? Campaign::with(['items'])->findOrFail($campaign_id): null;
 
-                                        return $campaign?->items?->pluck('name', 'id')->toArray();
+                                        return Cache::rememberForever(
+                                            'campaign_items_' . $campaign_id,
+                                            function() use ($campaign_id) {
+                                                $campaign = Campaign::find($campaign_id)->load(['items']);
+
+                                                return $campaign?->items?->pluck('name', 'id')->toArray();
+                                            }
+                                        );
                                     })
                                     ->searchable()
                                     ->preload(10)
@@ -236,11 +242,13 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('subtotal_amount')
                     ->numeric()
                     ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tax_amount')
                     ->numeric()
                     ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable()
@@ -280,8 +288,8 @@ class InvoiceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
                     PayInvoiceAction::make(),
                     DownloadInvoiceAction::make(),
                 ])

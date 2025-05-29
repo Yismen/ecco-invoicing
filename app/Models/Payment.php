@@ -50,18 +50,7 @@ class Payment extends Model
         });
 
         static::saved(function($payment) {
-            if ($payment->invoice->balance_pending > 0) {
-                $payment->invoice->updateQuietly([
-                    'status' => InvoiceStatuses::PartiallyPaid
-                ]);
-            }
-
-            if ($payment->invoice->balance_pending == 0) {
-                $payment->invoice->updateQuietly([
-                    'status' => InvoiceStatuses::Paid
-                ]);
-            }
-            // $payment->invoice->touch();
+            $payment->invoice->touch();
 
         });
     }

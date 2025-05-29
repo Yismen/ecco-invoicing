@@ -77,6 +77,21 @@
       color: #777;
       margin-top: 30px;
     }
+    .text-right {
+      text-align: right;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .text-blue {
+      color: #007bff;
+    }
+    .text-red {
+      color: #dc3545;
+    }
+    .cool-gray {
+      color: #6c757d;
+    }
   </style>
 </head>
 <body>
@@ -173,8 +188,46 @@
                 <strong>{{ $invoice->formatCurrency($invoice->total_amount) }}</strong>
             </td>
         </tr>
+        <tr>
+            <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
+            <td class="text-right pl-0">{{ __('Amount paid') }}</td>
+            <td class="text-right pr-0 text-blue" @class(['text-blue' => $invoice->model->total_paid > 0])>
+                <strong>{{ $invoice->formatCurrency($invoice->model->total_paid) }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
+            <td class="text-right pl-0">{{ __('Amount Pending') }}</td>
+            <td class="text-right pr-0" @class(['p-4', 'text-red' => $invoice->model->balance_pending > 0])>
+                <strong>{{ $invoice->formatCurrency($invoice->model->balance_pending) }}</strong>
+            </td>
+        </tr>
       </tbody>
     </table>
+
+    {{-- {{ $invoice->model->payments }} --}}
+
+    @if ($invoice->model->payments->count() > 0)
+        <h3>Payments</h3>
+        <table class="payments">
+            <thead>
+                <tr>
+                    <th>Payment Date</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($invoice->model->payments as $payment)
+                <tr>
+                    <td>{{ $payment->created_at->format('M d, Y') }}</td>
+                    <td class="text-right">
+                        {{ $invoice->formatCurrency($payment->amount) }}
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
     <div class="footer">
     <p>Thank you for your business!</p>
