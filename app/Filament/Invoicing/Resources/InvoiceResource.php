@@ -27,6 +27,7 @@ use App\Services\Filament\Forms\CampaignForm;
 use App\Filament\Actions\DownloadInvoiceAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use App\Services\Filament\Forms\InvoicePaymentForm;
 
 class InvoiceResource extends Resource
 {
@@ -290,7 +291,14 @@ class InvoiceResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    PayInvoiceAction::make(),
+                    \Filament\Tables\Actions\Action::make('Pay')
+                        ->visible(fn($record) => $record->balance_pending > 0)
+                        ->color(\Filament\Support\Colors\Color::Purple)
+                        ->icon('heroicon-s-credit-card')
+                        ->form(InvoicePaymentForm::make())
+                        ->action(function (array $data, Invoice $record): void {
+                            $record->payments()->create($data);
+                        }),
                     DownloadInvoiceAction::make(),
                 ])
             ])
