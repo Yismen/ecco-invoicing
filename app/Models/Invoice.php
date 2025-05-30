@@ -75,6 +75,7 @@ class Invoice extends Model
             $tax_amount = $subtotal_amount * ($invoice->project->tax_rate ?: 0);
             $total_amount = $subtotal_amount + $tax_amount;
             $total_paid = $invoice->payments->sum('amount');
+
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
@@ -121,7 +122,6 @@ class Invoice extends Model
 
     protected function getStatus(): InvoiceStatuses
     {
-
         if ($this->total_paid > 0) {
             return $this->balance_pending > 0 ? InvoiceStatuses::PartiallyPaid : InvoiceStatuses::Paid;
         }
