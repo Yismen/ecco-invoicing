@@ -26,7 +26,7 @@ it('save correct fields', function () {
         'tax_amount',
         'total_amount',
         'total_paid',
-        // 'balance_pending',
+        'balance_pending',
         'status',
         // 'due_date',
     ]));
@@ -393,9 +393,7 @@ it('has status partially paid when payment is created but invoice still have som
         'amount' => 200,
     ]);
 
-    $invoice->refresh();
-
-    expect($invoice->status)->toBe(InvoiceStatuses::PartiallyPaid);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatuses::PartiallyPaid);
 });
 
 it('has status paid when payment is created and balance is 0', function () {
@@ -415,7 +413,5 @@ it('has status paid when payment is created and balance is 0', function () {
         'amount' => 300,
     ]);
 
-    $invoice->refresh();
-
-    expect($invoice->status)->toBe(InvoiceStatuses::Paid);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatuses::Paid);
 });

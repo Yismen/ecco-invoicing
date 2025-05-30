@@ -33,6 +33,7 @@ class Invoice extends Model
         'tax_amount',
         'total_amount',
         'total_paid',
+        'balance_pending',
         'status',
         'due_date',
     ];
@@ -73,11 +74,13 @@ class Invoice extends Model
 
             $tax_amount = $subtotal_amount * ($invoice->project->tax_rate ?: 0);
             $total_amount = $subtotal_amount + $tax_amount;
+            $total_paid = $invoice->payments->sum('amount');
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
-                'total_paid' =>  $invoice->payments()->sum('amount'),
+                'total_paid' => $total_paid,
+                'balance_pending' => $total_amount - $total_paid,
             ]);
 
             $invoice->updateQuietly([
@@ -116,26 +119,11 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function getBalancePendingAttribute()
-    {
-        return (float)($this->total_amount - $this->total_paid);
-    }
-
     protected function getStatus(): InvoiceStatuses
     {
-        $balance = $this->balance_pending;
-        // dd($this->total_amount, $this->total_paid,(float)$this->total_amount- (float)$this->total_paid, $balance);
 
-        // if ($this->total_paid > 0 && $balance > 0) {
-        //     return InvoiceStatuses::PartiallyPaid;
-        // }
-
-        // if ($this->total_amount > 0 && $balance == 0) {
-        //     dd("adsf");
-        //     return InvoiceStatuses::Paid;
-        // }
         if ($this->total_paid > 0) {
-            return $balance > 0 ? InvoiceStatuses::PartiallyPaid : InvoiceStatuses::Paid;
+            return $this->balance_pending > 0 ? InvoiceStatuses::PartiallyPaid : InvoiceStatuses::Paid;
         }
 
         if ($this->due_date->isPast()) {
