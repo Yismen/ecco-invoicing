@@ -272,7 +272,7 @@ class InvoiceResource extends Resource
                     ->label('Balance')
                     ->numeric()
                     ->color(Color::Red)
-                    // ->summarize(Sum::make())
+                    ->summarize(Sum::make())
                     // ->money()
                     ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : '')
                     // ->sortable()
