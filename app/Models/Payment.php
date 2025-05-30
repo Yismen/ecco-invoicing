@@ -29,6 +29,7 @@ class Payment extends Model
     protected $casts = [
         'date' => 'datetime',
         'amount' => 'float',
+        'total_paid' => 'float',
         'images' => 'array',
     ];
 
@@ -51,7 +52,6 @@ class Payment extends Model
 
         static::saved(function($payment) {
             $payment->invoice->touch();
-
         });
     }
 

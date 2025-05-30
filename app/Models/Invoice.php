@@ -32,6 +32,7 @@ class Invoice extends Model
         'subtotal_amount',
         'tax_amount',
         'total_amount',
+        'total_paid',
         'status',
         'due_date',
     ];
@@ -72,11 +73,11 @@ class Invoice extends Model
 
             $tax_amount = $subtotal_amount * ($invoice->project->tax_rate ?: 0);
             $total_amount = $subtotal_amount + $tax_amount;
-
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
+                'total_paid' =>  $invoice->payments()->sum('amount'),
             ]);
 
             $invoice->updateQuietly([
@@ -113,18 +114,6 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
-    }
-
-    public function getTotalPaidAttribute()
-    {
-        return $this->payments()->sum('amount');
-        // return Cache::remember(
-        //     'invoice_total_paid_' . $this->id,
-        //     60 * 60, // Cache for 1 hour
-        //     function () {
-        //         return $this->payments()->sum('amount');
-        //     }
-        // );
     }
 
     public function getBalancePendingAttribute()

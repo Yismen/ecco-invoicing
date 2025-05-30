@@ -24,9 +24,10 @@ class InvoiceFactory extends Factory
             'agent_id' => \App\Models\Agent::factory(),
             'campaign_id' => \App\Models\Campaign::factory(),
             'data' => $this->faker->text(),
-            'subtotal_amount' => $this->faker->randomFloat(2, 0, 1000),
-            'tax_amount' => $this->faker->randomFloat(2, 0, 1000),
-            'total_amount' => $this->faker->randomFloat(2, 0, 1000),
+            'subtotal_amount' => 0,
+            'tax_amount' => 0,
+            'total_amount' => 0,
+            'total_paid' => 0,
             'status' =>InvoiceStatuses::Pending,
             'due_date' => $this->faker->date(),
         ];
