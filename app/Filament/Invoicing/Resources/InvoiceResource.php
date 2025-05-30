@@ -17,18 +17,19 @@ use Filament\Tables\Table;
 use App\Models\InvoiceItem;
 use Illuminate\Support\Number;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Cache;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Actions\PayInvoiceAction;
 use App\Services\Filament\Forms\AgentForm;
 use App\Services\Filament\Forms\ProjectForm;
+use Filament\Tables\Columns\Summarizers\Sum;
 use App\Services\Filament\Forms\CampaignForm;
 use App\Filament\Actions\DownloadInvoiceAction;
+use App\Services\Filament\Forms\InvoicePaymentForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use App\Services\Filament\Forms\InvoicePaymentForm;
-use Filament\Tables\Columns\Summarizers\Sum;
 
 class InvoiceResource extends Resource
 {
@@ -260,8 +261,17 @@ class InvoiceResource extends Resource
                     ->sortable()
                     ->summarize(Sum::make())
                     ->money(),
-                Tables\Columns\TextColumn::make('balance_pending')
+                Tables\Columns\TextColumn::make('total_paid')
                     ->numeric()
+                    ->sortable()
+                    ->color(Color::Blue)
+                    ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state) : '')
+                    ->summarize(Sum::make())
+                    ->money(),
+                Tables\Columns\TextColumn::make('balance_pending')
+                    ->label('Balance')
+                    ->numeric()
+                    ->color(Color::Red)
                     // ->summarize(Sum::make())
                     // ->money()
                     ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : '')
