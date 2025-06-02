@@ -11,6 +11,7 @@
         "bezhansalleh/filament-shield": "^3.3",
         "filament/filament": "^3.3",
         "filipfonal/filament-log-manager": "^2.1",
+        "flowframe/laravel-trend": "^0.4.0",
         "geo-sot/filament-env-editor": "^0.0.7",
         "jeffgreco13/filament-breezy": "^2.6",
         "laravel/framework": "^12.0",
