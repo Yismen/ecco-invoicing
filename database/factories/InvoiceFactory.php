@@ -19,18 +19,18 @@ class InvoiceFactory extends Factory
     {
         return [
             'number' => $this->faker->unique()->numerify('INV-#####'),
-            'date' => $this->faker->date(),
+            'date' => now(),
             'project_id' => \App\Models\Project::factory(),
             'agent_id' => \App\Models\Agent::factory(),
             'campaign_id' => \App\Models\Campaign::factory(),
-            'data' => $this->faker->text(),
+            // 'data' => $this->faker->text(),
             'subtotal_amount' => 0,
             'tax_amount' => 0,
             'total_amount' => 0,
             'total_paid' => 0,
             'balance_pending' => 0,
             'status' =>InvoiceStatuses::Pending,
-            'due_date' => $this->faker->date(),
+            // 'due_date' => $this->faker->date(),
         ];
     }
 }

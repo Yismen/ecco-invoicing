@@ -66,7 +66,7 @@ class Invoice extends Model
         static::saved(function (self $invoice) {
             $subtotal_amount = 0;
 
-            $invoice->load(['invoiceItems', 'project']);
+            $invoice->load(['invoiceItems', 'project.client', 'payments']);
 
             foreach ($invoice->invoiceItems as $item) {
                 $subtotal_amount += $item->item_price * $item->quantity;
