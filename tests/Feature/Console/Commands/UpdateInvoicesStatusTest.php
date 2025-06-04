@@ -47,6 +47,6 @@ it('is schedule to run daily at 2:00 AM', function () {
     expect($events)
         ->toHaveCount(1)
         ->and($events->first()->expression)
-        ->toBe('0 3 * * *')
+        ->toBe('0 2 * * *')
         ;
 });
