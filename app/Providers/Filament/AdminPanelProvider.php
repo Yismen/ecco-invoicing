@@ -63,7 +63,11 @@ class AdminPanelProvider extends PanelProvider
                 FilamentMailsPlugin::make(),
                 BreezeCoreService::make(),
                 DebuggerPlugin::make()
-                    ->telescopeNavigation(true)
+                    ->telescopeNavigation(
+                        condition: config('telescope.enabled', true),
+                        url: config('telescope.path', 'telescope'),
+                        openInNewTab: fn () => true,
+                    )
                     ->horizonNavigation(false)
                     ->pulseNavigation(false),
                 FilamentLogManager::make(),
