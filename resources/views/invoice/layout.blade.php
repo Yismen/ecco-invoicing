@@ -17,14 +17,6 @@
       flex-direction: row;
       margin-bottom: 20px;
     }
-    .invoice-box {
-      /* max-width: 800px; */
-      margin: auto;
-      /* padding: 30px; */
-      background: #fff;
-      /* border: 1px solid #eee; */
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-    }
     h1 {
       /* text-align: center;
       margin-bottom: 20px; */
@@ -37,6 +29,12 @@
     }
     .info, .billing, .dates {
       margin-bottom: 20px;
+    }
+    .box-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      background-color: rgb(191,115,0)
     }
     .info p, .billing p, .dates p {
       margin: 4px 0;
@@ -121,7 +119,7 @@
     </table>
 
     <table>
-        <tbody>
+        <tr>
             <td style="vertical-align: top; width: 50%;">
                 <strong>Bill To:</strong><br>
                 {{ $invoice->buyer->name }}<br>
@@ -134,7 +132,7 @@
                 <strong>{{ $date_field_name }}:</strong> {{ $invoice->date->format('M d, Y') }}</br>
                 <strong>{{ $project_field_name }}:</strong> {{ $invoice->model->campaign->name }}</br>
             </td>
-        </tbody>
+        </tr>
     </table>
 
     <table class="products">
@@ -182,26 +180,26 @@
 
         {{-- Subtotal --}}
         <tr>
-            <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
-            <td class="text-right pl-0">{{ __('invoices::invoice.total_amount') }}</td>
+            <td colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('invoices::invoice.total_amount') }}</td>
             <td class="text-right pr-0 total">
                 <strong>{{ $invoice->formatCurrency($invoice->total_amount) }}</strong>
             </td>
         </tr>
-        <tr>
-            <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
-            <td class="text-right pl-0">{{ __('Amount paid') }}</td>
-            <td class="text-right pr-0 text-blue" @class(['text-blue' => $invoice->model->total_paid > 0])>
-                <strong>{{ $invoice->formatCurrency($invoice->model->total_paid) }}</strong>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
-            <td class="text-right pl-0">{{ __('Amount Pending') }}</td>
-            <td class="text-right pr-0" @class(['p-4', 'text-red' => $invoice->model->balance_pending > 0])>
-                <strong>{{ $invoice->formatCurrency($invoice->model->balance_pending) }}</strong>
-            </td>
-        </tr>
+        @if ($invoice->model->payments->count() > 0)
+            <tr>
+                <td colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('Amount paid') }}</td>
+                <td class="text-right pr-0 text-blue" @class(['text-blue' => $invoice->model->total_paid > 0])>
+                    <strong>{{ $invoice->formatCurrency($invoice->model->total_paid) }}</strong>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('Amount Pending') }}</td>
+                <td class="text-right pr-0" @class(['p-4', 'text-red' => $invoice->model->balance_pending > 0])>
+                    <strong>{{ $invoice->formatCurrency($invoice->model->balance_pending) }}</strong>
+                </td>
+            </tr>
+
+        @endif
       </tbody>
     </table>
 
