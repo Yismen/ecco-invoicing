@@ -111,15 +111,16 @@ it('has many invoice items', function () {
 it('updates the due date based on project net terms', function () {
     $project = Project::factory()
         ->create(['invoice_net_days' => 30]);
+    $date = now()->subDays(10)->startOfDay();
 
     $data = Invoice::factory()
         ->create([
             'project_id' => $project->id,
-            'date' => now(),
+            'date' => $date,
             'due_date' => null,
         ]);
 
-    $this->assertEquals($data->due_date, today()->addDays(30));
+    $this->assertEquals($data->due_date, $date->addDays(30));
 });
 
 it('calculates subtotal', function () {;

@@ -60,7 +60,6 @@ class Invoice extends Model
                 $invoice->project->invoice_prefix,
                 str($invoice->project->invoices->count() + 1)->padLeft(config('app.company.invoice_length', 8), 0)
             ]);
-            $invoice->due_date = now()->addDays($invoice->project->invoice_net_days ?: 0);
         });
 
         static::saved(function (self $invoice) {
@@ -82,6 +81,7 @@ class Invoice extends Model
                 'total_amount' => $total_amount,
                 'total_paid' => $total_paid,
                 'balance_pending' => $total_amount - $total_paid,
+                'due_date' => $invoice->date->addDays($invoice->project->invoice_net_days ?: 0),
             ]);
 
             $invoice->updateQuietly([
