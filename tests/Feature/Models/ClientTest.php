@@ -53,7 +53,7 @@ it('has many projects', function () {
 it('gather invoice prefix name', function() {
     $data = Client::factory()->create(['name' => 'Some random name']);
 
-    expect($data->invoice_prefix)
+    expect($data->invoiceNamePrefix())
         ->toBe('SOME');
 });
 

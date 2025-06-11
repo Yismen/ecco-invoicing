@@ -24,10 +24,6 @@ class Client extends Model
         'invoice_template',
     ];
 
-    protected $appends = [
-        'invoice_prefix'
-    ];
-
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);

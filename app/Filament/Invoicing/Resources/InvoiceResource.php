@@ -233,10 +233,11 @@ class InvoiceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('date', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->sortable()
                     ->copyable()
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('date')
                     ->date()
@@ -266,19 +267,15 @@ class InvoiceResource extends Resource
                     ->sortable()
                     ->color(Color::Blue)
                     ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state) : '')
-                    ->summarize(Sum::make())
-                    ->money(),
+                    ->summarize(Sum::make()),
                 Tables\Columns\TextColumn::make('balance_pending')
                     ->label('Balance')
                     ->numeric()
                     ->color(Color::Red)
                     ->summarize(Sum::make())
-                    // ->money()
-                    ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : '')
-                    // ->sortable()
-                    ,
+                    ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : ''),
                 Tables\Columns\TextColumn::make('status')
-                    ->formatStateUsing(fn($state) => $state->name)
+                    ->formatStateUsing(fn($state) => $state->getLabel())
                     ->badge()
                     ->color(fn($state) => $state->getColor())
                     ,

@@ -56,8 +56,8 @@ class Invoice extends Model
         static::creating(function (self $invoice) {
             $invoice->number = join('-', [
                 config('app.company.short_name'),
-                $invoice->project->client->invoice_prefix,
-                $invoice->project->invoice_prefix,
+                $invoice->project->client->invoiceNamePrefix(3),
+                $invoice->project->invoiceNamePrefix(),
                 str($invoice->project->invoices->count() + 1)->padLeft(config('app.company.invoice_length', 8), 0)
             ]);
         });

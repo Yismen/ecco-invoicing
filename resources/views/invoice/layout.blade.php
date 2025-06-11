@@ -32,9 +32,15 @@
     }
     .box-header {
       font-weight: bold;
-      margin-bottom: 10px;
       text-transform: uppercase;
-      background-color: rgb(191,115,0)
+      background-color: rgb(191,115,0);
+      width: 70%;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+      margin: 0px;
+        color: white;
+
     }
     .info p, .billing p, .dates p {
       margin: 4px 0;
@@ -111,8 +117,9 @@
                 <h1 style="vertical-align: top; margin: 0; padding: 0; text-transform: uppercase;">
                     {{ $invoice->name }}
                 </h1>
-                <h2 class="status">
-                    {{ $invoice->status }}
+                <h2 class="status" style="color: {{ $invoice->model->status->getTextColor() }}; margin: 0; padding: 0;">
+                    {{-- {{ $invoice->status->name }} --}}
+                    {{ $invoice->model->status->getLabel() }}
                 </h2>
             </td>
         </tr>
@@ -120,15 +127,15 @@
 
     <table>
         <tr>
-            <td style="vertical-align: top; width: 50%;">
-                <strong>Bill To:</strong><br>
+            <td style="vertical-align: top; width: 50%; margin-right: 20px;">
+                <span class="box-header"><strong>Bill To:</strong></span><br>
                 {{ $invoice->buyer->name }}<br>
                 <strong>{{ $invoice->buyer->company }}</strong><br>
                 <span class="address">{!! ($invoice->buyer->address) !!}</span>
             </td>
-            <td style="vertical-align: top;">
+            <td style="vertical-align: top;" >
                 <strong>Invoice #:</strong> {{ $invoice->series }}</br>
-                <strong>Date:</strong> {{ $invoice->model->created_at->format('M d, Y') }}</br>
+                <strong>Create At:</strong> {{ $invoice->model->created_at->format('M d, Y') }}</br>
                 <strong>{{ $date_field_name }}:</strong> {{ $invoice->date->format('M d, Y') }}</br>
                 <strong>{{ $project_field_name }}:</strong> {{ $invoice->model->campaign->name }}</br>
             </td>

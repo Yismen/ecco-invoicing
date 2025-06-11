@@ -24,6 +24,28 @@ enum InvoiceStatuses: string
         };
     }
 
+    public function getTextColor()
+    {
+        return match ($this) {
+            self::Pending => 'rgb(211, 84, 0)',
+            self::PartiallyPaid => 'rgb(13, 71, 161)',
+            self::Paid => "rgb(22, 160, 133)",
+            self::Overdue => 'rgb(192, 57, 43)',
+            self::Cancelled => 'rgb(127, 140, 141)',
+        };
+    }
+
+    public function getLabel()
+    {
+        return match ($this) {
+            self::Pending => 'Pending',
+            self::PartiallyPaid => 'Partially Paid',
+            self::Paid => 'Paid',
+            self::Overdue => 'Overdue',
+            self::Cancelled => 'Cancelled',
+        };
+    }
+
     /**
      * Get all names of the statuses.
      */

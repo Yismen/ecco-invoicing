@@ -260,7 +260,7 @@ it('updates the number based on the project', function() {
         ->create();
 
     expect($data->number)
-        ->toBe('ECC-CLIENT-PROJECT-00000001');
+        ->toBe('ECC-CLI-PROJECT-00000001');
 });
 
 it('has many payments', function () {
