@@ -91,6 +91,11 @@ class InvoiceResource extends Resource
                             Forms\Components\TextInput::make('name')
                                 ->autofocus()
                                 ->required()
+                                ->unique(
+                                    table: Campaign::class,
+                                    column: 'name',
+                                    ignorable: fn (Get $get) => $get('campaign_id') ? Campaign::find($get('campaign_id')) : null
+                                )
                                 ->maxLength(255),
                         ])
                         ->createOptionUsing(function (array $data, Get $get): int {
