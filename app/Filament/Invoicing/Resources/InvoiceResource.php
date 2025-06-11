@@ -87,7 +87,28 @@ class InvoiceResource extends Resource
                         ->relationship('campaign', 'name')
                         ->required()
                         ->searchable()
-                        ->createOptionForm(CampaignForm::make())
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->autofocus()
+                                ->required()
+                                ->maxLength(255),
+                        ])
+                        ->createOptionUsing(function (array $data, Get $get): int {
+                            $data['agent_id'] = $get('agent_id');
+
+                            if ($data['agent_id'] === null) {
+                                Notification::make()
+                                    ->title('Invalid Agent')
+                                    ->danger()
+                                    ->persistent()
+                                    ->body('Please select an agent to which this campaign belongs.')
+                                    ->send();
+                                return 0;
+                            } else {
+                                $campaign = Campaign::create($data);
+                                return $campaign->id;
+                            }
+                        })
                         ->createOptionModalHeading('Create Campaign')
                         ->options(function(Get $get) : array|null {
                             $agent_id = $get('agent_id');
