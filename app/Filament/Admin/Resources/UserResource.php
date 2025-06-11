@@ -49,6 +49,12 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->searchable()
+                    ->badge()
+                    ->separator(',')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -62,8 +68,10 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn ($record) => $record->id !== auth()->id() && ! $record->hasRole('super-admin')),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn ($record) => $record->id !== auth()->id() && ! $record->hasRole('super-admin')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
