@@ -26,6 +26,23 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
+                    ->unique(
+                        ignoreRecord: true,
+                        column: 'email',
+                    )
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->required()
+                    ->visibleOn('create')
+                    ->confirmed('password_confirmation')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('password_confirmation')
+                    ->password()
+                    ->visibleOn('create')
+                    ->label('Confirm Password')
+                    ->dehydrated(false)
+                    ->required()
                     ->maxLength(255),
                 Forms\Components\CheckboxList::make('roles')
                     ->relationship('roles', 'name')
@@ -43,9 +60,11 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
