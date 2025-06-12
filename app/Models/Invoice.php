@@ -4,6 +4,7 @@ namespace App\Models;
 
 use LDAP\Result;
 use App\Enums\InvoiceStatuses;
+use App\Services\GenerateInvoiceNumberService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -54,12 +55,8 @@ class Invoice extends Model
         parent::boot();
 
         static::creating(function (self $invoice) {
-            $invoice->number = join('-', [
-                config('app.company.short_name'),
-                $invoice->project->client->invoiceNamePrefix(3),
-                $invoice->project->invoiceNamePrefix(),
-                str($invoice->project->invoices->count() + 1)->padLeft(config('app.company.invoice_length', 8), 0)
-            ]);
+            $invoice->number = null;
+            $invoice->number = GenerateInvoiceNumberService::generate($invoice->project);
         });
 
         static::saved(function (self $invoice) {
@@ -131,5 +128,12 @@ class Invoice extends Model
         }
 
         return InvoiceStatuses::Pending;
+    }
+
+    protected function number(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ?: GenerateInvoiceNumberService::generate($this->project),
+        );
     }
 }

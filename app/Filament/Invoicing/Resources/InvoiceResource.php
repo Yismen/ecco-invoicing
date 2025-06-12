@@ -26,6 +26,7 @@ use App\Services\Filament\Forms\AgentForm;
 use App\Services\Filament\Forms\ProjectForm;
 use Filament\Tables\Columns\Summarizers\Sum;
 use App\Services\Filament\Forms\CampaignForm;
+use App\Services\GenerateInvoiceNumberService;
 use App\Filament\Actions\DownloadInvoiceAction;
 use App\Services\Filament\Forms\InvoicePaymentForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -144,6 +145,21 @@ class InvoiceResource extends Resource
                                 ]);
                             }),
                     ]),
+
+               Forms\Components\Section::make()
+                    ->visible(fn($record) => $record === null)
+                    ->inlineLabel()
+                    ->schema([
+                        Forms\Components\Placeholder::make('New Invoice Numbrer')
+                            ->content(function(Get $get) {
+                                $project = Project::find($get('project_id'));
+
+                                if ($project) {
+                                    return GenerateInvoiceNumberService::generate($project);
+                                }
+                            }),
+                    ]),
+
                 Forms\Components\Section::make('Invoice Items')
                     ->schema([
                         Forms\Components\Repeater::make('invoiceItems')
