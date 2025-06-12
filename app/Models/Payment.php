@@ -53,6 +53,18 @@ class Payment extends Model
         static::saved(function($payment) {
             $payment->invoice->touch();
         });
+
+        static::deleting(function ($payment) {
+            $payment->invoice->touch();
+        });
+
+        static::softDeleted(function ($payment) {
+            $payment->invoice->touch();
+        });
+
+        static::restored(function ($payment) {
+            $payment->invoice->touch();
+        });
     }
 
     public function invoice(): BelongsTo
