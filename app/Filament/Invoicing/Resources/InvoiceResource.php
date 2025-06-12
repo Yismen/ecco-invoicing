@@ -324,14 +324,12 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('template')
+                Tables\Columns\TextColumn::make('project.client.invoice_template')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('notes')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('project.invoice_notes')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('terms')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('project.invoice_terms')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
