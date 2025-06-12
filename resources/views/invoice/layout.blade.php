@@ -35,13 +35,15 @@
       text-transform: uppercase;
       background-color: rgb(191,115,0);
       width: 70%;
-      padding: 5px 10px;
-      border-radius: 5px;
+      padding: 8px;
+      /* border-radius: 5px; */
       display: inline-block;
       margin: 0px;
-        color: white;
+      color: white;
 
     }
+
+
     .info p, .billing p, .dates p {
       margin: 4px 0;
     }
@@ -65,6 +67,17 @@
     }
     table.products td {
       text-align: right;
+    }
+
+    table.products tr.table-header > th {
+      font-weight: bold;
+      text-transform: uppercase;
+      background-color: rgb(191,115,0);
+      /* width: 70%; */
+      /* padding: 8px; */
+      /* display: inline-block; */
+      margin: 0px;
+      color: white;
     }
     table td.description {
       text-align: left;
@@ -144,7 +157,7 @@
 
     <table class="products">
       <thead>
-        <tr>
+        <tr class="table-header">
           <th>Description</th>
           <th>Qty</th>
           <th>Unit Price</th>
@@ -186,21 +199,21 @@
         @endforeach
 
         {{-- Subtotal --}}
-        <tr>
-            <td colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('invoices::invoice.total_amount') }}</td>
+        <tr class="table-footer">
+            <th colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('invoices::invoice.total_amount') }}</th>
             <td class="text-right pr-0 total">
                 <strong>{{ $invoice->formatCurrency($invoice->total_amount) }}</strong>
             </td>
         </tr>
         @if ($invoice->model->payments->count() > 0)
             <tr>
-                <td colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('Amount paid') }}</td>
+                <th colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('Amount paid') }}</th>
                 <td class="text-right pr-0 text-blue" @class(['text-blue' => $invoice->model->total_paid > 0])>
                     <strong>{{ $invoice->formatCurrency($invoice->model->total_paid) }}</strong>
                 </td>
             </tr>
-            <tr>
-                <td colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('Amount Pending') }}</td>
+            <tr class="table-footer">">
+                <th colspan="{{ $invoice->table_columns - 1 }}" class="text-right pl-0">{{ __('Amount Pending') }}</th>
                 <td class="text-right pr-0" @class(['p-4', 'text-red' => $invoice->model->balance_pending > 0])>
                     <strong>{{ $invoice->formatCurrency($invoice->model->balance_pending) }}</strong>
                 </td>
