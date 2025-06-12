@@ -250,7 +250,7 @@
     <div class="footer">
     <p>Thank you for your business!</p>
     <p>
-        <strong>Payment Terms:</strong> Net {{ $invoice->model->project->invoice_net_days }} Days ({{ $invoice->model->due_date->format('M d, Y') }})
+        <strong>Payment Terms:</strong> Net {{ $invoice->model->project->invoice_net_days }} Days (By {{ $invoice->model->due_date->format('M d, Y') }})
     </p>
       <p><strong>Wire Payment Info:</strong><br>
       {{ config('app.company.account.bank') }}<br>
