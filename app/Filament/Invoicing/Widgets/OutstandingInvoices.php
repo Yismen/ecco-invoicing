@@ -14,12 +14,11 @@ class OutstandingInvoices extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
+            ->defaultSort('due_date', 'desc')
             ->query(
                 Invoice::query()
                     ->where('status', '=', \App\Enums\InvoiceStatuses::Overdue)
                     ->with('project.client', 'agent', 'campaign')
-                    // ->orderBy('project_id', 'asc')
-                    // ->orderBy('due_date', 'asc')
                     ->where('balance_pending', '>', 0)
             )
             ->columns([
