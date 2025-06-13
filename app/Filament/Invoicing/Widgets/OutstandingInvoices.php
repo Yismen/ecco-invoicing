@@ -2,6 +2,7 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
+use App\Filament\Exports\InvoiceExporter;
 use App\Models\Invoice;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -26,6 +27,10 @@ class OutstandingInvoices extends BaseWidget
                     ->label('Invoice Number')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('date')
+                    ->label('Date')
+                    ->date()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('project.client.name')
                     ->label('Client')
                     ->searchable()
@@ -43,6 +48,19 @@ class OutstandingInvoices extends BaseWidget
                     ->date()
                     ->formatStateUsing(fn ($state) => $state?->diffForHumans())
                     ->sortable(),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label('View')
+                    ->icon('heroicon-o-eye'),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\ExportBulkAction::make()
+                        ->exporter(InvoiceExporter::class)
+                                ->label('Export Invoices')
+                                ->icon('heroicon-o-download'),
+                        ]),
             ]);
     }
 }
