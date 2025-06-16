@@ -15,7 +15,7 @@ class OutstandingInvoices extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->defaultSort('due_date', 'desc')
+            ->defaultSort('due_date', 'asc')
             ->query(
                 Invoice::query()
                     ->where('status', '=', \App\Enums\InvoiceStatuses::Overdue)
@@ -50,9 +50,12 @@ class OutstandingInvoices extends BaseWidget
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
+                Tables\Actions\Action::make('view')
                     ->label('View')
-                    ->icon('heroicon-o-eye'),
+                    ->color('primary')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (Invoice $record): string => route('filament.invoicing.resources.invoices.view', ['record' => $record->id]))
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
