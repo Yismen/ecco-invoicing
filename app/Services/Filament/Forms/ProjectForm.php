@@ -10,8 +10,9 @@ class ProjectForm
     {
         return [
             Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                ->required()
+                ->unique(ignoreRecord: true)
+                ->maxLength(255),
             Forms\Components\Select::make('client_id')
                 ->relationship('client', 'name')
                 ->searchable()

@@ -23,15 +23,16 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Actions\PayInvoiceAction;
 use App\Services\Filament\Forms\AgentForm;
+use App\Services\Filament\Forms\ClientForm;
 use App\Services\Filament\Forms\ProjectForm;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Illuminate\Database\Eloquent\Collection;
 use App\Services\Filament\Forms\CampaignForm;
 use App\Services\GenerateInvoiceNumberService;
 use App\Filament\Actions\DownloadInvoiceAction;
 use App\Services\Filament\Forms\InvoicePaymentForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use Illuminate\Database\Eloquent\Collection;
 
 class InvoiceResource extends Resource
 {
@@ -80,10 +81,45 @@ class InvoiceResource extends Resource
                         ->required()
                         ->searchable()
                         ->disabled(fn(Get $get) => ! $get('project_id'))
-                        ->createOptionForm(AgentForm::make())
-                        ->createOptionModalHeading('Create Agent')
                         ->preload(10)
                         ->columnSpan(2)
+                        ->createOptionForm([
+                            Forms\Components\Grid::make(3)
+                                ->schema([
+                                    Forms\Components\TextInput::make('name')
+                                        ->required()
+                                        ->unique(
+                                            table: Agent::class,
+                                            column: 'name',
+                                            ignorable: fn (Get $get) => $get('agent_id') ? Agent::find($get('agent_id')) : null
+                                        )
+                                        ->autofocus()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('phone')
+                                        ->tel()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('email')
+                                        ->email()
+                                        ->maxLength(255),
+                                ]),
+                        ])
+                        ->createOptionModalHeading('Create Agent')
+                        ->createOptionUsing(function (array $data, Get $get): int {
+                            $data['project_id'] = $get('project_id');
+
+                            if ($data['project_id'] === null) {
+                                Notification::make()
+                                    ->title('Invalid Project')
+                                    ->danger()
+                                    ->persistent()
+                                    ->body('Please select an agent to which this agent belongs.')
+                                    ->send();
+                                return 0;
+                            } else {
+                                $agent = Agent::create($data);
+                                return $agent->id;
+                            }
+                        })
                         ->live(),
                     Forms\Components\Select::make('campaign_id')
                         ->relationship('campaign', 'name')
