@@ -389,20 +389,38 @@ class InvoiceResource extends Resource
                     // Tables\Actions\DeleteBulkAction::make(),
                     // Tables\Actions\ForceDeleteBulkAction::make(),
                     // Tables\Actions\RestoreBulkAction::make(),
+                ]),
+
                     Tables\Actions\BulkAction::make('Pay Fully')
                         ->color(Color::Red)
                         ->icon('heroicon-s-credit-card')
-                        ->requiresConfirmation()
+                        // ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
                         ->modalDescription(
                             'This action will pay the all selected invoices fully using the pending balance. Are you sure?'
                         )
-                        // ->form(InvoicePaymentForm::make())
-                        ->action(function (Collection $records): void {
+                        ->form([
+                            Forms\Components\Grid::make(2)
+                                ->schema([
+                                        Forms\Components\DatePicker::make('date')
+                                            ->required()
+                                            ->default(now())
+                                            ->maxDate(now()->endOfDay()),
+                                        Forms\Components\TextInput::make('reference'),
+                                        Forms\Components\FileUpload::make('images')
+                                            ->image()
+                                            ->imageEditor()
+                                            ->multiple()
+                                            ->maxSize(1024)
+                                            ->columnSpanFull(),
+                                ]),
+                        ])
+                        ->action(function (Collection $records, array $data): void {
                             foreach ($records as $record) {
                                 if ($record->balance_pending > 0) {
                                     $record->payments()->create([
-                                        'date' => now(),
+                                        'date' => $data['date'],
+                                        'images' => $data['images'],
                                         'amount' => $record->balance_pending,
                                         'reference' => 'Paid using Bulk Action',
                                         'description' => 'Paid using Bulk Action',
@@ -416,7 +434,6 @@ class InvoiceResource extends Resource
                                 ->body("All {$records->count()} selected invoices have been paid fully.")
                                 ->send();
                         }),
-                ]),
             ])
             ->checkIfRecordIsSelectableUsing(
                 fn (Invoice $record): bool => $record->balance_pending > 0,
