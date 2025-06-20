@@ -12,6 +12,8 @@ it('save correct fields', function () {
     $this->assertDatabaseHas(Client::class, $data->only([
         'name',
         'invoice_template',
+        'template_date_field_name',
+        'template_project_field_name',
     ]));
 });
 

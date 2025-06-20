@@ -22,6 +22,8 @@ class Client extends Model
     protected $fillable = [
         'name',
         'invoice_template',
+        'template_date_field_name',
+        'template_project_field_name',
     ];
 
     public function projects(): HasMany

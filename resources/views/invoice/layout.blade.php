@@ -148,9 +148,9 @@
             </td>
             <td style="vertical-align: top;" >
                 <strong>Invoice #:</strong> {{ $invoice->series }}</br>
-                <strong>Create At:</strong> {{ $invoice->model->created_at->format('M d, Y') }}</br>
-                <strong>{{ $date_field_name }}:</strong> {{ $invoice->date->format('M d, Y') }}</br>
-                <strong>{{ $project_field_name }}:</strong> {{ $invoice->model->campaign->name }}</br>
+                <strong>Invoice Date:</strong> {{ $invoice->model->created_at->format('M d, Y') }}</br>
+                <strong>{{ $invoice->model->project->client->template_date_field_name ?? 'File Sent At' }}:</strong> {{ $invoice->date->format('M d, Y') }}</br>
+                <strong>{{  $invoice->model->project->client->template_project_field_name ?? 'Publication' }}:</strong> {{ $invoice->model->campaign->name }}</br>
             </td>
         </tr>
     </table>

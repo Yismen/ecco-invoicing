@@ -1,4 +1,1 @@
-@extends('invoice.layout', [
-    'date_field_name' => 'Up To Date',
-    'project_field_name' => 'Project',
-])
+@extends('invoice.layout')

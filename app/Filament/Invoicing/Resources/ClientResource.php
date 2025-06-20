@@ -43,6 +43,10 @@ class ClientResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('invoice_template'),
+                Tables\Columns\TextColumn::make('template_date_field_name')
+                    ->label('Date Field Name'),
+                Tables\Columns\TextColumn::make('template_project_field_name')
+                    ->label('Project Field Name'),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

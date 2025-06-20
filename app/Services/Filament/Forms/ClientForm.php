@@ -21,6 +21,17 @@ class ClientForm
                 ->label('Invoice Template')
                 ->required()
                 ->default('default'),
+            Forms\Components\TextInput::make('template_date_field_name')
+                ->label('Date Field Name')
+                ->required()
+                ->default('File Sent At')
+                ->placeholder('File Sent At'),
+            Forms\Components\TextInput::make('template_project_field_name')
+                ->label('Project Field Name')
+                ->required()
+                ->default('Publication')
+                ->placeholder('Publication')
+                ,
         ];
     }
 }
