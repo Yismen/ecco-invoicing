@@ -12,7 +12,7 @@ describe('Agent Resource', function () {
             Filament::getPanel('invoicing')
         );
 
-        $this->user = User::factory()->create();
+        // $this->user = User::factory()->create();
         $this->model = Agent::factory()->create();
 
         $this->routes = [
@@ -34,6 +34,7 @@ describe('Agent Resource', function () {
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
+        // dd('$this->user');
         $this->actingAs($this->user)
             ->get($this->routes[$route])
             ->assertForbidden();
@@ -55,6 +56,7 @@ describe('Agent Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
+                // $permission = str($permission)->append('Agent')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',

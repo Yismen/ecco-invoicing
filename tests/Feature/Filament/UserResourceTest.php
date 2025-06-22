@@ -10,7 +10,7 @@ uses(TestCase::class, RefreshDatabase::class)->in('Feature/Filament');
 
 beforeEach(function () {
     $this->resource = new UserResource;
-    $this->user = User::factory()->create();
+    // $this->user = User::factory()->create();
 });
 
 describe('guest user', function () {

@@ -12,7 +12,7 @@ describe('Campaign Resource', function () {
             Filament::getPanel('invoicing')
         );
 
-        $this->user = User::factory()->create();
+        // $this->user = User::factory()->create();
         $this->model = Campaign::factory()->create();
 
         $this->routes = [
@@ -55,6 +55,7 @@ describe('Campaign Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
+                // $permission = str($permission)->append('Campaign')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',
@@ -62,6 +63,7 @@ describe('Campaign Resource', function () {
                 $this->user->givePermissionTo($permission);
             }
         });
+
 
         it('can access client resource endpoints', function ($route) {
             $this->actingAs($this->user)

@@ -11,8 +11,6 @@ describe('Project Resource', function () {
         Filament::setCurrentPanel(
             Filament::getPanel('invoicing')
         );
-
-        $this->user = User::factory()->create();
         $this->model = Project::factory()->create();
 
         $this->routes = [
@@ -46,7 +44,6 @@ describe('Project Resource', function () {
 
     describe('authorized users', function () {
         beforeEach(function () {
-
             $permissions = [
                 'index' => 'viewAny',
                 'create' => 'create',
@@ -55,6 +52,7 @@ describe('Project Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
+                // $permission = str($permission)->append('Project')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',

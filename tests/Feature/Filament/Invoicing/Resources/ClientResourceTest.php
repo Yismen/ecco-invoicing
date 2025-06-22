@@ -12,7 +12,7 @@ describe('Client Resource', function () {
             Filament::getPanel('invoicing')
         );
 
-        $this->user = User::factory()->create();
+        // $this->user = User::factory()->create();
         $this->model = Client::factory()->create();
 
         $this->routes = [
@@ -55,6 +55,7 @@ describe('Client Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
+                // $permission = str($permission)->append('Client')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',

@@ -26,7 +26,7 @@ describe('Payment Resource', function () {
             'item_price' => $item->price,
         ]);
 
-        $this->user = User::factory()->create();
+        // $this->user = User::factory()->create();
         $this->model = Payment::factory()->create([
             'invoice_id' => $invoice->id,
             'amount' => 200.00,
@@ -72,6 +72,7 @@ describe('Payment Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
+                // $permission = str($permission)->append('Payment')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',

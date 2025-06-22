@@ -14,7 +14,11 @@
 pest()
     ->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+    ->in('Feature')
+    ->beforeEach(function () {
+        // This will run before each tests in the Feature directory
+        $this->user = \App\Models\User::factory()->create(['email' => 'sdasf@ecco.com.do']);
+    });
 
 /*
 |--------------------------------------------------------------------------
