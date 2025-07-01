@@ -12,6 +12,7 @@ class CampaignForm
             Forms\Components\TextInput::make('name')
                 ->autofocus()
                 ->required()
+                ->unique(ignoreRecord: true)
                 ->maxLength(255),
             Forms\Components\Select::make('agent_id')
                 ->relationship('agent', 'name')

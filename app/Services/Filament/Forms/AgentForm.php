@@ -11,6 +11,7 @@ class AgentForm
         return [
             Forms\Components\TextInput::make('name')
                 ->required()
+                ->unique(ignoreRecord: true)
                 ->autofocus()
                 ->maxLength(255),
             Forms\Components\Select::make('project_id')

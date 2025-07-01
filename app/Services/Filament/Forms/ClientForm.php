@@ -12,6 +12,7 @@ class ClientForm
         return [
             Forms\Components\TextInput::make('name')
                 ->autofocus()
+                ->unique(ignoreRecord: true)
                 ->required()
                 ->maxLength(255),
             Forms\Components\Select::make('invoice_template')
