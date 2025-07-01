@@ -41,12 +41,17 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-
-                Tables\Columns\TextColumn::make('invoice_template'),
+                Tables\Columns\TextColumn::make('invoice_template')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('template_date_field_name')
-                    ->label('Date Field Name'),
+                    ->label('Date Field Name')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('template_project_field_name')
-                    ->label('Project Field Name'),
+                    ->label('Project Field Name')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

@@ -39,20 +39,25 @@ class ProjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('client.name')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->limit(50)
+                    ->searchable()
                     ->html()
                     ->wrap()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('invoice_net_days'),
+                Tables\Columns\TextColumn::make('invoice_net_days')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tax_rate')
+                    ->sortable()
                     ->label('Tax Rate (%)')
                     ->formatStateUsing(fn ($state) => $state * 100),
                 Tables\Columns\TextColumn::make('invoice_notes')
+                    ->searchable()
                     ->limit(50)
                     ->html()
                     ->wrap()

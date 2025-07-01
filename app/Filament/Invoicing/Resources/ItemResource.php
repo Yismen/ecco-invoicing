@@ -57,12 +57,15 @@ class ItemResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('campaign.name')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->money()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable()
