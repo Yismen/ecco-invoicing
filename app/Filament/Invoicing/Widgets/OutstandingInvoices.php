@@ -4,20 +4,27 @@ namespace App\Filament\Invoicing\Widgets;
 
 use App\Filament\Exports\InvoiceExporter;
 use App\Models\Invoice;
+use App\Services\InvoiceQueryForFilters;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class OutstandingInvoices extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    use InteractsWithPageFilters;
+
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
         return $table
             ->defaultSort('due_date', 'asc')
             ->query(
-                Invoice::query()
+                InvoiceQueryForFilters::applyFilters(
+                    Invoice::query(),
+                    $this->filters
+                )
                     ->where('status', '=', \App\Enums\InvoiceStatuses::Overdue)
                     ->with('project.client', 'agent', 'campaign')
                     ->where('balance_pending', '>', 0)
@@ -61,9 +68,9 @@ class OutstandingInvoices extends BaseWidget
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\ExportBulkAction::make()
                         ->exporter(InvoiceExporter::class)
-                                ->label('Export Invoices')
-                                ->icon('heroicon-o-download'),
-                        ]),
+                        ->label('Export Invoices')
+                        ->icon('heroicon-o-download'),
+                ]),
             ]);
     }
 }

@@ -3,13 +3,13 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Models\Invoice;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Number;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class IncomeByProject extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?string $heading = 'Projects Income';
 
     protected function getData(): array
@@ -19,10 +19,15 @@ class IncomeByProject extends ChartWidget
             ->selectRaw('SUM(total_amount) as aggregate')
             ->groupBy('project_id')
             ->with('project')
-            ->whereBetween('date', [
-                now()->subMonths(6)->startOfMonth(),
-                now(),
-            ])
+            ->when($this->filters['project'] ?? null, function ($query) {
+                $query->where('project_id', $this->filters['project']);
+            })
+            ->when($this->filters['startDate'] ?? null, function ($query) {
+                $query->whereDate('date', '>=', $this->filters['startDate']);
+            })
+            ->when($this->filters['endDate'] ?? null, function ($query) {
+                $query->whereDate('date', '<=', $this->filters['endDate']);
+            })
             ->get();
 
         return [

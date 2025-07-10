@@ -3,19 +3,25 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Models\Invoice;
-use Illuminate\Support\Number;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use App\Services\InvoiceQueryForFilters;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Number;
 
 class InvoicesSummary extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected function getStats(): array
     {
         return [
 
-            Stat::make('Total Incomes',  Number::currency(
-                Invoice::query()
+            Stat::make('Total Incomes', Number::currency(
+                InvoiceQueryForFilters::applyFilters(
+                    Invoice::query(),
+                    $this->filters
+                )
                     ->sum('total_amount'),
                 'USD'
             ))
@@ -23,19 +29,25 @@ class InvoicesSummary extends BaseWidget
                 ->icon('heroicon-o-document-text')
                 ->description('Total amount for all invoices'),
 
-            Stat::make('Outstanding Invoices',  Number::currency(
-                Invoice::query()
+            Stat::make('Outstanding Invoices', Number::currency(
+                InvoiceQueryForFilters::applyFilters(
+                    Invoice::query(),
+                    $this->filters
+                )
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
                     ->sum('balance_pending'),
-                        'USD'
+                'USD'
             ))
                 ->color('danger')
                 ->icon('heroicon-o-document-text')
                 ->description('Total amount for outstanding invoices'),
 
-            Stat::make('Total Paid',  Number::currency(
-                Invoice::query()
+            Stat::make('Total Paid', Number::currency(
+                InvoiceQueryForFilters::applyFilters(
+                    Invoice::query(),
+                    $this->filters
+                )
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
                     ->sum('total_paid'),
                 'USD'
