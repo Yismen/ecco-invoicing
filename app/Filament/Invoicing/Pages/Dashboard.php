@@ -37,6 +37,7 @@ class Dashboard extends BaseDashboard
                     ->label('Project Name')
                     ->searchable()
                     ->preload()
+                    ->multiple()
                     ->options(function () {
                         return \App\Models\Project::query()
                             ->orderBy('name')

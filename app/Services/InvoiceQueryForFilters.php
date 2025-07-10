@@ -10,7 +10,7 @@ class InvoiceQueryForFilters
     {
         return $query
             ->when($filters['project'] ?? null, function ($query) use ($filters) {
-                $query->where('project_id', $filters['project']);
+                $query->whereIn('project_id', (array)$filters['project']);
             })
             ->when(
                 $filters['startDate'] ?? null,
