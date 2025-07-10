@@ -2,7 +2,6 @@
 
 use App\Enums\InvoiceStatuses;
 use App\Models\Agent;
-use App\Models\Client;
 use App\Models\Campaign;
 use App\Models\Project;
 use Illuminate\Database\Migrations\Migration;

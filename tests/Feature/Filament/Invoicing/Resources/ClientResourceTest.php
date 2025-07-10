@@ -91,11 +91,10 @@ describe('Client Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             ClientResource::getNavigationSort()
-        )->toBe(1)
+        )->toBe(1);
         // ->and(
         //     ClientResource::getNavigationGroup()
         // )->toBe('Invoicing')
-        ;
     });
 
 });

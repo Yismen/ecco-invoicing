@@ -137,6 +137,6 @@ return [
             'number' => env('COMPANY_BANK_NUMBER'),
             'routing' => env('COMPANY_BANK_ROUTING'),
             'wire' => env('COMPANY_BANK_WIRE'),
-        ]
+        ],
     ],
 ];

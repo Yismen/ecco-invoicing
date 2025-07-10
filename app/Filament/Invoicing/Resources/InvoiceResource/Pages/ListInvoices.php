@@ -3,12 +3,12 @@
 namespace App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 
 use App\Enums\InvoiceStatuses;
-use Filament\Actions;
+use App\Filament\Invoicing\Resources\InvoiceResource;
 use App\Models\Invoice;
+use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Invoicing\Resources\InvoiceResource;
 
 class ListInvoices extends ListRecords
 {

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Services\Filament\Forms\ClientForm;
 use App\Filament\Invoicing\Resources\ClientResource\Pages;
 use App\Models\Client;
+use App\Services\Filament\Forms\ClientForm;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

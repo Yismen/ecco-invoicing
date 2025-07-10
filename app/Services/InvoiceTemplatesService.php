@@ -9,7 +9,7 @@ class InvoiceTemplatesService
 {
     public $path;
 
-    public function __construct(string|null $path = null)
+    public function __construct(?string $path = null)
     {
         if ($path) {
             $this->path = $path;
@@ -18,7 +18,7 @@ class InvoiceTemplatesService
         $this->path = $this->path ?: resource_path('views/vendor/invoices/templates');
     }
 
-    public static function make(string|null $path = null): array
+    public static function make(?string $path = null): array
     {
         $static = new static($path);
 
@@ -30,7 +30,7 @@ class InvoiceTemplatesService
         return Cache::remember('invoice_template_services', now()->addMinutes(15), function () {
             $files = [];
 
-            foreach( Storage::build([
+            foreach (Storage::build([
                 'driver' => 'local',
                 'root' => $this->path,
             ])->allFiles('') as $file) {

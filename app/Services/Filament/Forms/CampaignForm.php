@@ -21,6 +21,6 @@ class CampaignForm
                 ->searchable()
                 ->preload(10)
                 ->required(),
-    ];
+        ];
     }
 }

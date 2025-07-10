@@ -2,16 +2,16 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use Filament\Forms;
+use App\Filament\Invoicing\Resources\ItemResource\Pages;
 use App\Models\Item;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use App\Services\Filament\Forms\ItemForm;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Invoicing\Resources\ItemResource\Pages;
 
 class ItemResource extends Resource
 {

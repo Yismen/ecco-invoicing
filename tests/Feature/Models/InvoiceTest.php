@@ -1,13 +1,11 @@
 <?php
 
-use App\Models\Item;
-use App\Models\Agent;
+use App\Enums\InvoiceStatuses;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Campaign;
 use App\Models\InvoiceItem;
-use App\Enums\InvoiceStatuses;
+use App\Models\Item;
+use App\Models\Payment;
 use App\Models\Project;
 
 it('save correct fields', function () {
@@ -21,7 +19,7 @@ it('save correct fields', function () {
         'project_id',
         'agent_id',
         'campaign_id',
-    //     'data',
+        //     'data',
         'subtotal_amount',
         'tax_amount',
         'total_amount',
@@ -123,22 +121,22 @@ it('updates the due date based on project net terms', function () {
     $this->assertEquals($data->due_date, $date->addDays(30));
 });
 
-it('calculates subtotal', function () {;
+it('calculates subtotal', function () {
     $items = Item::factory()
         ->count(3)
         ->create();
     $data = Invoice::factory()
         ->create();
 
-   foreach ($items as $item) {
+    foreach ($items as $item) {
         $data->invoiceItems()->create([
             'item_id' => $item->id,
             'item_price' => 10,
             'quantity' => 4,
-    ]);
-   }
+        ]);
+    }
 
-   $data->touch();
+    $data->touch();
 
     $subtotal = 3 * 10 * 4;
 
@@ -154,15 +152,15 @@ it('calculates taxt amount', function () {
     $data = Invoice::factory()
         ->create(['project_id' => $project->id]);
 
-   foreach ($items as $item) {
+    foreach ($items as $item) {
         $data->invoiceItems()->create([
             'item_id' => $item->id,
             'item_price' => 10,
             'quantity' => 4,
-    ]);
-   }
+        ]);
+    }
 
-   $data->touch();
+    $data->touch();
 
     $subtotal = 3 * 10 * 4;
     $tax = $subtotal * $project->tax_rate;
@@ -179,15 +177,15 @@ it('calculates total amount', function () {
     $data = Invoice::factory()
         ->create(['project_id' => $project->id]);
 
-   foreach ($items as $item) {
+    foreach ($items as $item) {
         $data->invoiceItems()->create([
             'item_id' => $item->id,
             'item_price' => 10,
             'quantity' => 4,
-    ]);
-   }
+        ]);
+    }
 
-   $data->touch();
+    $data->touch();
 
     $subtotal = 3 * 10 * 4;
     $tax = $subtotal * $project->tax_rate;
@@ -205,14 +203,13 @@ it('calculates total amount paid', function () {
     $data = Invoice::factory()
         ->create(['project_id' => $project->id]);
 
-
-        foreach ($items as $item) {
-            $data->invoiceItems()->create([
-                'item_id' => $item->id,
-                'item_price' => 10,
-                'quantity' => 4,
-            ]);
-        }
+    foreach ($items as $item) {
+        $data->invoiceItems()->create([
+            'item_id' => $item->id,
+            'item_price' => 10,
+            'quantity' => 4,
+        ]);
+    }
 
     Payment::factory()->create(['invoice_id' => $data->id, 'amount' => $totalPaid = 10]);
 
@@ -233,10 +230,10 @@ it('calculates total balance', function () {
         ->create();
 
     foreach ($items as $item) {
-            $data->invoiceItems()->create([
-                'item_id' => $item->id,
-                'item_price' => 10,
-                'quantity' => 4,
+        $data->invoiceItems()->create([
+            'item_id' => $item->id,
+            'item_price' => 10,
+            'quantity' => 4,
         ]);
     }
 
@@ -245,7 +242,7 @@ it('calculates total balance', function () {
     $this->assertEquals($data->fresh()->balance_pending, 110);
 });
 
-it('updates the number based on the project', function() {
+it('updates the number based on the project', function () {
     config()->set('app.company.short_name', 'ECC');
     config()->set('app.company.invoice_length', 8);
     $data = Invoice::factory()
@@ -357,14 +354,14 @@ it('prevents a payment that exceeds invoice total', function () {
     ]);
 })->throws(\Exception::class);
 
-it('has status pending by default', function() {
+it('has status pending by default', function () {
     $data = Invoice::factory()->create();
 
     expect($data->status)
         ->toBe(InvoiceStatuses::Pending);
 });
 
-it('has status overdue when it hasnt been paid and due day has passed', function() {
+it('has status overdue when it hasnt been paid and due day has passed', function () {
     $data = Invoice::factory()
         ->for(Project::factory()->state(['invoice_net_days' => 10]))
         ->create(['status' => InvoiceStatuses::Pending]);

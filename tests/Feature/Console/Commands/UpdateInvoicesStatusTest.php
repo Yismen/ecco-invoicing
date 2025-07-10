@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Item;
+use App\Enums\InvoiceStatuses;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Enums\InvoiceStatuses;
+use App\Models\Item;
 use Illuminate\Console\Scheduling\Event;
 
 it('run successfully', function () {
@@ -47,6 +47,5 @@ it('is schedule to run daily at 2:00 AM', function () {
     expect($events)
         ->toHaveCount(1)
         ->and($events->first()->expression)
-        ->toBe('0 3 * * *')
-        ;
+        ->toBe('0 3 * * *');
 });

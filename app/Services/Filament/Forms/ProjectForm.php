@@ -45,6 +45,6 @@ class ProjectForm
                 ->label('Invoice Terms')
                 ->maxLength(255)
                 ->columns(2),
-            ];
+        ];
     }
 }

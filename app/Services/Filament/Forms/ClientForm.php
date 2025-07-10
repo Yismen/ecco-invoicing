@@ -31,8 +31,7 @@ class ClientForm
                 ->label('Project Field Name')
                 ->required()
                 ->default('Publication')
-                ->placeholder('Publication')
-                ,
+                ->placeholder('Publication'),
         ];
     }
 }

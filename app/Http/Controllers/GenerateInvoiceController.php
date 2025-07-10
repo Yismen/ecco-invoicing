@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Services\GenerateInvoiceService;
-use LaravelDaily\Invoices\Classes\Party;
-use LaravelDaily\Invoices\Invoice as PrintInvoice;
 use LaravelDaily\Invoices\Classes\InvoiceItem as PrintItem;
+use LaravelDaily\Invoices\Classes\Party;
 
 class GenerateInvoiceController extends Controller
 {
@@ -18,19 +17,19 @@ class GenerateInvoiceController extends Controller
         ]);
 
         $client = new Party([
-            'name'          => 'Roosevelt Lloyd',
-            'phone'         => '(520) 318-9486',
+            'name' => 'Roosevelt Lloyd',
+            'phone' => '(520) 318-9486',
             'custom_fields' => [
-                'note'        => 'IDDQD',
+                'note' => 'IDDQD',
                 'business id' => '365#GG',
             ],
         ]);
 
         $customer = new Party([
-            'name'          => $invoice->agent->name,
-            'company'       => $invoice->project->name,
-            'address'       => $invoice->project->address,
-            'code'          => '#22663214',
+            'name' => $invoice->agent->name,
+            'company' => $invoice->project->name,
+            'address' => $invoice->project->address,
+            'code' => '#22663214',
             'custom_fields' => [
                 'order number' => '> 654321 <',
             ],
@@ -49,7 +48,7 @@ class GenerateInvoiceController extends Controller
             'in regards of delivery or something else',
         ];
 
-        $notes = implode("<br>", $notes);
+        $notes = implode('<br>', $notes);
 
         $pdf = GenerateInvoiceService::make('Invoice')
             ->series($invoice->number)
@@ -82,7 +81,6 @@ class GenerateInvoiceController extends Controller
         // And return invoice itself to browser or have a different view
         return $pdf->stream();
         // return $invoice->download();
-
 
     }
 }

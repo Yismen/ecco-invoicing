@@ -69,7 +69,7 @@ it('has many invoices', function () {
     );
 });
 
-it('gather invoice prefix name', function() {
+it('gather invoice prefix name', function () {
     $data = Project::factory()->create(['name' => 'Some random name']);
 
     expect($data->invoiceNamePrefix())

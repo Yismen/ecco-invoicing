@@ -64,7 +64,6 @@ describe('Campaign Resource', function () {
             }
         });
 
-
         it('can access client resource endpoints', function ($route) {
             $this->actingAs($this->user)
                 ->get($this->routes[$route])
@@ -93,10 +92,9 @@ describe('Campaign Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             CampaignResource::getNavigationSort()
-        )->toBe(4)
+        )->toBe(4);
         // ->and(
         //     CampaignResource::getNavigationGroup()
         // )->toBe('Invoicing')
-        ;
     });
 });

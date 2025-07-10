@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\InvoiceStatuses;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,11 +45,11 @@ class Payment extends Model
             $attempt = $totalPaid + $payment->amount;
 
             if ($attempt > $invoice->total_amount) {
-                throw new \Exception("Payment exceeds invoice total");
+                throw new \Exception('Payment exceeds invoice total');
             }
         });
 
-        static::saved(function($payment) {
+        static::saved(function ($payment) {
             $payment->invoice->touch();
         });
 

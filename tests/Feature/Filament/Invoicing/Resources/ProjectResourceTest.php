@@ -2,7 +2,6 @@
 
 use App\Filament\Invoicing\Resources\ProjectResource;
 use App\Models\Project;
-use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
 
@@ -77,16 +76,15 @@ describe('Project Resource', function () {
                 ->get($this->routes['index'])
                 ->assertSeeText('Projects')
                 ->assertSeeText($this->model->name)
-                ->assertSeeText($this->model->client->name)
-                // ->assertSeeText($this->model->address)
-                // ->assertSeeText($this->model->phone)
-                // ->assertSeeText($this->model->email)
-                // ->assertSeeText($this->model->tax_rate) // Assuming tax_rate is stored as a decimal;
-                // ->assertSeeText($this->model->invoce_net_days)
-                // ->assertSeeText($this->model->invoices_count)
-                // ->assertSeeText($this->model->invoice_notes)
-                // ->assertSeeText($this->model->invoice_terms)
-                ;
+                ->assertSeeText($this->model->client->name);
+            // ->assertSeeText($this->model->address)
+            // ->assertSeeText($this->model->phone)
+            // ->assertSeeText($this->model->email)
+            // ->assertSeeText($this->model->tax_rate) // Assuming tax_rate is stored as a decimal;
+            // ->assertSeeText($this->model->invoce_net_days)
+            // ->assertSeeText($this->model->invoices_count)
+            // ->assertSeeText($this->model->invoice_notes)
+            // ->assertSeeText($this->model->invoice_terms)
         });
         it('shows the create form', function () {
             $this->actingAs($this->user)
@@ -98,11 +96,10 @@ describe('Project Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             ProjectResource::getNavigationSort()
-        )->toBe(2)
+        )->toBe(2);
         // ->and(
         //     ProjectResource::getNavigationGroup()
         // )->toBe('Invoicing')
-        ;
     });
 
 });

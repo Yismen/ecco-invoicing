@@ -29,7 +29,7 @@ class CampaignResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->schema(CampaignForm::make())
-                ->columns(2),
+                    ->columns(2),
             ]);
     }
 

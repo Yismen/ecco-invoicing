@@ -4,7 +4,7 @@ namespace App\Traits\Models;
 
 trait HasNamePrefix
 {
-    public function invoiceNamePrefix(null|int $length = null): string
+    public function invoiceNamePrefix(?int $length = null): string
     {
 
         $name = str($this->attributes['name'])->upper()->replace(['-', '_', '/', ',', '\''], ' ');
@@ -15,7 +15,7 @@ trait HasNamePrefix
 
         // return $name[0] . (str($name[1] ?? '')->substr(0, 1)) . (str($name[2] ?? '')->substr(0, 1));
 
-        $name = explode(" ", $name, 2);
+        $name = explode(' ', $name, 2);
 
         return $length ? substr($name[0], 0, $length) : $name[0];
     }

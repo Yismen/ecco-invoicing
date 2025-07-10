@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Project;
 
@@ -52,7 +51,7 @@ it('has many projects', function () {
 //     );
 // });
 
-it('gather invoice prefix name', function() {
+it('gather invoice prefix name', function () {
     $data = Client::factory()->create(['name' => 'Some random name']);
 
     expect($data->invoiceNamePrefix())

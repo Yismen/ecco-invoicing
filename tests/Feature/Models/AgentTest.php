@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\Agent;
-use App\Models\Client;
-use App\Models\Invoice;
 use App\Models\Project;
 
 it('save correct fields', function () {

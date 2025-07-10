@@ -29,7 +29,7 @@ enum InvoiceStatuses: string
         return match ($this) {
             self::Pending => 'rgb(211, 84, 0)',
             self::PartiallyPaid => 'rgb(13, 71, 161)',
-            self::Paid => "rgb(22, 160, 133)",
+            self::Paid => 'rgb(22, 160, 133)',
             self::Overdue => 'rgb(192, 57, 43)',
             self::Cancelled => 'rgb(127, 140, 141)',
         };
@@ -51,7 +51,7 @@ enum InvoiceStatuses: string
      */
     public static function getNames(): array
     {
-        return array_map(fn($status) => $status->name, self::cases());
+        return array_map(fn ($status) => $status->name, self::cases());
     }
 
     /**
@@ -59,6 +59,6 @@ enum InvoiceStatuses: string
      */
     public static function getValues(): array
     {
-        return array_map(fn($status) => $status->value, self::cases());
+        return array_map(fn ($status) => $status->value, self::cases());
     }
 }

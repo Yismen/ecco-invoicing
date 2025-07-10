@@ -1,22 +1,22 @@
 <?php
 
-use App\Models\Item;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\InvoiceItem;
+use App\Models\Item;
+use App\Models\Payment;
 
-beforeEach(function() {
+beforeEach(function () {
 
-        $this->invoice = Invoice::factory()
-            ->create();
-        $item = Item::factory()->create(['price' => 500]);
+    $this->invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 500]);
 
-        InvoiceItem::create([
-            'invoice_id' => $this->invoice->id,
-            'item_id' => $item->id,
-            'quantity' => 1,
-            'item_price' => $item->price,
-        ]);
+    InvoiceItem::create([
+        'invoice_id' => $this->invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
 });
 
 it('save correct fields', function () {

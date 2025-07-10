@@ -29,7 +29,7 @@ class InvoiceFactory extends Factory
             'total_amount' => 0,
             'total_paid' => 0,
             'balance_pending' => 0,
-            'status' =>InvoiceStatuses::Pending,
+            'status' => InvoiceStatuses::Pending,
             // 'due_date' => $this->faker->date(),
         ];
     }

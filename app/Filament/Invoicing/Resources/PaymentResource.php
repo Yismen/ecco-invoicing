@@ -2,16 +2,16 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Invoicing\Resources\PaymentResource\Pages;
 use App\Models\Payment;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use App\Rules\PreventOverpayment;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Invoicing\Resources\PaymentResource\Pages;
 
 class PaymentResource extends Resource
 {
@@ -31,13 +31,13 @@ class PaymentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Placeholder::make('Invoice Number')
-                            ->content(fn($record) => $record->invoice->number),
+                            ->content(fn ($record) => $record->invoice->number),
                         Forms\Components\TextInput::make('amount')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             // ->maxValue(fn($record) => $record->balance_pending)
-                            ->default(fn($record) => $record->invoice->balance_pending)
+                            ->default(fn ($record) => $record->invoice->balance_pending)
                             ->rule(static function ($record) {
                                 return new PreventOverpayment($record);
                             }),
@@ -52,7 +52,7 @@ class PaymentResource extends Resource
                             ->imageEditor()
                             ->multiple(),
                         Forms\Components\Textarea::make('description'),
-                    ])
+                    ]),
             ]);
     }
 

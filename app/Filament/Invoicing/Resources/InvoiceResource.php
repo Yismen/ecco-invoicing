@@ -2,37 +2,32 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use Filament\Forms;
-use App\Models\Item;
-use Filament\Tables;
+use App\Filament\Actions\DownloadInvoiceAction;
+use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 use App\Models\Agent;
+use App\Models\Campaign;
 use App\Models\Invoice;
-use App\Models\Payment;
+use App\Models\InvoiceItem;
+use App\Models\Item;
 use App\Models\Project;
+use App\Services\Filament\Forms\InvoicePaymentForm;
+use App\Services\Filament\Forms\ProjectForm;
+use App\Services\GenerateInvoiceNumberService;
+use Filament\Forms;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use App\Models\Campaign;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Models\InvoiceItem;
-use Illuminate\Support\Number;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
-use Illuminate\Support\Facades\Cache;
-use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Actions\PayInvoiceAction;
-use App\Services\Filament\Forms\AgentForm;
-use App\Services\Filament\Forms\ClientForm;
-use App\Services\Filament\Forms\ProjectForm;
+use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Services\Filament\Forms\CampaignForm;
-use App\Services\GenerateInvoiceNumberService;
-use App\Filament\Actions\DownloadInvoiceAction;
-use App\Services\Filament\Forms\InvoicePaymentForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Number;
 
 class InvoiceResource extends Resource
 {
@@ -48,147 +43,153 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
-               Forms\Components\Section::make()
-                ->schema([
-                    Forms\Components\Select::make('project_id')
-                        ->relationship('project', 'name')
-                        ->options(function() : array {
-                            return Project::query()
-                                ->orderBy('name')
-                                ->pluck('name', 'id')
-                                ->all();
-                        })
-                        ->afterStateUpdated(fn(Set $set) => $set('agent_id', null))
-                        ->autofocus(fn (string $operation) => in_array($operation, ['create', 'edit']))
-                        ->searchable()
-                        ->required()
-                        ->createOptionForm(ProjectForm::make())
-                        ->createOptionModalHeading('Create Project')
-                        ->preload(10)
-                        ->columnSpan(2)
-                        ->live(),
-                    Forms\Components\Select::make('agent_id')
-                        ->relationship('agent', 'name')
-                        ->options(function(Get $get) : array|null {
-                            $project_id = $get('project_id');
-                            return Agent::query()
-                                ->where('project_id', $project_id)
-                                ->orderBy('name')
-                                ->pluck('name', 'id')
-                                ->all();
-                        })
-                        ->afterStateUpdated(fn(Set $set) => $set('campaign_id', null))
-                        ->required()
-                        ->searchable()
-                        ->disabled(fn(Get $get) => ! $get('project_id'))
-                        ->preload(10)
-                        ->columnSpan(2)
-                        ->createOptionForm([
-                            Forms\Components\Grid::make(3)
-                                ->schema([
-                                    Forms\Components\TextInput::make('name')
-                                        ->required()
-                                        ->unique(
-                                            table: Agent::class,
-                                            column: 'name',
-                                            ignorable: fn (Get $get) => $get('agent_id') ? Agent::find($get('agent_id')) : null
-                                        )
-                                        ->autofocus()
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('phone')
-                                        ->tel()
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('email')
-                                        ->email()
-                                        ->maxLength(255),
-                                ]),
-                        ])
-                        ->createOptionModalHeading('Create Agent')
-                        ->createOptionUsing(function (array $data, Get $get): int {
-                            $data['project_id'] = $get('project_id');
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\Select::make('project_id')
+                            ->relationship('project', 'name')
+                            ->options(function (): array {
+                                return Project::query()
+                                    ->orderBy('name')
+                                    ->pluck('name', 'id')
+                                    ->all();
+                            })
+                            ->afterStateUpdated(fn (Set $set) => $set('agent_id', null))
+                            ->autofocus(fn (string $operation) => in_array($operation, ['create', 'edit']))
+                            ->searchable()
+                            ->required()
+                            ->createOptionForm(ProjectForm::make())
+                            ->createOptionModalHeading('Create Project')
+                            ->preload(10)
+                            ->columnSpan(2)
+                            ->live(),
+                        Forms\Components\Select::make('agent_id')
+                            ->relationship('agent', 'name')
+                            ->options(function (Get $get): ?array {
+                                $project_id = $get('project_id');
 
-                            if ($data['project_id'] === null) {
-                                Notification::make()
-                                    ->title('Invalid Project')
-                                    ->danger()
-                                    ->persistent()
-                                    ->body('Please select an agent to which this agent belongs.')
-                                    ->send();
-                                return 0;
-                            } else {
-                                $agent = Agent::create($data);
-                                return $agent->id;
-                            }
-                        })
-                        ->live(),
-                    Forms\Components\Select::make('campaign_id')
-                        ->relationship('campaign', 'name')
-                        ->required()
-                        ->searchable()
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->autofocus()
-                                ->required()
-                                ->unique(
-                                    table: Campaign::class,
-                                    column: 'name',
-                                    ignorable: fn (Get $get) => $get('campaign_id') ? Campaign::find($get('campaign_id')) : null
-                                )
-                                ->maxLength(255),
-                        ])
-                        ->createOptionUsing(function (array $data, Get $get): int {
-                            $data['agent_id'] = $get('agent_id');
+                                return Agent::query()
+                                    ->where('project_id', $project_id)
+                                    ->orderBy('name')
+                                    ->pluck('name', 'id')
+                                    ->all();
+                            })
+                            ->afterStateUpdated(fn (Set $set) => $set('campaign_id', null))
+                            ->required()
+                            ->searchable()
+                            ->disabled(fn (Get $get) => ! $get('project_id'))
+                            ->preload(10)
+                            ->columnSpan(2)
+                            ->createOptionForm([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->unique(
+                                                table: Agent::class,
+                                                column: 'name',
+                                                ignorable: fn (Get $get) => $get('agent_id') ? Agent::find($get('agent_id')) : null
+                                            )
+                                            ->autofocus()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('phone')
+                                            ->tel()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('email')
+                                            ->email()
+                                            ->maxLength(255),
+                                    ]),
+                            ])
+                            ->createOptionModalHeading('Create Agent')
+                            ->createOptionUsing(function (array $data, Get $get): int {
+                                $data['project_id'] = $get('project_id');
 
-                            if ($data['agent_id'] === null) {
-                                Notification::make()
-                                    ->title('Invalid Agent')
-                                    ->danger()
-                                    ->persistent()
-                                    ->body('Please select an agent to which this campaign belongs.')
-                                    ->send();
-                                return 0;
-                            } else {
-                                $campaign = Campaign::create($data);
-                                return $campaign->id;
-                            }
-                        })
-                        ->createOptionModalHeading('Create Campaign')
-                        ->options(function(Get $get) : array|null {
-                            $agent_id = $get('agent_id');
-                            return Campaign::query()
-                                ->orderBy('name')
-                                ->where('agent_id', $agent_id)
-                                ->pluck('name', 'id')
-                                ->all();
-                        })
-                        ->preload(10)
-                        ->disabled(fn(Get $get) => ! $get('agent_id'))
-                        ->columnSpan(2)
-                        ->live(),
-                    Forms\Components\DatePicker::make('date')
-                        ->default(today()->format('Y-m-d'))
-                        ->maxDate(now()->format('Y-m-d'))
-                        ->required(),
-               ])->columns(7),
-               Forms\Components\Section::make()
-                    ->visible(fn($record) => $record)
+                                if ($data['project_id'] === null) {
+                                    Notification::make()
+                                        ->title('Invalid Project')
+                                        ->danger()
+                                        ->persistent()
+                                        ->body('Please select an agent to which this agent belongs.')
+                                        ->send();
+
+                                    return 0;
+                                } else {
+                                    $agent = Agent::create($data);
+
+                                    return $agent->id;
+                                }
+                            })
+                            ->live(),
+                        Forms\Components\Select::make('campaign_id')
+                            ->relationship('campaign', 'name')
+                            ->required()
+                            ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->autofocus()
+                                    ->required()
+                                    ->unique(
+                                        table: Campaign::class,
+                                        column: 'name',
+                                        ignorable: fn (Get $get) => $get('campaign_id') ? Campaign::find($get('campaign_id')) : null
+                                    )
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data, Get $get): int {
+                                $data['agent_id'] = $get('agent_id');
+
+                                if ($data['agent_id'] === null) {
+                                    Notification::make()
+                                        ->title('Invalid Agent')
+                                        ->danger()
+                                        ->persistent()
+                                        ->body('Please select an agent to which this campaign belongs.')
+                                        ->send();
+
+                                    return 0;
+                                } else {
+                                    $campaign = Campaign::create($data);
+
+                                    return $campaign->id;
+                                }
+                            })
+                            ->createOptionModalHeading('Create Campaign')
+                            ->options(function (Get $get): ?array {
+                                $agent_id = $get('agent_id');
+
+                                return Campaign::query()
+                                    ->orderBy('name')
+                                    ->where('agent_id', $agent_id)
+                                    ->pluck('name', 'id')
+                                    ->all();
+                            })
+                            ->preload(10)
+                            ->disabled(fn (Get $get) => ! $get('agent_id'))
+                            ->columnSpan(2)
+                            ->live(),
+                        Forms\Components\DatePicker::make('date')
+                            ->default(today()->format('Y-m-d'))
+                            ->maxDate(now()->format('Y-m-d'))
+                            ->required(),
+                    ])->columns(7),
+                Forms\Components\Section::make()
+                    ->visible(fn ($record) => $record)
                     ->schema([
                         Forms\Components\Placeholder::make('')
-                            ->content(function($record) {
+                            ->content(function ($record) {
                                 $record->load(['project', 'agent', 'campaign', 'items']);
 
                                 return view('filament.partials.invoice-company-details', [
-                                    'invoice' => $record
+                                    'invoice' => $record,
                                 ]);
                             }),
                     ]),
 
-               Forms\Components\Section::make()
-                    ->visible(fn($record) => $record === null)
+                Forms\Components\Section::make()
+                    ->visible(fn ($record) => $record === null)
                     ->inlineLabel()
                     ->schema([
                         Forms\Components\Placeholder::make('New Invoice Numbrer')
-                            ->content(function(Get $get) {
+                            ->content(function (Get $get) {
                                 $project = Project::find($get('project_id'));
 
                                 if ($project) {
@@ -201,7 +202,7 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Repeater::make('invoiceItems')
                             ->relationship()
-                            ->visible(fn($get) =>  $get('campaign_id'))
+                            ->visible(fn ($get) => $get('campaign_id'))
                             ->label('Items')
                             ->defaultItems(1)
                             ->reorderable()
@@ -210,12 +211,12 @@ class InvoiceResource extends Resource
                             ->addActionLabel('Add Item')
                             ->schema([
                                 Forms\Components\Select::make('item_id')
-                                    ->options(function(Get $get) : array|null {
+                                    ->options(function (Get $get): ?array {
                                         $campaign_id = $get('../../campaign_id');
 
                                         return Cache::rememberForever(
-                                            'campaign_items_' . $campaign_id,
-                                            function() use ($campaign_id) {
+                                            'campaign_items_'.$campaign_id,
+                                            function () use ($campaign_id) {
                                                 $campaign = Campaign::find($campaign_id)->load(['items']);
 
                                                 return $campaign?->items?->pluck('name', 'id')->toArray();
@@ -225,14 +226,14 @@ class InvoiceResource extends Resource
                                     ->searchable()
                                     ->preload(10)
                                     ->distinct()
-                                    ->afterStateUpdated(function($state, Get $get, Set $set) {
+                                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
                                         $item = Item::find($state);
 
-                                        if($item) {
+                                        if ($item) {
                                             $set('item_price', $item->price);
                                             $set('subtotal', $item->price * (float) $get('quantity'));
                                         }
-                                    } )
+                                    })
                                     ->createOptionForm([
                                         Forms\Components\Section::make()
                                             ->columns(2)
@@ -244,7 +245,7 @@ class InvoiceResource extends Resource
                                                     ->required()
                                                     ->numeric()
                                                     ->prefix('$'),
-                                            ])
+                                            ]),
                                     ])
                                     ->createOptionUsing(function (array $data, $get): int {
                                         $data['campaign_id'] = $get('../../campaign_id');
@@ -257,6 +258,7 @@ class InvoiceResource extends Resource
                                                 ->persistent()
                                                 ->body('Please select a campaign to which this campaign belongs.')
                                                 ->send();
+
                                             return 0;
                                         } else {
                                             $item = Item::create($data);
@@ -270,7 +272,7 @@ class InvoiceResource extends Resource
                                 Forms\Components\TextInput::make('quantity')
                                     ->numeric()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function($state, Set $set, Get $get) {
+                                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                         $set('subtotal', $state * $get('item_price'));
                                     })
                                     ->minValue(0)
@@ -281,12 +283,11 @@ class InvoiceResource extends Resource
                                     ->dehydrated(),
                                 Forms\Components\TextInput::make('subtotal')
                                     ->disabled()
-                                    ->formatStateUsing(function(?InvoiceItem $record) {
+                                    ->formatStateUsing(function (?InvoiceItem $record) {
                                         $subtotal = $record?->item_price * $record?->quantity;
 
                                         return Number::currency($subtotal);
-                                    })
-                                ,
+                                    }),
                             ])
                             ->columns(5),
                     ]),
@@ -294,12 +295,13 @@ class InvoiceResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('')
-                            ->content(function($record, $get) {
+                            ->content(function ($record, $get) {
                                 $subtotal = 0;
 
-                                foreach($get('invoiceItems') as $item) {
-                                    $subtotal += (float)$item['subtotal'] ?? 0;
+                                foreach ($get('invoiceItems') as $item) {
+                                    $subtotal += (float) $item['subtotal'] ?? 0;
                                 }
+
                                 return view('filament.partials.invoice-summary', [
                                     'invoice' => $record,
                                     'subtotal' => $subtotal,
@@ -354,10 +356,9 @@ class InvoiceResource extends Resource
                     ->summarize(Sum::make())
                     ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : ''),
                 Tables\Columns\TextColumn::make('status')
-                    ->formatStateUsing(fn($state) => $state->getLabel())
+                    ->formatStateUsing(fn ($state) => $state->getLabel())
                     ->badge()
-                    ->color(fn($state) => $state->getColor())
-                    ,
+                    ->color(fn ($state) => $state->getColor()),
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
@@ -389,13 +390,13 @@ class InvoiceResource extends Resource
                         ->orderBy('name')
                         ->pluck('name', 'id')
                         ->toArray()
-                ),
+                    ),
                 Tables\Filters\SelectFilter::make('agent_id')
                     ->label('Agent')
                     ->options(Agent::query()
-                        ->orderBy('name')
-                        ->pluck('name', 'id')
-                        ->toArray()
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray()
                     ),
                 Tables\Filters\SelectFilter::make('campaign_id')
                     ->label('Campaign')
@@ -410,7 +411,7 @@ class InvoiceResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\Action::make('Pay')
-                        ->visible(fn($record) => $record->balance_pending > 0)
+                        ->visible(fn ($record) => $record->balance_pending > 0)
                         ->color(Color::Purple)
                         ->icon('heroicon-s-credit-card')
                         ->form(InvoicePaymentForm::make())
@@ -418,7 +419,7 @@ class InvoiceResource extends Resource
                             $record->payments()->create($data);
                         }),
                     DownloadInvoiceAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -427,49 +428,49 @@ class InvoiceResource extends Resource
                     // Tables\Actions\RestoreBulkAction::make(),
                 ]),
 
-                    Tables\Actions\BulkAction::make('Pay Fully')
-                        ->color(Color::Red)
-                        ->icon('heroicon-s-credit-card')
-                        // ->requiresConfirmation()
-                        ->deselectRecordsAfterCompletion()
-                        ->modalDescription(
-                            'This action will pay the all selected invoices fully using the pending balance. Are you sure?'
-                        )
-                        ->form([
-                            Forms\Components\Grid::make(2)
-                                ->schema([
-                                        Forms\Components\DatePicker::make('date')
-                                            ->required()
-                                            ->default(now())
-                                            ->maxDate(now()->endOfDay()),
-                                        Forms\Components\TextInput::make('reference'),
-                                        Forms\Components\FileUpload::make('images')
-                                            ->image()
-                                            ->imageEditor()
-                                            ->multiple()
-                                            ->maxSize(1024)
-                                            ->columnSpanFull(),
-                                ]),
-                        ])
-                        ->action(function (Collection $records, array $data): void {
-                            foreach ($records as $record) {
-                                if ($record->balance_pending > 0) {
-                                    $record->payments()->create([
-                                        'date' => $data['date'],
-                                        'images' => $data['images'],
-                                        'amount' => $record->balance_pending,
-                                        'reference' => 'Paid using Bulk Action',
-                                        'description' => 'Paid using Bulk Action',
-                                    ]);
-                                }
+                Tables\Actions\BulkAction::make('Pay Fully')
+                    ->color(Color::Red)
+                    ->icon('heroicon-s-credit-card')
+                    // ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->modalDescription(
+                        'This action will pay the all selected invoices fully using the pending balance. Are you sure?'
+                    )
+                    ->form([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\DatePicker::make('date')
+                                    ->required()
+                                    ->default(now())
+                                    ->maxDate(now()->endOfDay()),
+                                Forms\Components\TextInput::make('reference'),
+                                Forms\Components\FileUpload::make('images')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->multiple()
+                                    ->maxSize(1024)
+                                    ->columnSpanFull(),
+                            ]),
+                    ])
+                    ->action(function (Collection $records, array $data): void {
+                        foreach ($records as $record) {
+                            if ($record->balance_pending > 0) {
+                                $record->payments()->create([
+                                    'date' => $data['date'],
+                                    'images' => $data['images'],
+                                    'amount' => $record->balance_pending,
+                                    'reference' => 'Paid using Bulk Action',
+                                    'description' => 'Paid using Bulk Action',
+                                ]);
                             }
+                        }
 
-                            Notification::make()
-                                ->title('Bulk Payment Successful')
-                                ->success()
-                                ->body("All {$records->count()} selected invoices have been paid fully.")
-                                ->send();
-                        }),
+                        Notification::make()
+                            ->title('Bulk Payment Successful')
+                            ->success()
+                            ->body("All {$records->count()} selected invoices have been paid fully.")
+                            ->send();
+                    }),
             ])
             ->checkIfRecordIsSelectableUsing(
                 fn (Invoice $record): bool => $record->balance_pending > 0,
@@ -506,6 +507,6 @@ class InvoiceResource extends Resource
         // dump($component);
 
         return Item::pluck('name', 'id')
-            ->toArray( );
+            ->toArray();
     }
 }

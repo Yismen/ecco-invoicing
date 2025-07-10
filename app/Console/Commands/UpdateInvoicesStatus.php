@@ -31,7 +31,6 @@ class UpdateInvoicesStatus extends Command
             ->each
             ->touch();
 
-
         $this->info('Invoices status updated successfully.');
     }
 }

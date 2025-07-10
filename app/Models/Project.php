@@ -14,9 +14,10 @@ class Project extends Model
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory;
+
     use HasNamePrefix;
-    use SoftDeletes;
     use InteracstsWithModelCaching;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -44,5 +45,4 @@ class Project extends Model
     {
         return $this->hasMany(Invoice::class);
     }
-
 }

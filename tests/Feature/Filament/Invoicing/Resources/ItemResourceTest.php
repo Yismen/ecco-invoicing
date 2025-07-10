@@ -81,9 +81,8 @@ describe('Item Resource', function () {
                 ->assertSeeText('Items')
                 ->assertSeeText($this->model->name)
                 ->assertSeeText($this->model->campaign->name)
-                ->assertSeeText($this->model->price)
-                // ->assertSeeText($this->model->description)
-                ;
+                ->assertSeeText($this->model->price);
+            // ->assertSeeText($this->model->description)
         });
         it('shows the create form', function () {
             $this->actingAs($this->user)
@@ -95,10 +94,9 @@ describe('Item Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             ItemResource::getNavigationSort()
-        )->toBe(5)
+        )->toBe(5);
         // ->and(
         //     ItemResource::getNavigationGroup()
         // )->toBe('Invoicing')
-        ;
     });
 });

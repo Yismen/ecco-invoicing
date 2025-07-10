@@ -2,18 +2,16 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Invoicing\Resources\AgentResource\Pages;
 use App\Models\Agent;
-use App\Models\Client;
+use App\Services\Filament\Forms\AgentForm;
+use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use App\Services\Filament\Forms\ClientForm;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Invoicing\Resources\AgentResource\Pages;
-use App\Services\Filament\Forms\AgentForm;
 
 class AgentResource extends Resource
 {

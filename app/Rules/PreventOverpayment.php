@@ -2,18 +2,14 @@
 
 namespace App\Rules;
 
-use Closure;
 use App\Models\Invoice;
 use App\Models\Payment;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Database\Eloquent\Model;
 
 class PreventOverpayment implements ValidationRule
 {
-
-    public function __construct(protected Invoice|Payment $model)
-    {
-    }
+    public function __construct(protected Invoice|Payment $model) {}
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

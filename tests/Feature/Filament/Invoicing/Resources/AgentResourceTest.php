@@ -94,10 +94,9 @@ describe('Agent Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             AgentResource::getNavigationSort()
-        )->toBe(3)
+        )->toBe(3);
         // ->and(
         //     AgentResource::getNavigationGroup()
         // )->toBe('Invoicing')
-        ;
     });
 });

@@ -1,13 +1,13 @@
 <?php
 
-use App\Models\Item;
-use App\Models\User;
+use App\Filament\Invoicing\Resources\PaymentResource;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\InvoiceItem;
+use App\Models\Item;
+use App\Models\Payment;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
-use App\Filament\Invoicing\Resources\PaymentResource;
 
 describe('Payment Resource', function () {
     beforeEach(function () {
@@ -99,18 +99,16 @@ describe('Payment Resource', function () {
                 ->assertSeeText($this->model->invoice->number)
                 ->assertSeeText($this->model->amount)
                 // ->assertSeeText($this->model->date)
-                ->assertSeeText($this->model->reference)
-                ;
+                ->assertSeeText($this->model->reference);
         });
     });
 
     it('shows correct navigation sort', function () {
         expect(
             PaymentResource::getNavigationSort()
-        )->toBe(7)
+        )->toBe(7);
         // ->and(
         //     PaymentResource::getNavigationGroup()
         // )->toBe('Invoicing')
-        ;
     });
 });

@@ -3,7 +3,6 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Invoicing\Resources\ProjectResource\Pages;
-use App\Filament\Invoicing\Resources\ProjectResource\RelationManagers;
 use App\Models\Project;
 use App\Services\Filament\Forms\ProjectForm;
 use Filament\Forms;
@@ -30,8 +29,8 @@ class ProjectResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->columns(2)
-                    ->schema(ProjectForm::make())
-                ]);
+                    ->schema(ProjectForm::make()),
+            ]);
     }
 
     public static function table(Table $table): Table
