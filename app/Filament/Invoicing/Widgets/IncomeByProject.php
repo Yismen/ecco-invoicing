@@ -37,7 +37,7 @@ class IncomeByProject extends ChartWidget
                     'data' => $data->map(fn ($value) => $value->aggregate),
                 ],
             ],
-            'labels' => $data->map(fn ($value) => $value->project->name ?? 'Unknown Project'),
+            'labels' => $data->map(fn ($value) => str($value->project->name)->limit(30) ?? 'Unknown Project'),
         ];
     }
 
