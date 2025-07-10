@@ -3,6 +3,7 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Models\Invoice;
+use App\Services\InvoiceQueryForFilters;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
@@ -14,20 +15,14 @@ class IncomeByProject extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Invoice::query()
+        $data = InvoiceQueryForFilters::applyFilters(
+            Invoice::query(),
+            $this->filters
+        )
             ->select('project_id')
             ->selectRaw('SUM(total_amount) as aggregate')
             ->groupBy('project_id')
             ->with('project')
-            ->when($this->filters['project'] ?? null, function ($query) {
-                $query->where('project_id', $this->filters['project']);
-            })
-            ->when($this->filters['startDate'] ?? null, function ($query) {
-                $query->whereDate('date', '>=', $this->filters['startDate']);
-            })
-            ->when($this->filters['endDate'] ?? null, function ($query) {
-                $query->whereDate('date', '<=', $this->filters['endDate']);
-            })
             ->get();
 
         return [

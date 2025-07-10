@@ -26,8 +26,8 @@ class MonthlyIncomes extends ChartWidget
         )
             ->dateColumn('date')
             ->between(
-                start: Carbon::parse($this->filters['startDate']) ?? now()->subMonths(6)->startOfMonth(),
-                end: Carbon::parse($this->filters['endDate']) ?? now()->endOfMonth(),
+                start: $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->startOfMonth(),
+                end: $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
             )
             ->perMonth()
             ->sum('total_amount');
