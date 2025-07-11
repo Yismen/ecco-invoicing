@@ -2,17 +2,20 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Filament\Exports\InvoiceExporter;
-use App\Models\Invoice;
-use App\Services\InvoiceQueryForFilters;
 use Filament\Tables;
+use App\Models\Invoice;
 use Filament\Tables\Table;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Facades\App;
+use App\Services\InvoiceQueryForFilters;
+use App\Filament\Exports\InvoiceExporter;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Tables\Concerns\CanPaginateRecords;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class OutstandingInvoices extends BaseWidget
 {
     use InteractsWithPageFilters;
+    use CanPaginateRecords;
 
     protected int|string|array $columnSpan = 'full';
 
