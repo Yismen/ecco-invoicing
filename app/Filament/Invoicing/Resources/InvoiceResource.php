@@ -3,6 +3,7 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Filament\Actions\DownloadInvoiceAction;
+use App\Filament\Exports\InvoiceExporter;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 use App\Models\Agent;
 use App\Models\Campaign;
@@ -13,6 +14,7 @@ use App\Models\Project;
 use App\Services\Filament\Forms\InvoicePaymentForm;
 use App\Services\Filament\Forms\ProjectForm;
 use App\Services\GenerateInvoiceNumberService;
+use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -21,6 +23,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -426,7 +429,14 @@ class InvoiceResource extends Resource
                     // Tables\Actions\DeleteBulkAction::make(),
                     // Tables\Actions\ForceDeleteBulkAction::make(),
                     // Tables\Actions\RestoreBulkAction::make(),
+
                 ]),
+                Tables\Actions\ExportBulkAction::make()
+                    ->label('Export Selected')
+                    // ->icon('heroicon-s-document-download')
+                    ->color(Color::Blue)
+                    ->deselectRecordsAfterCompletion()
+                    ->exporter(InvoiceExporter::class),
 
                 Tables\Actions\BulkAction::make('Pay Fully')
                     ->color(Color::Red)
@@ -434,8 +444,11 @@ class InvoiceResource extends Resource
                     // ->requiresConfirmation()
                     ->deselectRecordsAfterCompletion()
                     ->modalDescription(
-                        'This action will pay the all selected invoices fully using the pending balance. Are you sure?'
+                        'This action will pay the all selected invoices fully using the pending balance. It only pays invoices with any pending amount. Are you sure?'
                     )
+                    // ->checkIfRecordIsSelectableUsing(
+                    //     fn (Invoice $record): bool => $record->balance_pending > 0,
+                    // )
                     ->form([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -471,10 +484,7 @@ class InvoiceResource extends Resource
                             ->body("All {$records->count()} selected invoices have been paid fully.")
                             ->send();
                     }),
-            ])
-            ->checkIfRecordIsSelectableUsing(
-                fn (Invoice $record): bool => $record->balance_pending > 0,
-            );
+            ]);
     }
 
     public static function getRelations(): array
