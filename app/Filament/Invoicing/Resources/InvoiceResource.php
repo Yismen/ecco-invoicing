@@ -2,35 +2,38 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Actions\DownloadInvoiceAction;
-use App\Filament\Exports\InvoiceExporter;
-use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use App\Models\Agent;
-use App\Models\Campaign;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Item;
-use App\Models\Project;
-use App\Services\Filament\Forms\InvoicePaymentForm;
-use App\Services\Filament\Forms\ProjectForm;
-use App\Services\GenerateInvoiceNumberService;
-use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
-use Filament\Forms\Form;
+use App\Models\Item;
+use Filament\Tables;
+use App\Models\Agent;
+use App\Models\Invoice;
+use App\Models\Project;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
-use Filament\Support\Colors\Color;
-use Filament\Tables;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Columns\Summarizers\Sum;
+use App\Models\Campaign;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Cache;
+use App\Models\InvoiceItem;
 use Illuminate\Support\Number;
+use Filament\Resources\Resource;
+use App\Services\ModelListService;
+use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Cache;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Notifications\Notification;
+use App\Filament\Exports\InvoiceExporter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Exports\Models\Export;
+use App\Services\Filament\Forms\ProjectForm;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Illuminate\Database\Eloquent\Collection;
+use App\Services\GenerateInvoiceNumberService;
+use App\Filament\Actions\DownloadInvoiceAction;
+use App\Services\Filament\Forms\InvoicePaymentForm;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class InvoiceResource extends Resource
 {
@@ -50,12 +53,13 @@ class InvoiceResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('project_id')
                             ->relationship('project', 'name')
-                            ->options(function (): array {
-                                return Project::query()
-                                    ->orderBy('name')
-                                    ->pluck('name', 'id')
-                                    ->all();
-                            })
+                            ->options(
+                                ModelListService::get(
+                                    model: Project::class,
+                                    key_field: 'id',
+                                    value_field: 'name'
+                                )
+                            )
                             ->afterStateUpdated(fn (Set $set) => $set('agent_id', null))
                             ->autofocus(fn (string $operation) => in_array($operation, ['create', 'edit']))
                             ->searchable()
@@ -70,11 +74,12 @@ class InvoiceResource extends Resource
                             ->options(function (Get $get): ?array {
                                 $project_id = $get('project_id');
 
-                                return Agent::query()
-                                    ->where('project_id', $project_id)
-                                    ->orderBy('name')
-                                    ->pluck('name', 'id')
-                                    ->all();
+                                return ModelListService::get(
+                                    model: Agent::query(),
+                                    key_field: 'id',
+                                    value_field: 'name',
+                                    conditions: $project_id ? [['project_id' => $project_id]] : []
+                                );
                             })
                             ->afterStateUpdated(fn (Set $set) => $set('campaign_id', null))
                             ->required()
@@ -159,11 +164,12 @@ class InvoiceResource extends Resource
                             ->options(function (Get $get): ?array {
                                 $agent_id = $get('agent_id');
 
-                                return Campaign::query()
-                                    ->orderBy('name')
-                                    ->where('agent_id', $agent_id)
-                                    ->pluck('name', 'id')
-                                    ->all();
+                                return ModelListService::get(
+                                    model: Campaign::query(),
+                                    key_field: 'id',
+                                    value_field: 'name',
+                                    conditions: $agent_id ? [['agent_id' => $agent_id]] : []
+                                );
                             })
                             ->preload(10)
                             ->disabled(fn (Get $get) => ! $get('agent_id'))
@@ -210,20 +216,21 @@ class InvoiceResource extends Resource
                             ->defaultItems(1)
                             ->reorderable()
                             ->reorderableWithButtons()
+                            ->reorderableWithDragAndDrop(false)
                             ->minItems(1)
                             ->addActionLabel('Add Item')
                             ->schema([
                                 Forms\Components\Select::make('item_id')
                                     ->options(function (Get $get): ?array {
                                         $campaign_id = $get('../../campaign_id');
-
-                                        return Cache::rememberForever(
-                                            'campaign_items_'.$campaign_id,
-                                            function () use ($campaign_id) {
-                                                $campaign = Campaign::find($campaign_id)->load(['items']);
-
-                                                return $campaign?->items?->pluck('name', 'id')->toArray();
-                                            }
+                                        if ($campaign_id === null) {
+                                            return [];
+                                        }
+                                        return ModelListService::get(
+                                            model: Item::query(),
+                                            key_field: 'id',
+                                            value_field: 'name',
+                                            conditions: [['campaign_id' => $campaign_id]]
                                         );
                                     })
                                     ->searchable()
@@ -389,25 +396,27 @@ class InvoiceResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label('Project')
-                    ->options(Project::query()
-                        ->orderBy('name')
-                        ->pluck('name', 'id')
-                        ->toArray()
+                    ->options(
+                        ModelListService::get(
+                            model: Project::query(),
+                            key_field: 'id',
+                            value_field: 'name'
+                        )
                     ),
                 Tables\Filters\SelectFilter::make('agent_id')
                     ->label('Agent')
-                    ->options(Agent::query()
-                            ->orderBy('name')
-                            ->pluck('name', 'id')
-                            ->toArray()
-                    ),
+                    ->options(ModelListService::get(
+                        model: Agent::query(),
+                        key_field: 'id',
+                        value_field: 'name'
+                    )),
                 Tables\Filters\SelectFilter::make('campaign_id')
                     ->label('Campaign')
-                    ->options(Campaign::query()
-                        ->orderBy('name')
-                        ->pluck('name', 'id')
-                        ->toArray()
-                    ),
+                    ->options(ModelListService::get(
+                        model: Campaign::query(),
+                        key_field: 'id',
+                        value_field: 'name'
+                    )),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -510,13 +519,5 @@ class InvoiceResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getItems(null $component = null): array
-    {
-        // dump($component);
-
-        return Item::pluck('name', 'id')
-            ->toArray();
     }
 }

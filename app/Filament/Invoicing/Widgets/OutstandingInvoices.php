@@ -2,12 +2,15 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
+use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\App;
-use App\Services\InvoiceQueryForFilters;
+use App\Services\ModelListService;
 use App\Filament\Exports\InvoiceExporter;
+use App\Models\Project;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Tables\Concerns\CanPaginateRecords;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -24,10 +27,7 @@ class OutstandingInvoices extends BaseWidget
         return $table
             ->defaultSort('due_date', 'asc')
             ->query(
-                InvoiceQueryForFilters::applyFilters(
-                    Invoice::query(),
-                    $this->filters
-                )
+                Invoice::query()
                     ->where('status', '=', \App\Enums\InvoiceStatuses::Overdue)
                     ->with('project.client', 'agent', 'campaign')
                     ->where('balance_pending', '>', 0)
@@ -58,6 +58,31 @@ class OutstandingInvoices extends BaseWidget
                     ->date()
                     ->formatStateUsing(fn ($state) => $state?->diffForHumans())
                     ->sortable(),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('project')
+                    ->label('Project')
+                    ->searchable()
+                    ->preload()
+                    ->attribute('project_id')
+                    ->options(
+                        ModelListService::get(model: Project::query(), key_field: 'id', value_field: 'name')
+                    ),
+                Tables\Filters\Filter::make('date')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_from'),
+                        Forms\Components\DatePicker::make('date_to'),
+                    ])
+                    ->query(function(Builder $query, array $data) {
+                        return $query
+                            ->when(
+                                $data['date_from'] ?? null,
+                                fn (Builder $query, $dateFrom) => $query->where('date', '>=', $dateFrom)
+                            )->when(
+                                $data['date_to'] ?? null,
+                                fn (Builder $query, $dateTo) => $query->where('date', '<=', $dateTo)
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('view')

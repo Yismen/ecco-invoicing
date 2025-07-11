@@ -2,15 +2,16 @@
 
 namespace App\Filament\Invoicing\Pages;
 
+use Filament\Forms\Form;
+use App\Services\ModelListService;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Dashboard as BaseDashboard;
+use App\Filament\Invoicing\Widgets\MonthlyIncomes;
 use App\Filament\Invoicing\Widgets\IncomeByProject;
 use App\Filament\Invoicing\Widgets\InvoicesSummary;
-use App\Filament\Invoicing\Widgets\MonthlyIncomes;
-use App\Filament\Invoicing\Widgets\OutstandingInvoices;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use App\Filament\Invoicing\Widgets\OutstandingInvoices;
 
 class Dashboard extends BaseDashboard
 {
@@ -39,9 +40,11 @@ class Dashboard extends BaseDashboard
                     ->preload()
                     ->multiple()
                     ->options(function () {
-                        return \App\Models\Project::query()
-                            ->orderBy('name')
-                            ->pluck('name', 'id');
+                        return ModelListService::get(
+                            model: \App\Models\Project::query(),
+                            key_field: 'id',
+                            value_field: 'name'
+                        );
 
                     })
                     ->placeholder('Enter project name'),
