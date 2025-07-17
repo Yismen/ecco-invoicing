@@ -281,6 +281,7 @@ class InvoiceResource extends Resource
                                     ->live(),
                                 Forms\Components\TextInput::make('quantity')
                                     ->numeric()
+                                    ->inputMode('decimal')
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                         $set('subtotal', $state * $get('item_price'));
@@ -290,13 +291,19 @@ class InvoiceResource extends Resource
                                     ->required(),
                                 Forms\Components\TextInput::make('item_price')
                                     ->disabled()
-                                    ->dehydrated(),
+                                    ->dehydrated()
+                                    ->numeric()
+                                    ->inputMode('decimal')
+                                    ->prefix('$'),
                                 Forms\Components\TextInput::make('subtotal')
                                     ->disabled()
+                                    // ->numeric()
+                                    ->dehydrated(false)
+                                    ->prefix('$')
                                     ->formatStateUsing(function (?InvoiceItem $record) {
                                         $subtotal = $record?->item_price * $record?->quantity;
 
-                                        return Number::currency($subtotal);
+                                        return number_format($subtotal, 4);
                                     }),
                             ])
                             ->columns(5),

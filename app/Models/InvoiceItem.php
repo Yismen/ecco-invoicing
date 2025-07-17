@@ -28,6 +28,8 @@ class InvoiceItem extends Model
         parent::boot();
 
         static::saved(function (self $invoice_item) {
+            $invoice_item->load('invoice');
+
             $invoice_item->invoice->touch();
         });
     }
@@ -42,3 +44,4 @@ class InvoiceItem extends Model
         return $this->belongsTo(Item::class);
     }
 }
+
