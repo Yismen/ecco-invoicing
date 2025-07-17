@@ -29,7 +29,7 @@ class IncomeByProject extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Project Incomes',
-                    'data' => $data->map(fn ($value) => $value->aggregate),
+                    'data' => $data->map(fn ($value) => $value->aggregate / 100), // Convert cents to dollars
                 ],
             ],
             'labels' => $data->map(fn ($value) => str($value->project->name)->limit(30) ?? 'Unknown Project'),

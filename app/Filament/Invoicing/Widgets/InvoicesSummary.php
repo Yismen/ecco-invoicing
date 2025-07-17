@@ -22,7 +22,7 @@ class InvoicesSummary extends BaseWidget
                     Invoice::query(),
                     $this->filters
                 )
-                    ->sum('total_amount'),
+                    ->sum('total_amount') / 100,
                 'USD'
             ))
                 ->color('success')
@@ -36,7 +36,7 @@ class InvoicesSummary extends BaseWidget
                 )
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
-                    ->sum('balance_pending'),
+                    ->sum('balance_pending') / 100,
                 'USD'
             ))
                 ->color('danger')
@@ -49,7 +49,7 @@ class InvoicesSummary extends BaseWidget
                     $this->filters
                 )
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
-                    ->sum('total_paid'),
+                    ->sum('total_paid') / 100,
                 'USD'
             ))
                 ->color('primary')

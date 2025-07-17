@@ -23,6 +23,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Notifications\Notification;
 use App\Filament\Exports\InvoiceExporter;
 use Illuminate\Database\Eloquent\Builder;
+use \Illuminate\Database\Query\Builder as QueryBuilder;
 use Filament\Actions\Exports\Models\Export;
 use App\Services\Filament\Forms\ProjectForm;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -32,6 +33,7 @@ use App\Filament\Actions\DownloadInvoiceAction;
 use App\Services\Filament\Forms\InvoicePaymentForm;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\AssignOp\Mod;
 
@@ -346,31 +348,31 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('subtotal_amount')
                     ->numeric()
                     ->money()
-                    ->summarize(Sum::make())
+                    ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('subtotal_amount') / 100)))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tax_amount')
                     ->numeric()
                     ->money()
-                    ->summarize(Sum::make())
+                    ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('tax_amount') / 100)))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable()
-                    ->summarize(Sum::make())
+                    ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('total_amount') / 100)))
                     ->money(),
                 Tables\Columns\TextColumn::make('total_paid')
                     ->numeric()
                     ->sortable()
                     ->color(Color::Blue)
                     ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state) : '')
-                    ->summarize(Sum::make()),
+                    ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('total_paid') / 100))),
                 Tables\Columns\TextColumn::make('balance_pending')
                     ->label('Balance')
                     ->numeric()
                     ->color(Color::Red)
-                    ->summarize(Sum::make())
+                    ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('balance_pending') / 100)))
                     ->formatStateUsing(fn ($state) => $state > 0 ? Number::currency($state * (-1)) : ''),
                 Tables\Columns\TextColumn::make('status')
                     ->formatStateUsing(fn ($state) => $state->getLabel())

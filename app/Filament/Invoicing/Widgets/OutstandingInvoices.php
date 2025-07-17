@@ -5,14 +5,17 @@ namespace App\Filament\Invoicing\Widgets;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
-use Filament\Tables\Table;
-use Illuminate\Support\Facades\App;
-use App\Services\ModelListService;
-use App\Filament\Exports\InvoiceExporter;
 use App\Models\Project;
+use Filament\Tables\Table;
+use Illuminate\Support\Number;
+use App\Services\ModelListService;
+use Illuminate\Support\Facades\App;
+use App\Filament\Exports\InvoiceExporter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Tables\Concerns\CanPaginateRecords;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class OutstandingInvoices extends BaseWidget
@@ -41,17 +44,24 @@ class OutstandingInvoices extends BaseWidget
                     ->label('Date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('project.client.name')
-                    ->label('Client')
-                    ->searchable()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('project.client.name')
+                //     ->label('Client')
+                //     ->searchable()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('project.name')
                     ->label('Project')
+                    ->wrap()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('agent.name')
                     ->label('Agent')
                     ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('balance_pending')
+                    ->label('Balance Pending')
+                    ->numeric()
+                    ->money()
+                    ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('balance_pending') / 100)))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->label('Expired')

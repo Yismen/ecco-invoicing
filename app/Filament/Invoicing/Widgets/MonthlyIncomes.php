@@ -37,7 +37,7 @@ class MonthlyIncomes extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Monthly Incomes',
-                    'data' => $data->map(fn (TrendValue $value) => $value->aggregate),
+                    'data' => $data->map(fn (TrendValue $value) => $value->aggregate / 100),
                 ],
             ],
             'labels' => $data->map(fn (TrendValue $value) => $value->date),
