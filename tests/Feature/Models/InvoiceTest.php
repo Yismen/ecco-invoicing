@@ -413,3 +413,64 @@ it('has status paid when payment is created and balance is 0', function () {
 
     expect($invoice->fresh()->status)->toBe(InvoiceStatuses::Paid);
 });
+
+
+
+it('saves the price as a integer', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    $this->assertDatabaseHas(Invoice::class, [
+        'id' => $invoice->id,
+        'subtotal_amount' => 30000, // Stored as integer in cents
+        'total_amount' => 30000, // Stored as integer in cents
+        'balance_pending' => 30000, // Stored as integer in cents
+    ]);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 300,
+    ]);
+
+    $this->assertDatabaseHas(Invoice::class, [
+        'id' => $invoice->id,
+        'total_paid' => 30000, // Stored as integer in cents
+        'balance_pending' => 0, // Stored as integer in cents
+    ]);
+});
+
+it('retrieves the price as a float', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+
+    $invoice->refresh();
+
+    $this->assertEquals(300.00, $invoice->subtotal_amount);
+    $this->assertEquals(300.00, $invoice->total_amount);
+    $this->assertEquals(300.00, $invoice->balance_pending);
+
+    Payment::factory()->create([
+        'invoice_id' => $invoice->id,
+        'amount' => 300,
+    ]);
+
+    $invoice->refresh();
+    $this->assertEquals(300.00, $invoice->total_paid);
+    $this->assertEquals(0.00, $invoice->balance_pending);
+});

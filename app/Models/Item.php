@@ -29,6 +29,10 @@ class Item extends Model
         'barcode',
     ];
 
+    protected $casts = [
+        'price' => \App\Casts\AsMoney::class,
+    ];
+
     public function campaign(): BelongsTo
     {
         return $this->belongsTo(Campaign::class);

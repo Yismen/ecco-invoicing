@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\AsMoney;
 use App\Enums\InvoiceStatuses;
 use App\Services\GenerateInvoiceNumberService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -41,11 +42,11 @@ class Invoice extends Model
         'status' => InvoiceStatuses::class,
         'due_date' => 'date',
         'date' => 'date',
-        'total_amount' => 'float',
-        'subtotal_amount' => 'float',
-        'tax_amount' => 'float',
-        'total_paid' => 'float',
-        'balance_pending' => 'float',
+        'total_amount' => AsMoney::class,
+        'subtotal_amount' => AsMoney::class,
+        'tax_amount' => AsMoney::class,
+        'total_paid' => AsMoney::class,
+        'balance_pending' => AsMoney::class,
     ];
 
     public static function boot(): void

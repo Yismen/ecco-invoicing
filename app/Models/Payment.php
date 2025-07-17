@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\AsMoney;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,8 +28,8 @@ class Payment extends Model
 
     protected $casts = [
         'date' => 'datetime',
-        'amount' => 'float',
-        'total_paid' => 'float',
+        'amount' => AsMoney::class,
+        'total_paid' => AsMoney::class,
         'images' => 'array',
     ];
 
@@ -40,7 +41,7 @@ class Payment extends Model
             $invoice = $payment->invoice;
             $totalPaid = $invoice->payments()
                 ->where('id', '!=', $payment->id) // Exclude current payment if updating
-                ->sum('amount');
+                ->sum('amount') / 100; // Convert cents to dollars
 
             $attempt = $totalPaid + $payment->amount;
 

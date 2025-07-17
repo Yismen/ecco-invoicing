@@ -17,12 +17,12 @@ class PreventOverpayment implements ValidationRule
         $total = 0;
 
         if ($this->model instanceof Invoice) {
-            $paidSoFar = $this->model->payments()->sum('amount');
+            $paidSoFar = ($this->model->payments()->sum('amount') / 100);
             $total = $this->model->total_amount ?? 0;
         }
 
         if ($this->model instanceof Payment) {
-            $paidSoFar = $this->model->invoice->payments()->sum('amount') - $this->model->amount;
+            $paidSoFar = ($this->model->invoice->payments()->sum('amount') / 100) - $this->model->amount;
             $total = $this->model->invoice->total_amount ?? 0;
         }
 

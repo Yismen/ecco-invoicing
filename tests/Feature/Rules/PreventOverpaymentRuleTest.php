@@ -38,7 +38,7 @@ it('passes when the new payment is equal or less to the invoice total', function
     ]);
 
     expect(Validator::make(
-        ['amount' => 300],
+        ['amount' => 300], // 300.00 in cents
         ['amount' => new PreventOverpayment($this->invoice->fresh())]
     )->passes())
         ->toBeTrue();

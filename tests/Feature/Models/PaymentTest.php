@@ -20,21 +20,19 @@ beforeEach(function () {
 });
 
 it('save correct fields', function () {
-    $payment = Payment::factory()->create([
+    $data = [
         'invoice_id' => $this->invoice->id,
         'amount' => 200.00,
+        'date' => now(),
         'reference' => 'REF123',
         'description' => 'Payment for invoice',
-    ]);
+    ];
 
-    $this->assertDatabaseHas(Payment::class, $payment->only([
-        'invoice_id',
-        'amount',
-        // 'date',
-        'reference',
-        // 'images',
-        'description',
-    ]));
+    Payment::factory()->create($data);
+
+    $data['amount'] = $data['amount'] * 100; // Convert to cents
+
+    $this->assertDatabaseHas(Payment::class, $data);
 });
 
 it('belongs to an invoice', function () {
@@ -51,4 +49,25 @@ it('belongs to an invoice', function () {
         \App\Models\Invoice::class,
         $payment->invoice()->getRelated()
     );
+});
+
+it('saves the price as a integer', function () {
+    $payment = Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 200.00,
+    ]);
+
+    $this->assertDatabaseHas(Payment::class, [
+        'id' => $payment->id,
+        'amount' => 20000, // Stored as integer in cents
+    ]);
+});
+
+it('retrieves the price as a float', function () {
+    $payment = Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 200.00,
+    ]);
+
+    $this->assertEquals(200.00, $payment->refresh()->amount);
 });

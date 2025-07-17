@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Traits\Models\InteracstsWithModelCaching;
+use App\Casts\AsMoney;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Models\InteracstsWithModelCaching;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceItem extends Model
 {
@@ -15,6 +16,10 @@ class InvoiceItem extends Model
     public $table = 'invoice_item';
 
     public $fillable = ['item_id', 'invoice_id', 'quantity', 'item_price'];
+
+    public $casts = [
+        'item_price' => AsMoney::class, // Cast item price to money format
+    ];
 
     public $incrementing = true;
 
