@@ -27,7 +27,7 @@ class InvoicingPanelProvider extends PanelProvider
             ->id('invoicing')
             ->path('invoicing')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Red
             ])
             ->login()
             ->registration()
