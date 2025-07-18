@@ -2,8 +2,7 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Models\Invoice;
-use App\Services\InvoiceQueryForFilters;
+use App\Services\InvoiceQueryService;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
@@ -15,10 +14,9 @@ class IncomeByProject extends ChartWidget
 
     protected function getData(): array
     {
-        $data = InvoiceQueryForFilters::applyFilters(
-            Invoice::query(),
-            $this->filters
-        )
+        $service = new InvoiceQueryService($this->filters);
+
+        $data = $service->getFilteredQuery()
             ->select('project_id')
             ->selectRaw('SUM(total_amount) as aggregate')
             ->groupBy('project_id')

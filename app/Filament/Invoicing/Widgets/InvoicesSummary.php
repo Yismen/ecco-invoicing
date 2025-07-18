@@ -5,7 +5,7 @@ namespace App\Filament\Invoicing\Widgets;
 use App\Models\Invoice;
 use Illuminate\Support\Number;
 use Filament\Support\Colors\Color;
-use App\Services\InvoiceQueryForFilters;
+use App\Services\InvoiceQueryService;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -16,42 +16,32 @@ class InvoicesSummary extends BaseWidget
 
     protected function getStats(): array
     {
+        $service = new InvoiceQueryService($this->filters);
+
         return [
 
             Stat::make('Total Invoiced', Number::currency(
-                InvoiceQueryForFilters::applyFilters(
-                    Invoice::query(),
-                    $this->filters
-                )
-                    ->sum('total_amount') / 100,
-                'USD'
+                $service->getFilteredQuery()
+                    ->sum('total_amount') / 100
             ))
                 ->color(Color::Blue)
                 ->icon('heroicon-o-document-text')
                 ->description('Total amount for all invoices'),
 
             Stat::make('Total Paid', Number::currency(
-                InvoiceQueryForFilters::applyFilters(
-                    Invoice::query(),
-                    $this->filters
-                )
+                $service->getFilteredQuery()
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
-                    ->sum('total_paid') / 100,
-                'USD'
+                    ->sum('total_paid') / 100
             ))
                 ->color(Color::Green)
                 ->icon('heroicon-o-document-text')
                 ->description('Total amount for paid invoices'),
 
             Stat::make('Pending Invoices', Number::currency(
-                InvoiceQueryForFilters::applyFilters(
-                    Invoice::query()
+                $service->getFilteredQuery()
                     ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
-                    ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled),
-                    $this->filters
-                )
-                    ->sum('balance_pending') / 100,
-                'USD'
+                    ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
+                    ->sum('balance_pending') / 100
             ))
                 ->color(Color::Red)
                 ->icon('heroicon-o-document-text')

@@ -3,8 +3,6 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Models\Invoice;
-use App\Services\InvoiceQueryForFilters;
-use App\Services\TrendService;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -19,18 +17,19 @@ class MonthlyIncomes extends ChartWidget
 
     protected function getData(): array
     {
-        $data = TrendService::query(
-            InvoiceQueryForFilters::applyFilters(
-                Invoice::query(),
-                $this->filters
-            )
+        $data = Trend::query(
+            Invoice::query()
+                ->when($this->filters['project'] ?? null, function ($query) {
+                    $query->whereIn('project_id', (array)$this->filters['project']);
+                })
         )
         ->between(
-            start: $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->startOfMonth(),
+            start: $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->subMonths(5),
             end: $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
         )
         ->perMonth()
-        ->dateColumn('date', 'Month')
+        ->dateColumn('date')
+        ->dateAlias('Month')
         ->sum('total_amount');
 
         return [
