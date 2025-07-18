@@ -3,11 +3,12 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Models\Invoice;
+use Illuminate\Support\Number;
+use Filament\Support\Colors\Color;
 use App\Services\InvoiceQueryForFilters;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Number;
 
 class InvoicesSummary extends BaseWidget
 {
@@ -17,7 +18,7 @@ class InvoicesSummary extends BaseWidget
     {
         return [
 
-            Stat::make('Total Incomes', Number::currency(
+            Stat::make('Total Invoiced', Number::currency(
                 InvoiceQueryForFilters::applyFilters(
                     Invoice::query(),
                     $this->filters
@@ -25,23 +26,9 @@ class InvoicesSummary extends BaseWidget
                     ->sum('total_amount') / 100,
                 'USD'
             ))
-                ->color('success')
+                ->color(Color::Blue)
                 ->icon('heroicon-o-document-text')
                 ->description('Total amount for all invoices'),
-
-            Stat::make('Outstanding Invoices', Number::currency(
-                InvoiceQueryForFilters::applyFilters(
-                    Invoice::query(),
-                    $this->filters
-                )
-                    ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
-                    ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled)
-                    ->sum('balance_pending') / 100,
-                'USD'
-            ))
-                ->color('danger')
-                ->icon('heroicon-o-document-text')
-                ->description('Total amount for outstanding invoices'),
 
             Stat::make('Total Paid', Number::currency(
                 InvoiceQueryForFilters::applyFilters(
@@ -52,9 +39,23 @@ class InvoicesSummary extends BaseWidget
                     ->sum('total_paid') / 100,
                 'USD'
             ))
-                ->color('primary')
+                ->color(Color::Green)
                 ->icon('heroicon-o-document-text')
                 ->description('Total amount for paid invoices'),
+
+            Stat::make('Pending Invoices', Number::currency(
+                InvoiceQueryForFilters::applyFilters(
+                    Invoice::query()
+                    ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
+                    ->where('status', '!=', \App\Enums\InvoiceStatuses::Cancelled),
+                    $this->filters
+                )
+                    ->sum('balance_pending') / 100,
+                'USD'
+            ))
+                ->color(Color::Red)
+                ->icon('heroicon-o-document-text')
+                ->description('Total amount pending to be paid'),
         ];
     }
 }

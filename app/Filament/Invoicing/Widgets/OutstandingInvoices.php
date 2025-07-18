@@ -9,13 +9,14 @@ use App\Models\Project;
 use Filament\Tables\Table;
 use Illuminate\Support\Number;
 use App\Services\ModelListService;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\App;
 use App\Filament\Exports\InvoiceExporter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Tables\Concerns\CanPaginateRecords;
 use Filament\Tables\Columns\Summarizers\Summarizer;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class OutstandingInvoices extends BaseWidget
@@ -60,7 +61,8 @@ class OutstandingInvoices extends BaseWidget
                 Tables\Columns\TextColumn::make('balance_pending')
                     ->label('Balance Pending')
                     ->numeric()
-                    ->money()
+                    ->color(Color::Red)
+                    ->formatStateUsing(fn ($state) => Number::currency((-1) * $state / 100, 'USD'))
                     ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('balance_pending') / 100)))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')

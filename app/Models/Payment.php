@@ -38,7 +38,7 @@ class Payment extends Model
         parent::boot();
 
         static::saving(function ($payment) {
-            $invoice = $payment->invoice;
+            $invoice = $payment->load('invoice')->invoice;
             $totalPaid = $invoice->payments()
                 ->where('id', '!=', $payment->id) // Exclude current payment if updating
                 ->sum('amount') / 100; // Convert cents to dollars

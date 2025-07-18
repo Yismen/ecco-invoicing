@@ -16,6 +16,7 @@ class InvoicePaymentForm
                     Forms\Components\TextInput::make('amount')
                         ->required()
                         ->numeric()
+                        ->inputMode('decimal')
                         ->minValue(0)
                         ->maxValue(fn ($record) => $record->balance_pending)
                         ->default(fn ($record) => $record->balance_pending)
