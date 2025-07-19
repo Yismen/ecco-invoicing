@@ -16,8 +16,8 @@ return new class extends Migration
         });
 
         Schema::table('invoice_item', function (Blueprint $table) {
-            $table->decimal('item_price', 24, 16)->change();
-            $table->decimal('quantity', 24, 16)->change();
+            $table->decimal('item_price', 24, 16)->default(0)->change();
+            $table->decimal('quantity', 24, 16)->default(0)->change();
         });
 
         Schema::table('invoices', function (Blueprint $table) {
