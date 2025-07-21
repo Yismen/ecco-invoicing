@@ -8,7 +8,6 @@ use App\Models\Invoice;
 use App\Models\Project;
 use Filament\Tables\Table;
 use Illuminate\Support\Number;
-use App\Traits\HasDefaultPolling;
 use App\Services\ModelListService;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\App;
@@ -24,7 +23,6 @@ class OutstandingInvoices extends BaseWidget
 {
     use InteractsWithPageFilters;
     use CanPaginateRecords;
-    use HasDefaultPolling;
 
     protected int|string|array $columnSpan = 'full';
 

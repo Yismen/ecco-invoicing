@@ -2,18 +2,18 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use Carbon\Carbon;
 use App\Models\Invoice;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
-use App\Traits\HasDefaultPolling;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
 
 class MonthlyIncomes extends ChartWidget
 {
     use InteractsWithPageFilters;
-    use HasDefaultPolling;
+
+    protected static ?string $pollingInterval = '600s';
 
     protected static ?string $heading = 'Monthly Incomes';
 

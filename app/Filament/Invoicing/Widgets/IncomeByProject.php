@@ -3,16 +3,16 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Services\InvoiceQueryService;
-use App\Traits\HasDefaultPolling;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class IncomeByProject extends ChartWidget
 {
     use InteractsWithPageFilters;
-    use HasDefaultPolling;
 
     protected static ?string $heading = 'Projects Income';
+
+    protected static ?string $pollingInterval = '600s';
 
     protected function getData(): array
     {
