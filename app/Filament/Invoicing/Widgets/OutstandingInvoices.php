@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Project;
 use Filament\Tables\Table;
 use Illuminate\Support\Number;
+use App\Traits\HasDefaultPolling;
 use App\Services\ModelListService;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\App;
@@ -23,15 +24,15 @@ class OutstandingInvoices extends BaseWidget
 {
     use InteractsWithPageFilters;
     use CanPaginateRecords;
+    use HasDefaultPolling;
 
     protected int|string|array $columnSpan = 'full';
-
-    protected static ?string $pollingInterval = '600s';
 
     public function table(Table $table): Table
     {
         return $table
             ->defaultSort('due_date', 'asc')
+            ->poll('600s')
             ->query(
                 Invoice::query()
                     ->where('status', '=', \App\Enums\InvoiceStatuses::Overdue)

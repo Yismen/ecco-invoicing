@@ -4,6 +4,7 @@ namespace App\Filament\Invoicing\Widgets;
 
 use App\Models\Invoice;
 use Illuminate\Support\Number;
+use App\Traits\HasDefaultPolling;
 use Filament\Support\Colors\Color;
 use App\Services\InvoiceQueryService;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -13,8 +14,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 class InvoicesSummary extends BaseWidget
 {
     use InteractsWithPageFilters;
-
-    protected static ?string $pollingInterval = '600s';
+    use HasDefaultPolling;
 
     protected function getStats(): array
     {
