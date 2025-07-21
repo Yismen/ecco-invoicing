@@ -26,6 +26,8 @@ class OutstandingInvoices extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected static ?string $pollingInterval = '600s';
+
     public function table(Table $table): Table
     {
         return $table

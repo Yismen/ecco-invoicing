@@ -14,6 +14,8 @@ class InvoicesSummary extends BaseWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?string $pollingInterval = '600s';
+
     protected function getStats(): array
     {
         $service = new InvoiceQueryService($this->filters);

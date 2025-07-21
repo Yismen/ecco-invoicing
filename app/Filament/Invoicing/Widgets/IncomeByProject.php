@@ -12,6 +12,8 @@ class IncomeByProject extends ChartWidget
 
     protected static ?string $heading = 'Projects Income';
 
+    protected static ?string $pollingInterval = '600s';
+
     protected function getData(): array
     {
         $service = new InvoiceQueryService($this->filters);

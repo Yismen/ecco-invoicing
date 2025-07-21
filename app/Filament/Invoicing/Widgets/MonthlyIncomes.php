@@ -13,6 +13,8 @@ class MonthlyIncomes extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?string $pollingInterval = '600s';
+
     protected static ?string $heading = 'Monthly Incomes';
 
     protected function getData(): array
