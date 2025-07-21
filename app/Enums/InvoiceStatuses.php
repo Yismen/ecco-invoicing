@@ -61,4 +61,15 @@ enum InvoiceStatuses: string
     {
         return array_map(fn ($status) => $status->value, self::cases());
     }
+
+    public static function toArray(): array
+    {
+        $array = [];
+
+        foreach (self::cases() as $status) {
+            $array[$status->value] = $status->name;
+        }
+
+        return $array;
+    }
 }

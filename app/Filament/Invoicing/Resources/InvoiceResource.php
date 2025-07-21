@@ -2,6 +2,7 @@
 
 namespace App\Filament\Invoicing\Resources;
 
+use App\Enums\InvoiceStatuses;
 use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
@@ -411,9 +412,15 @@ class InvoiceResource extends Resource
                             key_field: 'id',
                             value_field: 'name'
                         )
-                    ),
+                    )
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('agent_id')
                     ->label('Agent')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
                     ->options(ModelListService::get(
                         model: Agent::query(),
                         key_field: 'id',
@@ -425,7 +432,16 @@ class InvoiceResource extends Resource
                         model: Campaign::query(),
                         key_field: 'id',
                         value_field: 'name'
-                    )),
+                    ))
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(InvoiceStatuses::toArray())
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
