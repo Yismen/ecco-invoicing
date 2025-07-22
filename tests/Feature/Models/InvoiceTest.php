@@ -19,7 +19,7 @@ it('save correct fields', function () {
         'project_id',
         'agent_id',
         'campaign_id',
-        //     'data',
+        // 'data',
         'subtotal_amount',
         'tax_amount',
         'total_amount',

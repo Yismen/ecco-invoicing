@@ -42,6 +42,7 @@ class Invoice extends Model
         'status' => InvoiceStatuses::class,
         'due_date' => 'date',
         'date' => 'date',
+        'data' => 'array',
         'total_amount' => AsMoney::class,
         'subtotal_amount' => AsMoney::class,
         'tax_amount' => AsMoney::class,
@@ -59,7 +60,7 @@ class Invoice extends Model
         });
 
         static::saved(function (self $invoice) {
-            $invoice->load(['invoiceItems', 'project.client']);
+            $invoice->load(['invoiceItems.item', 'project.client', 'agent', 'campaign', 'payments']);
 
             $subtotal_amount = 0;
 
@@ -69,7 +70,7 @@ class Invoice extends Model
 
             $tax_amount = round($subtotal_amount * ($invoice->project->tax_rate ?: 0), 10);
             $total_amount = round($subtotal_amount + $tax_amount, 10);
-            $total_paid = round($invoice->payments()->sum('amount') / 100, 10);
+            $total_paid = round($invoice->payments->sum('amount'), 10);
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
@@ -82,6 +83,25 @@ class Invoice extends Model
 
             $invoice->updateQuietly([
                 'status' => $invoice->getStatus(),
+                'data' => [
+                    'client' => $invoice->project->client->only(['id', 'name', 'invoice_template', 'template_date_field_name', 'template_project_field_name']),
+                    'agent' => $invoice->agent ? $invoice->agent->only(['id', 'name']) : null,
+                    'campaign' => $invoice->campaign ? $invoice->campaign->only(['id', 'name']) : null,
+                    'project' => $invoice->project->only(['id', 'name']),
+                    'invoiceItems' => $invoice->invoiceItems->map(fn ($item) => [
+                        'name' => $item->item->name,
+                        'price' => $item->item_price,
+                        'quantity' => $item->quantity,
+                        'total' => $item->item_price * $item->quantity,
+                    ])->toArray(),
+                    'payments' => $invoice->payments->map(fn ($payment) => [
+                        'amount' => $payment->amount,
+                        'date' => $payment->date,
+                        'reference' => $payment->reference,
+                        'description' => $payment->description,
+                        'images' => $payment->images,
+                    ])->toArray(),
+                ]
             ]);
         });
     }
