@@ -223,23 +223,23 @@ it('calculates total amount paid', function () {
 });
 
 it('calculates total balance', function () {
-    $items = Item::factory()
-        ->count(3)
-        ->create();
-    $data = Invoice::factory()
-        ->create();
-
-    foreach ($items as $item) {
-        $data->invoiceItems()->create([
-            'item_id' => $item->id,
-            'item_price' => 10,
-            'quantity' => 4,
+    $item = Item::factory()
+        ->create([
+            'price' => 5.15,
         ]);
-    }
 
-    Payment::factory()->create(['invoice_id' => $data->id, 'amount' => 10]);
+    $invoice = Invoice::factory()
+        ->create();
 
-    $this->assertEquals($data->fresh()->balance_pending, 110);
+    $invoice->invoiceItems()->create([
+        'item_id' => $item->id,
+        'item_price' => $item->price,
+        'quantity' => 360,
+    ]);
+
+    Payment::factory()->create(['invoice_id' => $invoice->id, 'amount' => $invoice->fresh()->total_amount - 100]);
+
+    $this->assertEquals($invoice->fresh()->balance_pending, 100);
 });
 
 it('updates the number based on the project', function () {

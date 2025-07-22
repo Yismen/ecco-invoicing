@@ -59,17 +59,17 @@ class Invoice extends Model
         });
 
         static::saved(function (self $invoice) {
-            $subtotal_amount = 0;
+            $invoice->load(['invoiceItems', 'project.client']);
 
-            $invoice->load(['invoiceItems', 'project.client', 'payments']);
+            $subtotal_amount = 0;
 
             foreach ($invoice->invoiceItems as $item) {
                 $subtotal_amount += $item->item_price * $item->quantity;
             }
 
-            $tax_amount = $subtotal_amount * ($invoice->project->tax_rate ?: 0);
-            $total_amount = $subtotal_amount + $tax_amount;
-            $total_paid = $invoice->payments->sum('amount');
+            $tax_amount = round($subtotal_amount * ($invoice->project->tax_rate ?: 0), 10);
+            $total_amount = round($subtotal_amount + $tax_amount, 10);
+            $total_paid = round($invoice->payments()->sum('amount') / 100, 10);
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,

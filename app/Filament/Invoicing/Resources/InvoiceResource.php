@@ -244,7 +244,7 @@ class InvoiceResource extends Resource
 
                                         if ($item) {
                                             $set('item_price', $item->price);
-                                            $set('subtotal', $item->price * (float) $get('quantity'));
+                                            $set('subtotal', $item->price * $get('quantity'));
                                         }
                                     })
                                     ->createOptionForm([
@@ -257,12 +257,12 @@ class InvoiceResource extends Resource
                                                     ->minValue(0)
                                                     ->required()
                                                     ->numeric()
+                                                    ->inputMode('decimal')
                                                     ->prefix('$'),
                                             ]),
                                     ])
                                     ->createOptionUsing(function (array $data, $get): int {
                                         $data['campaign_id'] = $get('../../campaign_id');
-                                        // dd($action);
 
                                         if ($data['campaign_id'] === null) {
                                             Notification::make()
@@ -289,6 +289,7 @@ class InvoiceResource extends Resource
                                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                         $set('subtotal', $state * $get('item_price'));
                                     })
+                                    ->formatStateUsing(fn ($state) => (float) $state)
                                     ->minValue(0)
                                     ->default(1)
                                     ->required(),
@@ -300,13 +301,11 @@ class InvoiceResource extends Resource
                                     ->prefix('$'),
                                 Forms\Components\TextInput::make('subtotal')
                                     ->disabled()
-                                    // ->numeric()
+                                    ->numeric()
                                     ->dehydrated(false)
                                     ->prefix('$')
                                     ->formatStateUsing(function (?InvoiceItem $record) {
-                                        $subtotal = $record?->item_price * $record?->quantity;
-
-                                        return number_format($subtotal, 4);
+                                        return round($record?->item_price * $record?->quantity, 6);
                                     }),
                             ])
                             ->columns(5),
@@ -319,7 +318,7 @@ class InvoiceResource extends Resource
                                 $subtotal = 0;
 
                                 foreach ($get('invoiceItems') as $item) {
-                                    $subtotal += (float) $item['subtotal'] ?? 0;
+                                    $subtotal += $item['subtotal'] ?? 0;
                                 }
 
                                 return view('filament.partials.invoice-summary', [
@@ -344,7 +343,6 @@ class InvoiceResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('agent.name')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subtotal_amount')
                     ->numeric()

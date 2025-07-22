@@ -29,7 +29,6 @@ class Payment extends Model
     protected $casts = [
         'date' => 'datetime',
         'amount' => AsMoney::class,
-        'total_paid' => AsMoney::class,
         'images' => 'array',
     ];
 
