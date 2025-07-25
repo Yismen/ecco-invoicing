@@ -72,4 +72,20 @@ enum InvoiceStatuses: string
 
         return $array;
     }
+
+    public static function itemsFromArray(array $statuses): array
+    {
+        $statusesArray = [];
+
+        foreach ($statuses as $status) {
+            if (is_string($status)) {
+                $status = self::from($status);
+            }
+            if ($status instanceof self) {
+                $statusesArray[$status->value] = $status->name;
+            }
+        }
+
+        return $statusesArray;
+    }
 }
