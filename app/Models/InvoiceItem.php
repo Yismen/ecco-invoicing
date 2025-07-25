@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Casts\AsMoney;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\Models\InteracstsWithModelCaching;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceItem extends Model
 {
@@ -44,4 +44,3 @@ class InvoiceItem extends Model
         return $this->belongsTo(Item::class);
     }
 }
-

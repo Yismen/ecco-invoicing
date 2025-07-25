@@ -3,40 +3,34 @@
 namespace App\Filament\Invoicing\Resources;
 
 use App\Enums\InvoiceStatuses;
-use Filament\Forms;
-use App\Models\Item;
-use Filament\Tables;
+use App\Filament\Actions\DownloadInvoiceAction;
+use App\Filament\Exports\InvoiceExporter;
+use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 use App\Models\Agent;
+use App\Models\Campaign;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\Item;
 use App\Models\Project;
+use App\Services\Filament\Forms\InvoicePaymentForm;
+use App\Services\Filament\Forms\ProjectForm;
+use App\Services\GenerateInvoiceNumberService;
+use App\Services\ModelListService;
+use Filament\Forms;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use App\Models\Campaign;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Models\InvoiceItem;
-use Illuminate\Support\Number;
-use Filament\Resources\Resource;
-use App\Services\ModelListService;
-use Filament\Support\Colors\Color;
-use Illuminate\Support\Facades\Cache;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Notifications\Notification;
-use App\Filament\Exports\InvoiceExporter;
-use Illuminate\Database\Eloquent\Builder;
-use \Illuminate\Database\Query\Builder as QueryBuilder;
-use Filament\Actions\Exports\Models\Export;
-use App\Services\Filament\Forms\ProjectForm;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Illuminate\Database\Eloquent\Collection;
-use App\Services\GenerateInvoiceNumberService;
-use App\Filament\Actions\DownloadInvoiceAction;
-use App\Services\Filament\Forms\InvoicePaymentForm;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Summarizer;
-use Illuminate\Database\Eloquent\Model;
-use PhpParser\Node\Expr\AssignOp\Mod;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Number;
 
 class InvoiceResource extends Resource
 {
@@ -229,6 +223,7 @@ class InvoiceResource extends Resource
                                         if ($campaign_id === null) {
                                             return [];
                                         }
+
                                         return ModelListService::get(
                                             model: Item::query(),
                                             key_field: 'id',

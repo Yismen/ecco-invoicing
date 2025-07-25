@@ -414,8 +414,6 @@ it('has status paid when payment is created and balance is 0', function () {
     expect($invoice->fresh()->status)->toBe(InvoiceStatuses::Paid);
 });
 
-
-
 it('saves the price as a integer', function () {
     $invoice = Invoice::factory()
         ->create();

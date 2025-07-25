@@ -22,17 +22,17 @@ class MonthlyIncomes extends ChartWidget
         $data = Trend::query(
             Invoice::query()
                 ->when($this->filters['project'] ?? null, function ($query) {
-                    $query->whereIn('project_id', (array)$this->filters['project']);
+                    $query->whereIn('project_id', (array) $this->filters['project']);
                 })
         )
-        ->between(
-            start: $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->subMonths(5),
-            end: $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
-        )
-        ->perMonth()
-        ->dateColumn('date')
-        ->dateAlias('Month')
-        ->sum('total_amount');
+            ->between(
+                start: $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->subMonths(5),
+                end: $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
+            )
+            ->perMonth()
+            ->dateColumn('date')
+            ->dateAlias('Month')
+            ->sum('total_amount');
 
         return [
             'datasets' => [

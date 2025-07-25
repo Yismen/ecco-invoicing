@@ -27,7 +27,6 @@ it('generates the correct key when conditions are provided', function () {
         ->toBeTrue();
 });
 
-
 it('returns the correct values', function () {
     Project::factory()->count(3)->create();
 
@@ -43,7 +42,6 @@ it('returns the correct values', function () {
         ->toBe($service);
 });
 
-
 it('returns the correct values with conditions', function () {
     Project::factory()->count(3)->create();
     Project::factory()->create(['name' => 'new condition']);
@@ -53,7 +51,7 @@ it('returns the correct values with conditions', function () {
         key_field: 'id',
         value_field: 'name',
         conditions: [
-            ['name' => 'new condition']
+            ['name' => 'new condition'],
         ]
     );
 

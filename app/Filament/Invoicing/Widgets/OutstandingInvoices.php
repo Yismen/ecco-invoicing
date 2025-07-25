@@ -3,29 +3,27 @@
 namespace App\Filament\Invoicing\Widgets;
 
 use App\Enums\InvoiceStatuses;
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Invoice;
-use App\Models\Project;
-use Filament\Tables\Table;
-use Illuminate\Support\Number;
-use App\Services\ModelListService;
-use Filament\Support\Colors\Color;
-use Illuminate\Support\Facades\App;
 use App\Filament\Exports\InvoiceExporter;
 use App\Models\Client;
-use Filament\Forms\Get;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Tables\Concerns\CanPaginateRecords;
+use App\Models\Invoice;
+use App\Models\Project;
+use App\Services\ModelListService;
+use Filament\Forms;
+use Filament\Support\Colors\Color;
+use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Summarizer;
-use Illuminate\Database\Query\Builder as QueryBuilder;
+use Filament\Tables\Concerns\CanPaginateRecords;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Number;
 
 class OutstandingInvoices extends BaseWidget
 {
-    use InteractsWithPageFilters;
     use CanPaginateRecords;
+    use InteractsWithPageFilters;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -102,9 +100,9 @@ class OutstandingInvoices extends BaseWidget
                     ->preload()
                     ->attribute('project_id')
                     ->options(ModelListService::get(
-                            model: Project::query(),
-                            key_field: 'id',
-                            value_field: 'name')
+                        model: Project::query(),
+                        key_field: 'id',
+                        value_field: 'name')
                     ),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
@@ -121,7 +119,7 @@ class OutstandingInvoices extends BaseWidget
                         Forms\Components\DatePicker::make('date_from'),
                         Forms\Components\DatePicker::make('date_to'),
                     ])
-                    ->query(function(Builder $query, array $data) {
+                    ->query(function (Builder $query, array $data) {
                         return $query
                             ->when(
                                 $data['date_from'] ?? null,

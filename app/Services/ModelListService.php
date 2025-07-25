@@ -12,9 +12,8 @@ class ModelListService
         string $key_field,
         string $value_field,
         array $conditions = []
-    ): array
-    {
-        if (filled($conditions) && isset($conditions[0]) && !is_array($conditions[0])) {
+    ): array {
+        if (filled($conditions) && isset($conditions[0]) && ! is_array($conditions[0])) {
             throw new \InvalidArgumentException('Conditions must be an array of arrays.');
         }
 

@@ -2,29 +2,29 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Pages;
-use Filament\Panel;
-use Filament\Widgets;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use App\Services\BreezeCoreService;
-use Filament\Http\Middleware\Authenticate;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Stephenjude\FilamentDebugger\DebuggerPlugin;
-use Filament\Http\Middleware\AuthenticateSession;
-use Vormkracht10\FilamentMails\FilamentMailsPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use FilipFonal\FilamentLogManager\FilamentLogManager;
-use GeoSot\FilamentEnvEditor\FilamentEnvEditorPlugin;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Vormkracht10\FilamentMails\Facades\FilamentMails;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\Authenticate;
+use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Filament\Pages;
+use Filament\Panel;
+use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
+use Filament\Widgets;
+use FilipFonal\FilamentLogManager\FilamentLogManager;
+use GeoSot\FilamentEnvEditor\FilamentEnvEditorPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use Stephenjude\FilamentDebugger\DebuggerPlugin;
+use Vormkracht10\FilamentMails\Facades\FilamentMails;
+use Vormkracht10\FilamentMails\FilamentMailsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {

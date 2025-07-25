@@ -2,13 +2,12 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Models\Invoice;
-use Illuminate\Support\Number;
-use Filament\Support\Colors\Color;
 use App\Services\InvoiceQueryService;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Support\Colors\Color;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Number;
 
 class InvoicesSummary extends BaseWidget
 {

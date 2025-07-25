@@ -101,7 +101,7 @@ class Invoice extends Model
                         'description' => $payment->description,
                         'images' => $payment->images,
                     ])->toArray(),
-                ]
+                ],
             ]);
         });
     }

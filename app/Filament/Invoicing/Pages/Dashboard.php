@@ -2,16 +2,16 @@
 
 namespace App\Filament\Invoicing\Pages;
 
-use Filament\Forms\Form;
-use App\Services\ModelListService;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\DatePicker;
-use Filament\Pages\Dashboard as BaseDashboard;
-use App\Filament\Invoicing\Widgets\MonthlyIncomes;
 use App\Filament\Invoicing\Widgets\IncomeByProject;
 use App\Filament\Invoicing\Widgets\InvoicesSummary;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use App\Filament\Invoicing\Widgets\MonthlyIncomes;
 use App\Filament\Invoicing\Widgets\OutstandingInvoices;
+use App\Services\ModelListService;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Form;
+use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 
 class Dashboard extends BaseDashboard
 {
