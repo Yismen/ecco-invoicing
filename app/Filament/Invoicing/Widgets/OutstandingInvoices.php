@@ -2,6 +2,7 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
+use App\Enums\InvoiceStatuses;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
@@ -12,6 +13,8 @@ use App\Services\ModelListService;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\App;
 use App\Filament\Exports\InvoiceExporter;
+use App\Models\Client;
+use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Tables\Concerns\CanPaginateRecords;
@@ -33,7 +36,11 @@ class OutstandingInvoices extends BaseWidget
             ->poll('600s')
             ->query(
                 Invoice::query()
-                    ->where('status', '=', \App\Enums\InvoiceStatuses::Overdue)
+                    ->whereIn('status', [
+                        InvoiceStatuses::Pending->value,
+                        InvoiceStatuses::PartiallyPaid->value,
+                        InvoiceStatuses::Overdue->value,
+                    ])
                     ->with('project.client', 'agent', 'campaign')
                     ->where('balance_pending', '>', 0)
             )
@@ -46,6 +53,12 @@ class OutstandingInvoices extends BaseWidget
                     ->label('Date')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state->getLabel())
+                    ->badge()
+                    ->color(fn ($state) => $state->getColor()),
+
                 // Tables\Columns\TextColumn::make('project.client.name')
                 //     ->label('Client')
                 //     ->searchable()
@@ -73,14 +86,36 @@ class OutstandingInvoices extends BaseWidget
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('client')
+                    ->label('Client')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->relationship('project.client', 'name')
+                    ->options(
+                        ModelListService::get(model: Client::query(), key_field: 'id', value_field: 'name')
+                    ),
                 Tables\Filters\SelectFilter::make('project')
                     ->label('Project')
+                    ->multiple()
                     ->searchable()
                     ->preload()
                     ->attribute('project_id')
-                    ->options(
-                        ModelListService::get(model: Project::query(), key_field: 'id', value_field: 'name')
+                    ->options(ModelListService::get(
+                            model: Project::query(),
+                            key_field: 'id',
+                            value_field: 'name')
                     ),
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(InvoiceStatuses::itemsFromArray([
+                        InvoiceStatuses::Pending,
+                        InvoiceStatuses::PartiallyPaid,
+                        InvoiceStatuses::Overdue,
+                    ]))
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\Filter::make('date')
                     ->form([
                         Forms\Components\DatePicker::make('date_from'),
