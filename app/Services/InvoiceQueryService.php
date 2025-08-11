@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\InvoicingDashboardFilterDTO;
 use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -12,13 +13,13 @@ class InvoiceQueryService
     /**
      * InvoiceQueryService constructor.
      */
-    public function __construct(array $filters)
+    public function __construct(InvoicingDashboardFilterDTO $filters)
     {
-        $this->filters = array_merge([
-            'startDate' => null,
-            'endDate' => null,
-            'project' => null,
-        ], $filters);
+        $this->filters = [
+            'startDate' => $filters->startDate,
+            'endDate' => $filters->endDate,
+            'project' => $filters->project,
+        ];
     }
 
     public function getFilteredQuery(): Builder

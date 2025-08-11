@@ -2,12 +2,13 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Services\InvoiceQueryService;
+use Illuminate\Support\Number;
 use Filament\Support\Colors\Color;
+use App\Services\InvoiceQueryService;
+use App\DTOs\InvoicingDashboardFilterDTO;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Number;
 
 class InvoicesSummary extends BaseWidget
 {
@@ -17,7 +18,11 @@ class InvoicesSummary extends BaseWidget
 
     protected function getStats(): array
     {
-        $service = new InvoiceQueryService($this->filters);
+        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO(
+            startDate: $this->filters['startDate'],
+            endDate: $this->filters['endDate'],
+            project: $this->filters['project']
+        ));
 
         return [
 

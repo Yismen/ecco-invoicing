@@ -2,8 +2,9 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Services\InvoiceQueryService;
 use Filament\Widgets\ChartWidget;
+use App\Services\InvoiceQueryService;
+use App\DTOs\InvoicingDashboardFilterDTO;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class IncomeByProject extends ChartWidget
@@ -16,7 +17,11 @@ class IncomeByProject extends ChartWidget
 
     protected function getData(): array
     {
-        $service = new InvoiceQueryService($this->filters);
+        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO(
+            startDate: $this->filters['startDate'],
+            endDate: $this->filters['endDate'],
+            project: $this->filters['project']
+        ));
 
         $data = $service->getFilteredQuery()
             ->select('project_id')
