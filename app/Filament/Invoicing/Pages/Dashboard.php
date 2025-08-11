@@ -2,20 +2,21 @@
 
 namespace App\Filament\Invoicing\Pages;
 
+use Filament\Forms\Form;
+use App\Services\ModelListService;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Dashboard as BaseDashboard;
+use App\Filament\Invoicing\Widgets\MonthlyIncomes;
 use App\Filament\Invoicing\Widgets\IncomeByProject;
 use App\Filament\Invoicing\Widgets\InvoicesSummary;
-use App\Filament\Invoicing\Widgets\MonthlyIncomes;
 use App\Filament\Invoicing\Widgets\OutstandingInvoices;
-use App\Services\ModelListService;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Pages\Dashboard\Actions\FilterAction;
+use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 
 class Dashboard extends BaseDashboard
 {
-    use HasFiltersForm;
+    use HasFiltersAction;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
@@ -24,32 +25,37 @@ class Dashboard extends BaseDashboard
         return false;
     }
 
-    public function filtersForm(Form $form): Form
+    protected function getHeaderActions(): array
     {
-        return $form
-            ->schema([
-                DatePicker::make('startDate')
-                    ->default(now()->subMonths(6)->startOfMonth())
-                    ->maxDate(now()->endOfMonth()),
-                DatePicker::make('endDate')
-                    ->default(now()->endOfMonth())
-                    ->maxDate(now()->endOfMonth()),
-                Select::make('project')
-                    ->label('Project Name')
-                    ->searchable()
-                    ->preload()
-                    ->multiple()
-                    ->options(function () {
-                        return ModelListService::get(
-                            model: \App\Models\Project::query(),
-                            key_field: 'id',
-                            value_field: 'name'
-                        );
+        return [
+            FilterAction::make()
+                ->slideOver(false)
+                ->form([
 
-                    })
-                    ->placeholder('Enter project name'),
-            ]);
+                    DatePicker::make('startDate')
+                        ->default(now()->subMonths(6)->startOfMonth())
+                        ->maxDate(now()->endOfMonth()),
+                    DatePicker::make('endDate')
+                        ->default(now()->endOfMonth())
+                        ->maxDate(now()->endOfMonth()),
+                    Select::make('project')
+                        ->label('Project Name')
+                        ->searchable()
+                        ->preload()
+                        ->multiple()
+                        ->options(function () {
+                            return ModelListService::get(
+                                model: \App\Models\Project::query(),
+                                key_field: 'id',
+                                value_field: 'name'
+                            );
+
+                        })
+                        ->placeholder('Enter project name'),
+                ]),
+        ];
     }
+
 
     /**
      * @return array<class-string<Widget> | WidgetConfiguration>
