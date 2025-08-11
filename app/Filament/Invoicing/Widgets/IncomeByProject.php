@@ -17,11 +17,7 @@ class IncomeByProject extends ChartWidget
 
     protected function getData(): array
     {
-        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO(
-            startDate: $this->filters['startDate'],
-            endDate: $this->filters['endDate'],
-            project: $this->filters['project']
-        ));
+        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO($this->filters));
 
         $data = $service->getFilteredQuery()
             ->select('project_id')

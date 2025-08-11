@@ -2,12 +2,13 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Models\Invoice;
 use Carbon\Carbon;
-use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use App\Models\Invoice;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
+use Filament\Widgets\ChartWidget;
+use App\DTOs\InvoicingDashboardFilterDTO;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class MonthlyIncomes extends ChartWidget
 {
@@ -19,15 +20,15 @@ class MonthlyIncomes extends ChartWidget
 
     protected function getData(): array
     {
+        $filters = new InvoicingDashboardFilterDTO($this->filters);
+
         $data = Trend::query(
             Invoice::query()
-                ->when($this->filters['project'] ?? null, function ($query) {
-                    $query->whereIn('project_id', (array) $this->filters['project']);
-                })
+                ->when($filters->project, fn ($query) => $query->whereIn('project_id', $filters->project))
         )
             ->between(
-                start: $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->subMonths(5),
-                end: $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
+                start: isset($this->filters['startDate']) && $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->startOfMonth()->subMonths(5),
+                end: isset($this->filters['endDate']) && $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
             )
             ->perMonth()
             ->dateColumn('date')

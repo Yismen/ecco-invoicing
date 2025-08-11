@@ -18,11 +18,7 @@ class InvoicesSummary extends BaseWidget
 
     protected function getStats(): array
     {
-        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO(
-            startDate: $this->filters['startDate'],
-            endDate: $this->filters['endDate'],
-            project: $this->filters['project']
-        ));
+        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO($this->filters));
 
         return [
 
