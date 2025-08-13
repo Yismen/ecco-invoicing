@@ -2,35 +2,37 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Enums\InvoiceStatuses;
-use App\Filament\Actions\DownloadInvoiceAction;
-use App\Filament\Exports\InvoiceExporter;
-use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use App\Models\Agent;
-use App\Models\Campaign;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Item;
-use App\Models\Project;
-use App\Services\Filament\Forms\InvoicePaymentForm;
-use App\Services\Filament\Forms\ProjectForm;
-use App\Services\GenerateInvoiceNumberService;
-use App\Services\ModelListService;
 use Filament\Forms;
-use Filament\Forms\Form;
+use App\Models\Item;
+use Filament\Tables;
+use App\Models\Agent;
+use App\Models\Invoice;
+use App\Models\Project;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
-use Filament\Support\Colors\Color;
-use Filament\Tables;
-use Filament\Tables\Columns\Summarizers\Summarizer;
+use App\Models\Campaign;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\InvoiceItem;
+use App\Enums\InvoiceStatuses;
+use Illuminate\Support\Number;
+use Filament\Resources\Resource;
+use App\Services\ModelListService;
+use Filament\Support\Colors\Color;
+use Illuminate\Validation\Rules\Unique;
+use Filament\Notifications\Notification;
+use App\Filament\Exports\InvoiceExporter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\Filament\Forms\ProjectForm;
 use Illuminate\Database\Eloquent\Collection;
+use App\Services\GenerateInvoiceNumberService;
+use App\Filament\Actions\DownloadInvoiceAction;
+use App\Services\Filament\Forms\InvoicePaymentForm;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Number;
+use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use Closure;
 
 class InvoiceResource extends Resource
 {
@@ -89,11 +91,18 @@ class InvoiceResource extends Resource
                                     ->schema([
                                         Forms\Components\TextInput::make('name')
                                             ->required()
-                                            ->unique(
-                                                table: Agent::class,
-                                                column: 'name',
-                                                ignorable: fn (Get $get) => $get('agent_id') ? Agent::find($get('agent_id')) : null
-                                            )
+                                            ->rules([
+                                                function(Get $get, $livewire): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) use($get, $livewire) {
+                                                        if (Agent::query()
+                                                            ->where('name', $value)
+                                                            ->where('project_id', $livewire->data['project_id'])
+                                                            ->exists()) {
+                                                            $fail("The name {$value} has already been taken for this project.");
+                                                        }
+                                                    };
+                                                },
+                                            ])
                                             ->autofocus()
                                             ->maxLength(255),
                                         Forms\Components\TextInput::make('phone')
@@ -132,11 +141,19 @@ class InvoiceResource extends Resource
                                 Forms\Components\TextInput::make('name')
                                     ->autofocus()
                                     ->required()
-                                    ->unique(
-                                        table: Campaign::class,
-                                        column: 'name',
-                                        ignorable: fn (Get $get) => $get('campaign_id') ? Campaign::find($get('campaign_id')) : null
-                                    )
+                                    ->rules([
+                                        function(Get $get, $livewire): Closure {
+                                            return function (string $attribute, $value, Closure $fail) use($get, $livewire) {
+
+                                                if (Campaign::query()
+                                                    ->where('name', $value)
+                                                    ->where('agent_id', $livewire->data['agent_id'])
+                                                    ->exists()) {
+                                                    $fail("The name {$value} has already been taken for this agent.");
+                                                }
+                                            };
+                                        },
+                                    ])
                                     ->maxLength(255),
                             ])
                             ->createOptionUsing(function (array $data, Get $get): int {
