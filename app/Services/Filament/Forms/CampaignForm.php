@@ -4,8 +4,8 @@ namespace App\Services\Filament\Forms;
 
 use Closure;
 use Filament\Forms;
-use Filament\Forms\Get;
 use App\Models\Campaign;
+use App\Rules\UniqueByParentRelationship;
 
 class CampaignForm
 {
@@ -18,20 +18,14 @@ class CampaignForm
                 ->rules([
                     'string',
                     'max:255',
-                    function(Get $get, $livewire, $record): Closure {
-                        return function (string $attribute, $value, Closure $fail) use($get, $livewire, $record) {
-                            $record_exists = Campaign::query()
-                                ->where('name', $value)
-                                ->where('agent_id', $livewire->data['agent_id'])
-                                ->when($record, function ($query) use ($record) {
-                                    return $query->where('id', '!=', $record->id);
-                                })
-                                ->exists();
-
-                            if ($record_exists) {
-                                $fail("The name {$value} already exits for this agent.");
-                            }
-                        };
+                    function($livewire, $record) {
+                        return new UniqueByParentRelationship(
+                            table: Campaign::class,
+                            uniqueField: 'name',
+                            parentField: 'agent_id',
+                            parentId: $livewire->data['agent_id'],
+                            recordToIgnore: $record
+                        );
                     },
                 ])
                 ->maxLength(255)

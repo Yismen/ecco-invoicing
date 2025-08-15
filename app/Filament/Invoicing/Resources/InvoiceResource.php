@@ -32,6 +32,7 @@ use Filament\Tables\Columns\Summarizers\Summarizer;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use App\Rules\UniqueByParentRelationship;
 use Closure;
 
 class InvoiceResource extends Resource
@@ -92,15 +93,13 @@ class InvoiceResource extends Resource
                                         Forms\Components\TextInput::make('name')
                                             ->required()
                                             ->rules([
-                                                function(Get $get, $livewire): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) use($get, $livewire) {
-                                                        if (Agent::query()
-                                                            ->where('name', $value)
-                                                            ->where('project_id', $livewire->data['project_id'])
-                                                            ->exists()) {
-                                                            $fail("The name {$value} has already been taken for this project.");
-                                                        }
-                                                    };
+                                                function($livewire) {
+                                                    return new UniqueByParentRelationship(
+                                                        table: Agent::class,
+                                                        uniqueField: 'name',
+                                                        parentField: 'project_id',
+                                                        parentId: $livewire->data['project_id'],
+                                                    );
                                                 },
                                             ])
                                             ->autofocus()
@@ -141,17 +140,15 @@ class InvoiceResource extends Resource
                                 Forms\Components\TextInput::make('name')
                                     ->autofocus()
                                     ->required()
+                                    ->validationAttribute('name')
                                     ->rules([
-                                        function(Get $get, $livewire): Closure {
-                                            return function (string $attribute, $value, Closure $fail) use($get, $livewire) {
-
-                                                if (Campaign::query()
-                                                    ->where('name', $value)
-                                                    ->where('agent_id', $livewire->data['agent_id'])
-                                                    ->exists()) {
-                                                    $fail("The name {$value} has already been taken for this agent.");
-                                                }
-                                            };
+                                        function($livewire) {
+                                            return new UniqueByParentRelationship(
+                                                table: Campaign::class,
+                                                uniqueField: 'name',
+                                                parentField: 'agent_id',
+                                                parentId: $livewire->data['agent_id'],
+                                            );
                                         },
                                     ])
                                     ->maxLength(255),
