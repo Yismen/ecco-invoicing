@@ -71,8 +71,6 @@ class AdminPanelProvider extends PanelProvider
                     )
                     ->horizonNavigation(false)
                     ->pulseNavigation(false),
-                FilamentLogViewer::make()
-                    ->navigationGroup('System'),
                 FilamentEnvEditorPlugin::make()
                     ->navigationGroup('System')
                     ->navigationLabel('Env Editor')
