@@ -7,10 +7,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "achyutn/filament-log-viewer": "^0.5.2",
         "bezhansalleh/filament-panel-switch": "^1.0",
         "bezhansalleh/filament-shield": "^3.3",
         "filament/filament": "^3.3",
-        "filipfonal/filament-log-manager": "^2.1",
         "flowframe/laravel-trend": "^0.4.0",
         "geo-sot/filament-env-editor": "^0.0.7",
         "jeffgreco13/filament-breezy": "^2.6",
@@ -22,11 +22,11 @@
         "pxlrbt/filament-environment-indicator": "^2.1",
         "stephenjude/filament-debugger": "^4.0",
         "symfony/http-client": "^7.2",
-        "symfony/mailgun-mailer": "^7.2",
-        "vormkracht10/filament-mails": "^2.3"
+        "symfony/mailgun-mailer": "^7.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",
+        "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
