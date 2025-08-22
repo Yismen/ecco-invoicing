@@ -18,7 +18,7 @@
                 wire:model.live.debounce.500ms="search"
             />
 
-            <ul class="mt-4 space-y-2">
+            <ul class="mt-4 space-y-2 h-full overflow-y-auto bg-white rounded p-1">
                 @foreach($users as $user)
                     <li
                         wire:click="selectUser({{ $user }})"
