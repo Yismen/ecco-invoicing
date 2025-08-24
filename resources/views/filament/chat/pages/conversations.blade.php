@@ -1,9 +1,8 @@
 <x-filament-panels::page>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @section('title', __('filament-chat::chat.pages.conversations.title'))
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <div class="flex justify-between gap-6"  style="height: calc(100vh - 14rem);">
+    <div class="flex justify-between gap-6"  style="height: calc(100vh - 12rem);">
         {{-- Conversations --}}
         {{-- Users --}}
         <div class="flex flex-col w-1/3 gap-2">
@@ -25,8 +24,8 @@
                     <li
                         wire:click="selectUser({{ $user }})"
                         @class([
-                            'bg-primary-500' => $selectedUser && $selectedUser->id === $user->id,
-                            'cursor-pointer hover:bg-gray-100 flex items-center gap-2 text-gray-700 p-2 rounded',
+                            'cursor-pointer hover:text-gray-700 hover:bg-gray-100 flex items-center gap-2 text-gray-700 p-2 rounded',
+                            'bg-primary-500 text-white font-bold' => $selectedUser && $selectedUser->id === $user->id,
                         ]) wire:key="user-{{ $user->id }}">
                         <span class="text-sm">{{ $user->name }}</span>
                     </li>
@@ -50,32 +49,31 @@
                 @endif
             </div>
             {{-- Messages --}}
-            <div class="mt-4 h-full flex flex-col overflow-hidden">
+            <div class="mt-4 h-full flex flex-col overflow-hidden" >
                 {{-- Message List --}}
-                @if ($selectedUser)
-                    <div class="flex flex-col mb-3 mt-2 justify-start items-end h-full overflow-y-auto">
-                        @foreach($messages as $message)
-                            <div
-                                @class([
-                                    'px-2 py-1 rounded mb-2',
-                                    'bg-primary-500 self-end text-white bold text-right' => $message->sender_id === auth()->id(),
-                                    'bg-gray-200 self-start' => $message->sender_id !== auth()->id(),
-                                ])
-                                wire:key="message-{{ $message->id }}"
-                            >
-                                <div class="text-sm">
-                                    {{ $message->message }}
-                                </div>
+                <div class="flex flex-col mb-3 mt-2 justify-start items-end h-full overflow-y-auto" id="messages-list" style="scroll-behavior: smooth;">
+                    @if ($selectedUser)
+                        @foreach($messages as $date => $message)
+                            <div class="w-full text-center my-2">
+                                <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                                    {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
+                                </span>
+                            </div>
+                            @foreach($message as $msg)
                                 <div
                                     @class([
-                                        "text-xs",
-                                        "text-gray-500 " => $message->sender_id !== auth()->id()
-                                        ])>
-                                    {{ $message->created_at->diffForHumans() }}
+                                        'max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded mb-2',
+                                        'bg-primary-500 text-white self-end' => $msg->sender_id === auth()->id(),
+                                        'bg-gray-200 text-gray-800 self-start' => $msg->sender_id !== auth()->id(),
+                                    ])
+                                    wire:key="message-{{ $msg->id }}"
+                                >
+                                    <p class="whitespace-pre-wrap">{{ $msg->message }}</p>
                                 </div>
-                        </div>
                         @endforeach
-                    </div>
+                    @endforeach
+                </div>
+                <div>
                     <form wire:submit.prevent="sendMessage" class="mt-6 flex ">
                         <input
                             type="text"
@@ -105,8 +103,30 @@
                         </button>
                     </form>
                 @else
-                    <p class="text-sm text-gray-500">Select a user to view messages.</p>
+                    <p class="text-sm text-gray-500 text-left self-start">Select a user to view messages.</p>
                 @endif
         </div>
     </div>
+    @pushOnce('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                scrollToBottom();
+
+                Livewire.on('showLastMessage', (data) => {
+                    console.log('Scrolling to bottom...');
+
+                    scrollToBottom();
+                });
+            });
+
+            function scrollToBottom() {
+                setTimeout(() => {
+                    const messagesList = document.getElementById('messages-list');
+                    if (messagesList) {
+                        messagesList.scrollTop = messagesList.scrollHeight;
+                    }
+                }, 300);
+            }
+        </script>
+    @endPushOnce
 </x-filament-panels::page>

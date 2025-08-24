@@ -7,11 +7,15 @@ use App\Models\User;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
 
+use function Illuminate\Log\log;
+
 class Conversations extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.chat.pages.conversations';
+
+    protected static ?string $title = 'Chats';
 
     public Collection $users;
     public ?User $selectedUser = null;
@@ -21,26 +25,26 @@ class Conversations extends Page
 
     public function mount()
     {
-        $this->users = $this->getUsers();
-
-        $this->selectedUser = Chat::query()
-            ->where('sender_id', auth()->id())
-            ->orWhere('receiver_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->first()
-            ->receiver ?? null;
+        $this->getUsers();
 
         $this->fetchMessages();
     }
 
-    public function updatedSearch()
+    public function getListeners(): array
     {
-        $this->users = $this->getUsers();
+        return [
+            "echo-private:chats." . auth()->id() . ",ChatMessageSent" => 'newMessageReceived',
+        ];
     }
 
-    protected function getUsers(): Collection
+    public function updatedSearch()
     {
-        return User::query()
+        $this->getUsers();
+    }
+
+    protected function getUsers()
+    {
+        $this->users = User::query()
             ->where('id', '!=', auth()->id())
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
@@ -59,6 +63,19 @@ class Conversations extends Page
         $this->fetchMessages();
     }
 
+    public function newMessageReceived($event)
+    {
+        $chat = $event['chat'];
+
+        $newChat = Chat::with('sender', 'receiver')->find($chat['id']);
+
+        if ($this->selectedUser && $newChat->sender_id === $this->selectedUser->id) {
+            $this->messages->push($newChat);
+        }
+
+        $this->dispatch('showLastMessage');
+    }
+
     public function sendMessage()
     {
         if (empty($this->newMessage) || !$this->selectedUser) {
@@ -75,9 +92,15 @@ class Conversations extends Page
         $this->newMessage = null;
 
         $this->messages->push($newMessage);
+
+        broadcast(new \App\Events\ChatMessageSent($newMessage))
+            ->toOthers();
+
+
+        $this->dispatch('showLastMessage');
     }
 
-    private function fetchMessages()
+    public function fetchMessages()
     {
         $this->newMessage = null;
 
@@ -87,13 +110,21 @@ class Conversations extends Page
         }
 
         $this->messages = Chat::query()
+            ->with(['sender', 'receiver'])
             ->where(function ($query) {
                 $query->where('sender_id', auth()->id())
                     ->where('receiver_id', $this->selectedUser->id);
             })->orWhere(function ($query) {
                 $query->where('sender_id', $this->selectedUser->id)
                     ->where('receiver_id', auth()->id());
-            })->orderBy('created_at')
-            ->get();
+            })
+            ->orderBy('created_at')
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->created_at->toDateString();
+            })
+            ->collect();
+
+        $this->dispatch('showLastMessage');
     }
 }

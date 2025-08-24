@@ -31,16 +31,17 @@ class ChatPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->navigation(false)
             ->discoverResources(in: app_path('Filament/Chat/Resources'), for: 'App\\Filament\\Chat\\Resources')
             ->discoverPages(in: app_path('Filament/Chat/Pages'), for: 'App\\Filament\\Chat\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
-            ->discoverWidgets(in: app_path('Filament/Chat/Widgets'), for: 'App\\Filament\\Chat\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
+            // ->pages([
+            //     Pages\Dashboard::class,
+            // ])
+            // ->discoverWidgets(in: app_path('Filament/Chat/Widgets'), for: 'App\\Filament\\Chat\\Widgets')
+            // ->widgets([
+            //     Widgets\AccountWidget::class,
+            //     Widgets\FilamentInfoWidget::class,
+            // ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
