@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Chat extends Model
 {
@@ -23,13 +25,23 @@ class Chat extends Model
         'read_at' => 'datetime',
     ];
 
-    public function sender()
+    public function sender(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    public function receiver()
+    public function receiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'receiver_id');
+    }
+
+    public function scopeRead(Builder $query):Builder
+    {
+        return $query->whereNotNull('read_at');
+    }
+
+    public function scopeUnread(Builder $query):Builder
+    {
+        return $query->whereNull('read_at');
     }
 }

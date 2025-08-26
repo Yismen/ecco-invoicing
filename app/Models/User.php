@@ -7,6 +7,7 @@ use App\Traits\Models\InteracstsWithModelCaching;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -63,5 +64,32 @@ class User extends Authenticatable implements FilamentUser
         //     true :
         //     str_ends_with($this->email, '@ecco.com.do') || str_ends_with($this->email, '@eccocorpbpo.do')
         //     ;
+    }
+
+    public function receivedChats(): HasMany
+    {
+        return $this->hasMany(Chat::class, 'receiver_id');
+    }
+
+    public function unreadReceivedChats(): HasMany
+    {
+        return $this->receivedChats()->whereNull('read_at');
+    }
+
+    public function sentChats(): HasMany
+    {
+        return $this->hasMany(Chat::class, 'sender_id');
+    }
+
+    public function unreadSentChats(): HasMany
+    {
+        return $this->sentChats()->whereNull('read_at');
+    }
+
+    public function unreadChatsCountForUser(User $receiver): int
+    {
+        return $this->unreadSentChats()
+            ->where('receiver_id', $receiver->id)
+            ->count();
     }
 }

@@ -5,29 +5,43 @@
     <div class="flex justify-between gap-6"  style="height: calc(100vh - 12rem);">
         {{-- Conversations --}}
         {{-- Users --}}
-        <div class="flex flex-col w-1/3 gap-2">
+        <div class="flex flex-col w-[27%] gap-2">
             <div>
                 <h1>Users</h1>
 
                 <p class="text-sm text-gray-500 border-b pb-2">Manage your conversations with users.</p>
             </div>
 
-            <input
-                type="text"
-                placeholder="Search users..."
-                class="m-2"
-                wire:model.live.debounce.500ms="search"
-            />
+            <div class="flex flex-row justify-between items-center m-2 relative">
+                <input
+                    type="text"
+                    placeholder="Search users..."
+                    class="w-full h-8  relative rounded imput "
+                    wire:model.live.debounce.500ms="search"
+                />
+                @if (strlen($search) > 1)
+                    <button class="absolute right-[15px] p-2 " title="Clear Search" wire:click="$set('search', '')">X</button>
+                @endif
+            </div>
 
             <ul class="mt-4 space-y-2 h-full overflow-y-auto bg-white rounded p-1">
                 @foreach($users as $user)
                     <li
                         wire:click="selectUser({{ $user }})"
                         @class([
-                            'cursor-pointer hover:text-gray-700 hover:bg-gray-100 flex items-center gap-2 text-gray-700 p-2 rounded',
+                            'cursor-pointer hover:text-gray-700 hover:bg-gray-100 flex items-center gap-2 text-gray-700 p-2 rounded text-sm',
                             'bg-primary-500 text-white font-bold' => $selectedUser && $selectedUser->id === $user->id,
                         ]) wire:key="user-{{ $user->id }}">
-                        <span class="text-sm">{{ $user->name }}</span>
+                            {{ $user->name }}
+
+                            @php
+                                $unreadChatsCount = $user->unreadChatsCountForUser(auth()->user());
+                            @endphp
+                        <span class="">
+                            @if ($unreadChatsCount > 0)
+                                <span class="ml-2 bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">{{ $unreadChatsCount }}</span>
+                            @endif
+                        </span>
                     </li>
                 @endforeach
             </ul>
@@ -36,14 +50,19 @@
         <div class="flex flex-col p-4 bg-white rounded shadow flex-1 h-full">
             {{-- Selected User --}}
             {{-- Heading --}}
-            <div class="flex flex-col border-b">
+            <div class="flex flex-row justify-between border-b">
                 @if ($selectedUser)
-                    <h1>
-                        {{ $selectedUser->name }}
-                    </h1>
-                    <p class="text-sm text-gray-500 mb-2">
+                   <div>
+                        <h1 class="flex justify-between">
+                            {{ $selectedUser->name }}
+                        </h1>
+                        <p class="text-sm text-gray-500 mb-2">
                         {{ $selectedUser->email }}.
-                    </p>
+                        </p>
+                    </div>
+                    @if ($messages->count())
+                        <div title="Delete Conversation">{{ $this->deleteConversationAction }}</div>
+                    @endif
                 @else
                     Select a user to start a conversation
                 @endif
@@ -62,24 +81,31 @@
                             @foreach($message as $msg)
                                 <div
                                     @class([
-                                        'max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded mb-2',
+                                        'max-w-[75%] px-2 py-1 text-xs rounded mb-2 relative',
                                         'bg-primary-500 text-white self-end' => $msg->sender_id === auth()->id(),
                                         'bg-gray-200 text-gray-800 self-start' => $msg->sender_id !== auth()->id(),
                                     ])
                                     wire:key="message-{{ $msg->id }}"
                                 >
                                     <p class="whitespace-pre-wrap">{{ $msg->message }}</p>
+                                    @if ($msg->sender_id === auth()->id())
+                                        <span class="absolute top-[-1rem] right-[3px] rounded text-gray-800 hover:text-gray-900 hover:rotate-90" title="Delete Message">
+                                            {{ ($this->deleteMessageAction)(['chat' => $msg->id]) }}
+                                        </span>
+                                    @endif
                                 </div>
                         @endforeach
                     @endforeach
                 </div>
                 <div>
+                    <div class="w-full text-xs text-gray-700 italic " id="typing-indicator"></div>
+
                     <form wire:submit.prevent="sendMessage" class="mt-6 flex ">
                         <input
                             type="text"
                             placeholder="Type your message..."
                             class="w-full p-2 border rounded"
-                            wire:model.live.debounce.500ms="newMessage"
+                            wire:model.live.debounce.500ms="newChat"
                             @if (!$selectedUser)
                                 disabled
                             @endif
@@ -88,11 +114,11 @@
                             type="submit"
                             @class([
                                 'mt-4 px-4 py-2 bg-gray-200 text-gray-950 rounded hover:bg-gray-300 flex gap-2 items-center',
-                                'opacity-50 cursor-not-allowed' => strlen($newMessage) < 1,
+                                'opacity-50 cursor-not-allowed' => strlen($newChat) < 1,
                             ])
                             wire:loading.attr="disabled"
                             wire:loading.class="opacity-50 cursor-not-allowed"
-                            @if(strlen($newMessage) < 1 )
+                            @if(strlen($newChat) < 1 )
                                 disabled
                             @endif
                         >
@@ -105,7 +131,8 @@
                 @else
                     <p class="text-sm text-gray-500 text-left self-start">Select a user to view messages.</p>
                 @endif
-        </div>
+            </div>
+        <x-filament-actions::modals />
     </div>
     @pushOnce('scripts')
         <script>
@@ -113,10 +140,27 @@
                 scrollToBottom();
 
                 Livewire.on('showLastMessage', (data) => {
-                    console.log('Scrolling to bottom...');
-
                     scrollToBottom();
                 });
+
+                Livewire.on('userTyping', (event) => {
+                    window.Echo.private(`chats.${event.receiverId}`)
+                        .whisper('typing', {
+                            userId: event.authId,
+                            userName: event.userName
+                        });
+                });
+
+                window.Echo.private(`chats.{{ auth()->id() }}`)
+                    .listenForWhisper('typing', (event) => {
+                        var typingIndicator = document.getElementById('typing-indicator');
+
+                        typingIndicator.innerText = `${event.userName} is typing...`;
+
+                        setTimeout(() => {
+                            typingIndicator.innerText = '';
+                        }, 2000);
+                    });
             });
 
             function scrollToBottom() {
