@@ -20,7 +20,7 @@ class ChatFactory extends Factory
             'sender_id' => \App\Models\User::factory(),
             'receiver_id' => \App\Models\User::factory(),
             'message' => $this->faker->sentence(),
-            'sent_at' => now(),
+            'sent_at' => null,
             'read_at' => null,
         ];
     }

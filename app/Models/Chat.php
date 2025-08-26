@@ -16,14 +16,21 @@ class Chat extends Model
         'sender_id',
         'receiver_id',
         'message',
-        'sent_at',
-        'read_at',
+        // 'sent_at',
+        // 'read_at',
     ];
 
     protected $casts = [
         'sent_at' => 'datetime',
         'read_at' => 'datetime',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function (Chat $chat) {
+            $chat->sent_at = now();
+        });
+    }
 
     public function sender(): BelongsTo
     {

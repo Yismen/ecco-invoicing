@@ -20,7 +20,7 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->text('message');
-            $table->dateTime('sent_at')->useCurrent();
+            $table->dateTime('sent_at')->nullable();
             $table->dateTime('read_at')->nullable();
             $table->timestamps();
         });
