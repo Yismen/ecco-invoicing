@@ -1,5 +1,4 @@
 <x-filament-panels::page>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @section('title', __('filament-chat::chat.pages.conversations.title'))
 
     <div class="flex justify-between gap-6"  style="height: calc(100vh - 12rem);">
@@ -9,14 +8,14 @@
             <div>
                 <h1>Users</h1>
 
-                <p class="text-sm text-gray-500 border-b pb-2">Manage your conversations with users.</p>
+                <p class="pb-2 text-sm text-gray-500 border-b">Manage your conversations with users.</p>
             </div>
 
-            <div class="flex flex-row justify-between items-center m-2 relative">
+            <div class="relative flex flex-row items-center justify-between m-2">
                 <input
                     type="text"
                     placeholder="Search users..."
-                    class="w-full h-8  relative rounded imput "
+                    class="relative w-full h-8 rounded imput "
                     wire:model.live.debounce.500ms="search"
                 />
                 @if (strlen($search) > 1)
@@ -24,7 +23,7 @@
                 @endif
             </div>
 
-            <ul class="mt-4 space-y-2 h-full overflow-y-auto bg-white rounded p-1">
+            <ul class="h-full p-1 mt-4 space-y-2 overflow-y-auto bg-white rounded">
                 @foreach($users as $user)
                     <li
                         wire:click="selectUser({{ $user }})"
@@ -39,7 +38,7 @@
                             @endphp
                         <span class="">
                             @if ($unreadChatsCount > 0)
-                                <span class="ml-2 bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">{{ $unreadChatsCount }}</span>
+                                <span class="px-2 py-1 ml-2 text-xs font-medium text-white bg-green-500 rounded-full">{{ $unreadChatsCount }}</span>
                             @endif
                         </span>
                     </li>
@@ -47,7 +46,7 @@
             </ul>
         </div>
 
-        <div class="flex flex-col p-4 bg-white rounded shadow flex-1 h-full">
+        <div class="flex flex-col flex-1 h-full p-4 bg-white rounded shadow">
             {{-- Selected User --}}
             {{-- Heading --}}
             <div class="flex flex-row justify-between border-b">
@@ -56,7 +55,7 @@
                         <h1 class="flex justify-between">
                             {{ $selectedUser->name }}
                         </h1>
-                        <p class="text-sm text-gray-500 mb-2">
+                        <p class="mb-2 text-sm text-gray-500">
                         {{ $selectedUser->email }}.
                         </p>
                     </div>
@@ -68,13 +67,13 @@
                 @endif
             </div>
             {{-- Messages --}}
-            <div class="mt-4 h-full flex flex-col overflow-hidden" >
+            <div class="flex flex-col h-full mt-4 overflow-hidden" >
                 {{-- Message List --}}
-                <div class="flex flex-col mb-3 mt-2 justify-start items-end h-full overflow-y-auto" id="messages-list" style="scroll-behavior: smooth;">
+                <div class="flex flex-col items-end justify-start h-full mt-2 mb-3 overflow-y-auto" id="messages-list" style="scroll-behavior: smooth;">
                     @if ($selectedUser)
                         @foreach($messages as $date => $message)
-                            <div class="w-full text-center my-2">
-                                <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                            <div class="w-full my-2 text-center">
+                                <span class="px-2 py-1 text-xs text-gray-500 bg-gray-200 rounded">
                                     {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
                                 </span>
                             </div>
@@ -98,9 +97,9 @@
                     @endforeach
                 </div>
                 <div>
-                    <div class="w-full text-xs text-gray-700 italic " id="typing-indicator"></div>
+                    <div class="w-full text-xs italic text-gray-700 " id="typing-indicator"></div>
 
-                    <form wire:submit.prevent="sendMessage" class="mt-6 flex ">
+                    <form wire:submit.prevent="sendMessage" class="flex mt-6 ">
                         <input
                             type="text"
                             placeholder="Type your message..."
@@ -129,7 +128,7 @@
                         </button>
                     </form>
                 @else
-                    <p class="text-sm text-gray-500 text-left self-start">Select a user to view messages.</p>
+                    <p class="self-start text-sm text-left text-gray-500">Select a user to view messages.</p>
                 @endif
             </div>
         <x-filament-actions::modals />
