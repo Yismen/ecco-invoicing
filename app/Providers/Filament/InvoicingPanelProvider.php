@@ -30,6 +30,7 @@ class InvoicingPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Emerald,
             ])
+            ->favicon(asset('img/favicon.png'))
             ->login()
             ->registration()
             ->passwordReset()

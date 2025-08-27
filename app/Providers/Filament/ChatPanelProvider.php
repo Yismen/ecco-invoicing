@@ -28,8 +28,9 @@ class ChatPanelProvider extends PanelProvider
             ->registration()
             ->passwordReset()
             ->path('chat')
+            ->favicon(asset('img/favicon.png'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Sky,
             ])
             ->navigation(false)
             ->discoverResources(in: app_path('Filament/Chat/Resources'), for: 'App\\Filament\\Chat\\Resources')
