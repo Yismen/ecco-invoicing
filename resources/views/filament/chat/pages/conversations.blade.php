@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     @section('title', __('filament-chat::chat.pages.conversations.title'))
-
+    @vite([ 'resources/js/app.js', 'resources/css/app.css' ])
     <div class="flex justify-between gap-6"  style="height: calc(100vh - 12rem);">
         {{-- Conversations --}}
         {{-- Users --}}
