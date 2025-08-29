@@ -21,7 +21,6 @@ class ItemForm
                 ->preload(10)
                 ->placeholder('Select a campaign'),
             Forms\Components\TextInput::make('price')
-                // ->minValue(0)
                 ->required()
                 ->numeric()
                 ->inputMode('decimal')

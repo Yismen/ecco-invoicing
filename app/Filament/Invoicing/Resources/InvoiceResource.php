@@ -263,7 +263,6 @@ class InvoiceResource extends Resource
                                                 Forms\Components\TextInput::make('name')
                                                     ->required(),
                                                 Forms\Components\TextInput::make('price')
-                                                    ->minValue(0)
                                                     ->required()
                                                     ->numeric()
                                                     ->inputMode('decimal')
