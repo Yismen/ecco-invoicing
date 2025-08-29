@@ -5,7 +5,6 @@ return [
     App\Providers\EventServiceProvider::class,
     App\Providers\FilamentServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,
-    App\Providers\Filament\ChatPanelProvider::class,
     App\Providers\Filament\InvoicingPanelProvider::class,
     App\Providers\TelescopeServiceProvider::class,
 ];
