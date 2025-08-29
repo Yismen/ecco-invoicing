@@ -67,6 +67,7 @@
     }
     table.products td {
       text-align: right;
+      font-size: 0.9rem;
     }
 
     table.products tr.table-header > th {
