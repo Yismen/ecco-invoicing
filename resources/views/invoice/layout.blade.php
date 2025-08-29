@@ -166,7 +166,9 @@
       </thead>
       <tbody>
         @foreach($invoice->items as $item)
-        <tr>
+        <tr @class([
+            'text-red' => $item->sub_total_price < 0,
+        ])>
             <td class="pl-0 description">
                 {{ $item->title }}
 
