@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +33,13 @@ class Item extends Model
     protected $casts = [
         'price' => \App\Casts\AsMoney::class,
     ];
+
+    public function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => trim($value),
+        );
+    }
 
     public function campaign(): BelongsTo
     {
