@@ -451,7 +451,8 @@ class InvoiceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->openUrlInNewTab(),
                     Tables\Actions\EditAction::make()
                         ->modalWidth('7xl')
                         ->stickyModalHeader()
@@ -550,7 +551,7 @@ class InvoiceResource extends Resource
         return [
             'index' => Pages\ListInvoices::route('/'),
             'create' => Pages\CreateInvoice::route('/create'),
-            // 'view' => Pages\ViewInvoice::route('/{record}'),
+            'view' => Pages\ViewInvoice::route('/{record}'),
             // 'edit' => Pages\EditInvoice::route('/{record}/edit'),
         ];
     }
