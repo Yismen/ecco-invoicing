@@ -60,6 +60,14 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
+                \AchyutN\FilamentLogViewer\FilamentLogViewer::make()
+                    ->authorize(fn () => auth()->check())
+                    ->navigationGroup('System')
+                    ->navigationIcon('heroicon-o-document-text')
+                    ->navigationLabel('Log Viewer')
+                    // ->navigationSort(10)
+                    ->navigationUrl('/logs')
+                    ->pollingTime(null),
                 EnvironmentIndicatorPlugin::make(),
                 FilamentShieldPlugin::make(),
                 BreezeCoreService::make(),
