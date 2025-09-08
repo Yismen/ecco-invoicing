@@ -477,14 +477,16 @@ class InvoiceResource extends Resource
                 ]),
                 Tables\Actions\ExportBulkAction::make()
                     ->label('Export Selected')
-                    // ->icon('heroicon-s-document-download')
-                    ->color(Color::Blue)
+                    ->size('xs')
+                    ->icon('heroicon-s-arrow-down-tray')
+                    ->color(Color::Amber)
                     ->deselectRecordsAfterCompletion()
                     ->exporter(InvoiceExporter::class),
 
                 Tables\Actions\BulkAction::make('Pay Fully')
-                    ->color(Color::Red)
+                    ->color(Color::Teal)
                     ->icon('heroicon-s-credit-card')
+                    ->size('xs')
                     // ->requiresConfirmation()
                     ->deselectRecordsAfterCompletion()
                     ->modalDescription(
@@ -501,6 +503,8 @@ class InvoiceResource extends Resource
                                     ->default(now())
                                     ->maxDate(now()->endOfDay()),
                                 Forms\Components\TextInput::make('reference'),
+                                Forms\Components\Textarea::make('description')
+                                    ->columnSpanFull(),
                                 Forms\Components\FileUpload::make('images')
                                     ->image()
                                     ->imageEditor()
@@ -510,22 +514,25 @@ class InvoiceResource extends Resource
                             ]),
                     ])
                     ->action(function (Collection $records, array $data): void {
+                        $paidInvoices = [];
                         foreach ($records as $record) {
                             if ($record->balance_pending > 0) {
                                 $record->payments()->create([
                                     'date' => $data['date'],
+                                    'reference' => $data['reference'] ?? null,
+                                    'description' => $data['description'] ?? null,
                                     'images' => $data['images'],
                                     'amount' => $record->balance_pending,
-                                    'reference' => 'Paid using Bulk Action',
-                                    'description' => 'Paid using Bulk Action',
                                 ]);
+
+                                $paidInvoices[] = $record->number;
                             }
                         }
 
                         Notification::make()
                             ->title('Bulk Payment Successful')
                             ->success()
-                            ->body("All {$records->count()} selected invoices have been paid fully.")
+                            ->body('Payments have been fully applied for the selected invoices: ' . implode(', ', $paidInvoices))
                             ->send();
                     }),
             ]);
