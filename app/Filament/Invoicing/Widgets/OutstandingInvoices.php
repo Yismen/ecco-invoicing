@@ -18,6 +18,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Number;
 
 class OutstandingInvoices extends BaseWidget
@@ -83,53 +84,9 @@ class OutstandingInvoices extends BaseWidget
                     ->formatStateUsing(fn ($state) => $state?->diffForHumans())
                     ->sortable(),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('client')
-                    ->label('Client')
-                    ->multiple()
-                    ->searchable()
-                    ->preload()
-                    ->relationship('project.client', 'name')
-                    ->options(
-                        ModelListService::get(model: Client::query(), key_field: 'id', value_field: 'name')
-                    ),
-                Tables\Filters\SelectFilter::make('project')
-                    ->label('Project')
-                    ->multiple()
-                    ->searchable()
-                    ->preload()
-                    ->attribute('project_id')
-                    ->options(ModelListService::get(
-                        model: Project::query(),
-                        key_field: 'id',
-                        value_field: 'name')
-                    ),
-                Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
-                    ->options(InvoiceStatuses::itemsFromArray([
-                        InvoiceStatuses::Pending,
-                        InvoiceStatuses::PartiallyPaid,
-                        InvoiceStatuses::Overdue,
-                    ]))
-                    ->multiple()
-                    ->searchable()
-                    ->preload(),
-                Tables\Filters\Filter::make('date')
-                    ->form([
-                        Forms\Components\DatePicker::make('date_from'),
-                        Forms\Components\DatePicker::make('date_to'),
-                    ])
-                    ->query(function (Builder $query, array $data) {
-                        return $query
-                            ->when(
-                                $data['date_from'] ?? null,
-                                fn (Builder $query, $dateFrom) => $query->where('date', '>=', $dateFrom)
-                            )->when(
-                                $data['date_to'] ?? null,
-                                fn (Builder $query, $dateTo) => $query->where('date', '<=', $dateTo)
-                            );
-                    }),
-            ])
+            ->filters(
+                \App\Services\Filament\Filters\InvoiceTableFilters::make(except: ['status'])
+            )
             ->actions([
                 Tables\Actions\Action::make('view')
                     ->label('View')
@@ -138,6 +95,8 @@ class OutstandingInvoices extends BaseWidget
                     ->url(fn (Invoice $record): string => route('filament.invoicing.resources.invoices.view', ['record' => $record->id]))
                     ->openUrlInNewTab(),
             ])
+            ->filtersFormColumns(2)
+            ->deferFilters()
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\ExportBulkAction::make()
