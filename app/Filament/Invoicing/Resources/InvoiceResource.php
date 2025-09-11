@@ -232,6 +232,7 @@ class InvoiceResource extends Resource
                             ->addActionLabel('Add Item')
                             ->schema([
                                 Forms\Components\Select::make('item_id')
+                                    ->label('Item')
                                     ->options(function (Get $get): ?array {
                                         $campaign_id = $get('../../campaign_id');
                                         if ($campaign_id === null) {
@@ -408,8 +409,42 @@ class InvoiceResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->filtersFormColumns(2)
+            ->deferFilters()
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\Filter::make('date')
+                    ->form([
+                        Forms\Components\Grid::make(2)
+                        ->schema([
+                            Forms\Components\DatePicker::make('from')
+                                ->label('From Date'),
+                            Forms\Components\DatePicker::make('to')
+                                ->label('To Date'),
+                        ])
+                    ])
+                    ->query(function (Builder $query, array $data): void {
+                        if ($data['from']) {
+                            $query->whereDate('date', '>=', $data['from']);
+                        }
+
+                        if ($data['to']) {
+                            $query->whereDate('date', '<=', $data['to']);
+                        }
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators['from'] = 'From ' . date('M j, Y', strtotime($data['from']));
+                        }
+
+                        if ($data['to'] ?? null) {
+                            $indicators['to'] = 'To ' . date('M j, Y', strtotime($data['to']));
+                        }
+
+                        return $indicators;
+                    }),
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label('Project')
                     ->options(
@@ -442,6 +477,25 @@ class InvoiceResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload(),
+                Tables\Filters\SelectFilter::make('invoiceItems')
+                    ->label('Item')
+                    ->options(ModelListService::get(
+                        model: Item::query(),
+                        key_field: 'id',
+                        value_field: 'name'
+                    ))
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->query(function (Builder $query, array $data): void {
+                        if (count($data['values'] ?? []) === 0) {
+                            return;
+                        }
+
+                        $query->whereHas('invoiceItems', function (Builder $query) use ($data): void {
+                            $query->whereIn('item_id', $data['values'] );
+                        });
+                    }),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
                     ->options(InvoiceStatuses::toArray())
