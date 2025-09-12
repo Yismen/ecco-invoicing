@@ -3,6 +3,7 @@
 use App\Enums\InvoiceStatuses;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceCancellation;
 use App\Models\InvoiceItem;
 use App\Models\Item;
 use App\Models\Payment;
@@ -275,6 +276,23 @@ it('has many payments', function () {
     );
 });
 
+it('has a cancellation', function () {
+    $data = Invoice::factory()
+        ->hasCancellation()
+        ->create();
+
+    dd($data->cancellation, InvoiceCancellation::first());
+
+    $this->assertInstanceOf(
+        \Illuminate\Database\Eloquent\Relations\HasOne::class,
+        $data->cancellation()
+    );
+    $this->assertInstanceOf(
+        InvoiceCancellation::class,
+        $data->cancellation
+    );
+});
+
 it('allows partial payments and calculates total paid', function () {
     $invoice = Invoice::factory()
         ->create();
@@ -472,3 +490,7 @@ it('retrieves the price as a float', function () {
     $this->assertEquals(300.00, $invoice->total_paid);
     $this->assertEquals(0.00, $invoice->balance_pending);
 });
+
+// invoice have a canncellation
+
+// status change when cancelled

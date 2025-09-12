@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
@@ -121,6 +122,11 @@ class Invoice extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function cancellation(): HasOne
+    {
+        return $this->hasOne(InvoiceCancellation::class, 'invoice_id');
+    }
+
     public function items(): BelongsToMany
     {
         return $this->belongsToMany(Item::class);
@@ -138,6 +144,10 @@ class Invoice extends Model
 
     protected function getStatus(): InvoiceStatuses
     {
+        if ($this->total_paid == 0 && $this->cancellation?->exists()) {
+            return InvoiceStatuses::Cancelled;
+        }
+
         if ($this->total_paid > 0) {
             return $this->balance_pending > 0 ? InvoiceStatuses::PartiallyPaid : InvoiceStatuses::Paid;
         }
