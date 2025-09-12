@@ -75,7 +75,7 @@ class OutstandingInvoices extends BaseWidget
                     ->label('Balance Pending')
                     ->numeric()
                     ->color(Color::Red)
-                    ->formatStateUsing(fn ($state) => Number::currency((-1) * $state / 100, 'USD'))
+                    ->formatStateUsing(fn ($state) => Number::currency((-1) * $state , 'USD'))
                     ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('balance_pending') / 100)))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
