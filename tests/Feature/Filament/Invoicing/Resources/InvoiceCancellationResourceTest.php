@@ -1,25 +1,41 @@
 <?php
 
-use App\Filament\Invoicing\Resources\ItemResource;
+use App\Filament\Invoicing\Resources\InvoiceCancellationResource;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Item;
+use App\Models\InvoiceCancellation;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
 
-describe('Item Resource', function () {
+describe('InvoiceCancellation Resource', function () {
     beforeEach(function () {
         Filament::setCurrentPanel(
             Filament::getPanel('invoicing')
         );
 
+        $invoice = Invoice::factory()
+            ->create();
+        $item = Item::factory()->create(['price' => 500]);
+
+        InvoiceItem::create([
+            'invoice_id' => $invoice->id,
+            'item_id' => $item->id,
+            'quantity' => 1,
+            'item_price' => $item->price,
+        ]);
+
         // $this->user = User::factory()->create();
-        $this->model = Item::factory()->create();
+        $this->model = InvoiceCancellation::factory()->create([
+            'invoice_id' => $invoice->id,
+        ]);
 
         $this->routes = [
-            'index' => ItemResource::getUrl('index'),
-            // 'create' => ItemResource::getUrl('create'),
-            // 'edit' => ItemResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            // 'view' => ItemResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            'index' => InvoiceCancellationResource::getUrl('index'),
+            // 'create' => InvoiceCancellationResource::getUrl('create'),
+            // 'edit' => InvoiceCancellationResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => InvoiceCancellationResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -55,7 +71,7 @@ describe('Item Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('Item')->snake()->toString();
+                // $permission = str($permission)->append('InvoiceCancellation')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',
@@ -78,25 +94,20 @@ describe('Item Resource', function () {
         it('show the correct table', function () {
             $this->actingAs($this->user)
                 ->get($this->routes['index'])
-                ->assertSeeText('Items')
-                ->assertSeeText($this->model->name)
-                ->assertSeeText($this->model->campaign->name)
-                ->assertSeeText($this->model->price);
-            // ->assertSeeText($this->model->description)
+                ->assertSeeText('Cancellations')
+                ->assertSeeText($this->model->invoice->number)
+                ->assertSeeText($this->model->amount)
+                // ->assertSeeText($this->model->date)
+                ->assertSeeText($this->model->reference);
         });
-        // it('shows the create form', function () {
-        //     $this->actingAs($this->user)
-        //         ->get($this->routes['create'])
-        //         ->assertSeeText('Create Item');
-        // });
     });
 
     it('shows correct navigation sort', function () {
         expect(
-            ItemResource::getNavigationSort()
-        )->toBe(5);
+            InvoiceCancellationResource::getNavigationSort()
+        )->toBe(7);
         // ->and(
-        //     ItemResource::getNavigationGroup()
+        //     InvoiceCancellationResource::getNavigationGroup()
         // )->toBe('Invoicing')
     });
 });

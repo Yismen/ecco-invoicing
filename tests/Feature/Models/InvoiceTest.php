@@ -276,17 +276,18 @@ it('has many payments', function () {
     );
 });
 
-it('has a cancellation', function () {
+it('can have a cancellation', function () {
     $data = Invoice::factory()
-        ->hasCancellation()
+        ->has(InvoiceCancellation::factory(), 'cancellation')
         ->create();
-
-    dd($data->cancellation, InvoiceCancellation::first());
 
     $this->assertInstanceOf(
         \Illuminate\Database\Eloquent\Relations\HasOne::class,
         $data->cancellation()
     );
+
+    $data->load('cancellation');
+    
     $this->assertInstanceOf(
         InvoiceCancellation::class,
         $data->cancellation

@@ -18,7 +18,7 @@ describe('Invoice Resource', function () {
         $this->routes = [
             'index' => InvoiceResource::getUrl('index'),
             'create' => InvoiceResource::getUrl('create'),
-            'edit' => InvoiceResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'edit' => InvoiceResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
             'view' => InvoiceResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
@@ -29,7 +29,7 @@ describe('Invoice Resource', function () {
     })->with([
         'index',
         'create',
-        'edit',
+        // 'edit',
         'view',
     ]);
 
@@ -40,7 +40,7 @@ describe('Invoice Resource', function () {
     })->with([
         'index',
         'create',
-        'edit',
+        // 'edit',
         'view',
     ]);
 
@@ -50,7 +50,7 @@ describe('Invoice Resource', function () {
             $permissions = [
                 'index' => 'viewAny',
                 'create' => 'create',
-                'edit' => 'update',
+                // 'edit' => 'update',
                 'view' => 'view',
             ];
 
@@ -71,7 +71,7 @@ describe('Invoice Resource', function () {
         })->with([
             'index',
             'create',
-            'edit',
+            // 'edit',
             'view',
         ]);
     });

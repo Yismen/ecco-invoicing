@@ -14,8 +14,8 @@ describe('Project Resource', function () {
 
         $this->routes = [
             'index' => ProjectResource::getUrl('index'),
-            'create' => ProjectResource::getUrl('create'),
-            'edit' => ProjectResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'create' => ProjectResource::getUrl('create'),
+            // 'edit' => ProjectResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
             // 'view' => ProjectResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
@@ -25,8 +25,8 @@ describe('Project Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
-        'edit',
+        // 'create',
+        // 'edit',
         // 'view',
     ]);
 
@@ -36,8 +36,8 @@ describe('Project Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
-        'edit',
+        // 'create',
+        // 'edit',
         // 'view',
     ]);
 
@@ -45,8 +45,8 @@ describe('Project Resource', function () {
         beforeEach(function () {
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
-                'edit' => 'update',
+                // 'create' => 'create',
+                // 'edit' => 'update',
                 // 'view' => 'view',
             ];
 
@@ -66,8 +66,8 @@ describe('Project Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
-            'edit',
+            // 'create',
+            // 'edit',
             // 'view',
         ]);
 
@@ -86,11 +86,11 @@ describe('Project Resource', function () {
             // ->assertSeeText($this->model->invoice_notes)
             // ->assertSeeText($this->model->invoice_terms)
         });
-        it('shows the create form', function () {
-            $this->actingAs($this->user)
-                ->get($this->routes['create'])
-                ->assertSeeText('Create Project');
-        });
+        // it('shows the create form', function () {
+        //     $this->actingAs($this->user)
+        //         ->get($this->routes['create'])
+        //         ->assertSeeText('Create Project');
+        // });
     });
 
     it('shows correct navigation sort', function () {

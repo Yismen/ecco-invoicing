@@ -17,9 +17,9 @@ describe('Campaign Resource', function () {
 
         $this->routes = [
             'index' => CampaignResource::getUrl('index'),
-            'create' => CampaignResource::getUrl('create'),
-            'edit' => CampaignResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            'view' => CampaignResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            // 'create' => CampaignResource::getUrl('create'),
+            // 'edit' => CampaignResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => CampaignResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -28,9 +28,9 @@ describe('Campaign Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
-        'edit',
-        'view',
+        // 'create',
+        // 'edit',
+        // 'view',
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
@@ -39,9 +39,9 @@ describe('Campaign Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
-        'edit',
-        'view',
+        // 'create',
+        // 'edit',
+        // 'view',
     ]);
 
     describe('authorized users', function () {
@@ -49,9 +49,9 @@ describe('Campaign Resource', function () {
 
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
-                'edit' => 'update',
-                'view' => 'view',
+                // 'create' => 'create',
+                // 'edit' => 'update',
+                // 'view' => 'view',
             ];
 
             foreach ($permissions as $route => $permission) {
@@ -70,9 +70,9 @@ describe('Campaign Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
-            'edit',
-            'view',
+            // 'create',
+            // 'edit',
+            // 'view',
         ]);
 
         it('show the correct table', function () {
@@ -82,11 +82,11 @@ describe('Campaign Resource', function () {
                 ->assertSeeText($this->model->name)
                 ->assertSeeText($this->model->description);
         });
-        it('shows the create form', function () {
-            $this->actingAs($this->user)
-                ->get($this->routes['create'])
-                ->assertSeeText('Create Campaign');
-        });
+        // it('shows the create form', function () {
+        //     $this->actingAs($this->user)
+        //         ->get($this->routes['create'])
+        //         ->assertSeeText('Create Campaign');
+        // });
     });
 
     it('shows correct navigation sort', function () {

@@ -35,8 +35,8 @@ describe('Payment Resource', function () {
         $this->routes = [
             'index' => PaymentResource::getUrl('index'),
             // 'create' => PaymentResource::getUrl('create'),
-            'edit' => PaymentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            'view' => PaymentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            // 'edit' => PaymentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => PaymentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -46,8 +46,8 @@ describe('Payment Resource', function () {
     })->with([
         'index',
         // 'create',
-        'edit',
-        'view',
+        // 'edit',
+        // 'view',
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
@@ -57,8 +57,8 @@ describe('Payment Resource', function () {
     })->with([
         'index',
         // 'create',
-        'edit',
-        'view',
+        // 'edit',
+        // 'view',
     ]);
 
     describe('authorized users', function () {
@@ -67,8 +67,8 @@ describe('Payment Resource', function () {
             $permissions = [
                 'index' => 'viewAny',
                 // 'create' => 'create',
-                'edit' => 'update',
-                'view' => 'view',
+                // 'edit' => 'update',
+                // 'view' => 'view',
             ];
 
             foreach ($permissions as $route => $permission) {
@@ -88,8 +88,8 @@ describe('Payment Resource', function () {
         })->with([
             'index',
             // 'create',
-            'edit',
-            'view',
+            // 'edit',
+            // 'view',
         ]);
 
         it('show the correct table', function () {

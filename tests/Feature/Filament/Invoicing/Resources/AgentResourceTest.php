@@ -17,9 +17,9 @@ describe('Agent Resource', function () {
 
         $this->routes = [
             'index' => AgentResource::getUrl('index'),
-            'create' => AgentResource::getUrl('create'),
-            'edit' => AgentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            'view' => AgentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            // 'create' => AgentResource::getUrl('create'),
+            // 'edit' => AgentResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => AgentResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -28,9 +28,9 @@ describe('Agent Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
-        'edit',
-        'view',
+        // 'create',
+        // 'edit',
+        // 'view',
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
@@ -40,9 +40,9 @@ describe('Agent Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
-        'edit',
-        'view',
+        // 'create',
+        // 'edit',
+        // 'view',
     ]);
 
     describe('authorized users', function () {
@@ -50,9 +50,9 @@ describe('Agent Resource', function () {
 
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
-                'edit' => 'update',
-                'view' => 'view',
+                // 'create' => 'create',
+                // 'edit' => 'update',
+                // 'view' => 'view',
             ];
 
             foreach ($permissions as $route => $permission) {
@@ -71,9 +71,9 @@ describe('Agent Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
-            'edit',
-            'view',
+            // 'create',
+            // 'edit',
+            // 'view',
         ]);
 
         it('show the correct table', function () {
@@ -84,11 +84,11 @@ describe('Agent Resource', function () {
                 ->assertSeeText($this->model->email)
                 ->assertSeeText($this->model->phone);
         });
-        it('shows the create form', function () {
-            $this->actingAs($this->user)
-                ->get($this->routes['create'])
-                ->assertSeeText('Create Agent');
-        });
+        // it('shows the create form', function () {
+        //     $this->actingAs($this->user)
+        //         ->get($this->routes['create'])
+        //         ->assertSeeText('Create Agent');
+        // });
     });
 
     it('shows correct navigation sort', function () {

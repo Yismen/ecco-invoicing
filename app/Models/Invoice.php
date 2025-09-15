@@ -20,7 +20,6 @@ class Invoice extends Model
 
     /** @use HasFactory<\Database\Factories\InvoiceFactory> */
     use HasFactory;
-
     use SoftDeletes;
 
     protected $fillable = [

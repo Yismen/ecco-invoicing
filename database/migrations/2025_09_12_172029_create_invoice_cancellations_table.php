@@ -20,6 +20,7 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->dateTime('date');
             $table->text('comments');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

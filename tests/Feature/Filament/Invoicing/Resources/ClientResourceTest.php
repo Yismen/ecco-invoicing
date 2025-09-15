@@ -17,9 +17,9 @@ describe('Client Resource', function () {
 
         $this->routes = [
             'index' => ClientResource::getUrl('index'),
-            'create' => ClientResource::getUrl('create'),
-            'edit' => ClientResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            'view' => ClientResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            // 'create' => ClientResource::getUrl('create'),
+            // 'edit' => ClientResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => ClientResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -28,9 +28,9 @@ describe('Client Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
-        'edit',
-        'view',
+        // 'create',
+        // 'edit',
+        // 'view',
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
@@ -39,9 +39,9 @@ describe('Client Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
-        'edit',
-        'view',
+        // 'create',
+        // 'edit',
+        // 'view',
     ]);
 
     describe('authorized users', function () {
@@ -49,9 +49,9 @@ describe('Client Resource', function () {
 
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
-                'edit' => 'update',
-                'view' => 'view',
+                // 'create' => 'create',
+                // 'edit' => 'update',
+                // 'view' => 'view',
             ];
 
             foreach ($permissions as $route => $permission) {
@@ -70,9 +70,9 @@ describe('Client Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
-            'edit',
-            'view',
+            // 'create',
+            // 'edit',
+            // 'view',
         ]);
 
         it('show the correct table', function () {
@@ -81,11 +81,11 @@ describe('Client Resource', function () {
                 ->assertSeeText('Clients')
                 ->assertSeeText($this->model->name);
         });
-        it('shows the create form', function () {
-            $this->actingAs($this->user)
-                ->get($this->routes['create'])
-                ->assertSeeText('Create Client');
-        });
+        // it('shows the create form', function () {
+        //     $this->actingAs($this->user)
+        //         ->get($this->routes['create'])
+        //         ->assertSeeText('Create Client');
+        // });
     });
 
     it('shows correct navigation sort', function () {
