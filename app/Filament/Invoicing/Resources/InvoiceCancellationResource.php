@@ -9,11 +9,10 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Enums\InvoiceStatuses;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use App\Models\InvoiceCancellation;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Invoicing\Resources\InvoiceCancellationResource\Pages;
-use App\Filament\Invoicing\Resources\InvoiceCancellationResource\RelationManagers;
 
 class InvoiceCancellationResource extends Resource
 {
@@ -112,11 +111,17 @@ class InvoiceCancellationResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Restore')
+                    ->color(Color::Green)
+                    ->icon('heroicon-s-arrow-path')
+                    ->modalHeading('Remove Cancellation')
+                    ->modalDescription('Are you sure you want to remove this cancellation and restore this invoice?')
+                    ->modalSubmitActionLabel('Restore'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
