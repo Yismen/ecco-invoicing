@@ -144,7 +144,7 @@ class Invoice extends Model
 
     protected function getStatus(): InvoiceStatuses
     {
-        if ($this->total_paid == 0 && $this->cancellation?->exists()) {
+        if ($this->total_paid == 0 && $this->cancellation) {
             return InvoiceStatuses::Cancelled;
         }
 

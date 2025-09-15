@@ -2,6 +2,7 @@
 
 namespace App\Filament\Invoicing\Resources;
 
+use App\Enums\InvoiceStatuses;
 use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
@@ -427,6 +428,49 @@ class InvoiceResource extends Resource
                         ->form(InvoicePaymentForm::make())
                         ->action(function (array $data, Invoice $record): void {
                             $record->payments()->create($data);
+                        }),
+                    Tables\Actions\Action::make('Cancel')
+                        ->visible(fn ($record) => $record->total_paid == 0 && !$record->cancellation()->exists())
+                        ->color(Color::Red)
+                        ->icon('heroicon-s-archive-box-x-mark')
+                        ->form([
+                            Forms\Components\DatePicker::make('cancellation_date')
+                                ->required()
+                                ->default(now())
+                                ->minDate(fn (Invoice $record) => $record->date)
+                                ->maxDate(now()),
+                            Forms\Components\Textarea::make('comments')
+                                ->required()
+                                ->minLength(10)
+                                ->columnSpanFull()
+                        ])
+                        ->modalHeading(fn ($record) => "Cancel invoice {$record->number}")
+                        ->modalDescription('Are you 100% certain you want to cancel this invoice?')
+                        ->action(function (array $data, Invoice $record): void {
+                            $record->cancellation()->create($data);
+
+                            Notification::make()
+                                ->danger()
+                                ->title('Invoice Cancelled')
+                                ->body("Invoice {$record->number} has been cancelled!")
+                                ->send();
+                        }),
+                    Tables\Actions\Action::make('restore')
+                        ->label('Restore Invoice')
+                        ->visible(fn ($record) => $record->status === InvoiceStatuses::Cancelled && $record->cancellation()->exists())
+                        ->color(Color::Green)
+                        ->icon('heroicon-s-arrow-path')
+                        ->requiresConfirmation()
+                        ->modalHeading(fn ($record) => "Restore invoice {$record->number}")
+                        ->modalDescription('Are you 100% certain you want to restore/remove cancellation for this invoice?')
+                        ->action(function (array $data, Invoice $record): void {
+                            $record->cancellation->delete();
+
+                            Notification::make()
+                                ->warning()
+                                ->title('Invoice restored')
+                                ->body("Invoice {$record->number} has been restored!")
+                                ->send();
                         }),
                     DownloadInvoiceAction::make(),
                 ]),

@@ -25,7 +25,8 @@ class InvoiceTableFilters
                             Forms\Components\DatePicker::make('from')
                                 ->label('From Date'),
                             Forms\Components\DatePicker::make('to')
-                                ->label('To Date'),
+                                ->label('To Date')
+                                ->maxDate(now()),
                         ])
                     ])
                     ->query(function (Builder $query, array $data): void {

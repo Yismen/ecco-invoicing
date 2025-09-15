@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\PreventCancellingInvoiceWithPaymentException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,8 +28,16 @@ class InvoiceCancellation extends Model
         parent::boot();
 
         static::saved(function (self $invoiceCancellation) {
+            throw_if(
+                $invoiceCancellation->invoice->payments()->sum('amount'),
+                new PreventCancellingInvoiceWithPaymentException('Invoice has payments already!')
+            );
+
             $invoiceCancellation->invoice->touch();
         });
 
+        static::deleted(function (self $invoiceCancellation) {
+            $invoiceCancellation->invoice->touch();
+        });
     }
 }
