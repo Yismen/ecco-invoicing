@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoice_cancellations', function (Blueprint $table) {
+        Schema::create('cancellations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Invoice::class)
                 ->constrained()
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoice_cancellations');
+        Schema::dropIfExists('cancellations');
     }
 };

@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\InvoiceCancellation;
+use App\Models\Cancellation;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class InvoiceCancellationPolicy
+class CancellationPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class InvoiceCancellationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_invoice_cancellation');
+        return $user->can('view_any_cancellation');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, InvoiceCancellation $invoice_cancellation): bool
+    public function view(User $user, Cancellation $cancellation): bool
     {
-        return $user->can('view_invoice_cancellation');
+        return $user->can('view_cancellation');
     }
 
     /**
@@ -31,23 +31,23 @@ class InvoiceCancellationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_invoice_cancellation');
+        return $user->can('create_cancellation');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, InvoiceCancellation $invoice_cancellation): bool
+    public function update(User $user, Cancellation $cancellation): bool
     {
-        return $user->can('update_invoice_cancellation');
+        return $user->can('update_cancellation');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, InvoiceCancellation $invoice_cancellation): bool
+    public function delete(User $user, Cancellation $cancellation): bool
     {
-        return $user->can('delete_invoice_cancellation');
+        return $user->can('delete_cancellation');
     }
 
     /**
@@ -55,15 +55,15 @@ class InvoiceCancellationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_invoice_cancellation');
+        return $user->can('delete_any_cancellation');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, InvoiceCancellation $invoice_cancellation): bool
+    public function forceDelete(User $user, Cancellation $cancellation): bool
     {
-        return $user->can('force_delete_invoice_cancellation');
+        return $user->can('force_delete_cancellation');
     }
 
     /**
@@ -71,15 +71,15 @@ class InvoiceCancellationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_invoice_cancellation');
+        return $user->can('force_delete_any_cancellation');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, InvoiceCancellation $invoice_cancellation): bool
+    public function restore(User $user, Cancellation $cancellation): bool
     {
-        return $user->can('restore_invoice_cancellation');
+        return $user->can('restore_cancellation');
     }
 
     /**
@@ -87,15 +87,15 @@ class InvoiceCancellationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_invoice_cancellation');
+        return $user->can('restore_any_cancellation');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, InvoiceCancellation $invoice_cancellation): bool
+    public function replicate(User $user, Cancellation $cancellation): bool
     {
-        return $user->can('replicate_invoice_cancellation');
+        return $user->can('replicate_cancellation');
     }
 
     /**
@@ -103,6 +103,6 @@ class InvoiceCancellationPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_invoice_cancellation');
+        return $user->can('reorder_cancellation');
     }
 }

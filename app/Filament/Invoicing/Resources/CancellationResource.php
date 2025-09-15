@@ -10,13 +10,13 @@ use Filament\Tables\Table;
 use App\Enums\InvoiceStatuses;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
-use App\Models\InvoiceCancellation;
+use App\Models\Cancellation;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Invoicing\Resources\InvoiceCancellationResource\Pages;
+use App\Filament\Invoicing\Resources\CancellationResource\Pages;
 
-class InvoiceCancellationResource extends Resource
+class CancellationResource extends Resource
 {
-    protected static ?string $model = InvoiceCancellation::class;
+    protected static ?string $model = Cancellation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -129,7 +129,7 @@ class InvoiceCancellationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageInvoiceCancellations::route('/'),
+            'index' => Pages\ManageCancellations::route('/'),
         ];
     }
 }

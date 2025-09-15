@@ -6,9 +6,9 @@ use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InvoiceCancellation>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Cancellation>
  */
-class InvoiceCancellationFactory extends Factory
+class CancellationFactory extends Factory
 {
     /**
      * Define the model's default state.

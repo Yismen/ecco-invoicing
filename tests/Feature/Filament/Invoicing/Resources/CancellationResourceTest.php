@@ -1,15 +1,15 @@
 <?php
 
-use App\Filament\Invoicing\Resources\InvoiceCancellationResource;
+use App\Filament\Invoicing\Resources\CancellationResource;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
-use App\Models\InvoiceCancellation;
+use App\Models\Cancellation;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
 
-describe('InvoiceCancellation Resource', function () {
+describe('Cancellation Resource', function () {
     beforeEach(function () {
         Filament::setCurrentPanel(
             Filament::getPanel('invoicing')
@@ -27,15 +27,15 @@ describe('InvoiceCancellation Resource', function () {
         ]);
 
         // $this->user = User::factory()->create();
-        $this->model = InvoiceCancellation::factory()->create([
+        $this->model = Cancellation::factory()->create([
             'invoice_id' => $invoice->id,
         ]);
 
         $this->routes = [
-            'index' => InvoiceCancellationResource::getUrl('index'),
-            // 'create' => InvoiceCancellationResource::getUrl('create'),
-            // 'edit' => InvoiceCancellationResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
-            // 'view' => InvoiceCancellationResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
+            'index' => CancellationResource::getUrl('index'),
+            // 'create' => CancellationResource::getUrl('create'),
+            // 'edit' => CancellationResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
+            // 'view' => CancellationResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
 
@@ -71,7 +71,7 @@ describe('InvoiceCancellation Resource', function () {
             ];
 
             foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('InvoiceCancellation')->snake()->toString();
+                // $permission = str($permission)->append('Cancellation')->snake()->toString();
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',
@@ -104,10 +104,10 @@ describe('InvoiceCancellation Resource', function () {
 
     it('shows correct navigation sort', function () {
         expect(
-            InvoiceCancellationResource::getNavigationSort()
+            CancellationResource::getNavigationSort()
         )->toBe(7);
         // ->and(
-        //     InvoiceCancellationResource::getNavigationGroup()
+        //     CancellationResource::getNavigationGroup()
         // )->toBe('Invoicing')
     });
 });

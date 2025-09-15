@@ -123,7 +123,7 @@ class Invoice extends Model
 
     public function cancellation(): HasOne
     {
-        return $this->hasOne(InvoiceCancellation::class, 'invoice_id');
+        return $this->hasOne(Cancellation::class, 'invoice_id');
     }
 
     public function items(): BelongsToMany

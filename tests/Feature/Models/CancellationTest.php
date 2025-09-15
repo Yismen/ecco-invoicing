@@ -2,17 +2,17 @@
 
 use App\Enums\InvoiceStatuses;
 use App\Exceptions\PreventCancellingInvoiceWithPaymentException;
-use App\Models\InvoiceCancellation;
+use App\Models\Cancellation;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Payment;
 
 it('save correct fields', function () {
-    $data = InvoiceCancellation::factory()->make();
+    $data = Cancellation::factory()->make();
 
-    InvoiceCancellation::create($data->toArray());
+    Cancellation::create($data->toArray());
 
-    $this->assertDatabaseHas(InvoiceCancellation::class, $data->only([
+    $this->assertDatabaseHas(Cancellation::class, $data->only([
         'invoice_id',
         'date',
         'comments',
@@ -20,7 +20,7 @@ it('save correct fields', function () {
 });
 
 it('belogns to an invoice', function () {
-    $data = InvoiceCancellation::factory()
+    $data = Cancellation::factory()
         ->hasInvoice()
         ->create();
 
@@ -42,7 +42,7 @@ it('change invoice status when created', function() {
     expect($invoice->status)
         ->toBe(InvoiceStatuses::Pending);
 
-    InvoiceCancellation::factory()->create([
+    Cancellation::factory()->create([
         'invoice_id' => $invoice->id
     ]);
 
@@ -63,7 +63,7 @@ it('prevents cancelling invoices with payments', function() {
         'amount' => 5
     ]);
 
-    InvoiceCancellation::factory()->create([
+    Cancellation::factory()->create([
         'invoice_id' => $invoice->id
     ]);
 

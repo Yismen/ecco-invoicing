@@ -3,7 +3,7 @@
 use App\Enums\InvoiceStatuses;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\InvoiceCancellation;
+use App\Models\Cancellation;
 use App\Models\InvoiceItem;
 use App\Models\Item;
 use App\Models\Payment;
@@ -278,7 +278,7 @@ it('has many payments', function () {
 
 it('can have a cancellation', function () {
     $data = Invoice::factory()
-        ->has(InvoiceCancellation::factory(), 'cancellation')
+        ->has(Cancellation::factory(), 'cancellation')
         ->create();
 
     $this->assertInstanceOf(
@@ -287,9 +287,9 @@ it('can have a cancellation', function () {
     );
 
     $data->load('cancellation');
-    
+
     $this->assertInstanceOf(
-        InvoiceCancellation::class,
+        Cancellation::class,
         $data->cancellation
     );
 });

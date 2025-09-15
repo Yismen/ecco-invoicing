@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InvoiceCancellation extends Model
+class Cancellation extends Model
 {
     use \App\Traits\Models\InteracstsWithModelCaching;
     use SoftDeletes;
-    /** @use HasFactory<\Database\Factories\InvoiceCancellationFactory> */
+    /** @use HasFactory<\Database\Factories\CancellationFactory> */
     use HasFactory;
 
     protected $fillable = [
