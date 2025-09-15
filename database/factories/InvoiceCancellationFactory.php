@@ -19,7 +19,7 @@ class InvoiceCancellationFactory extends Factory
     {
         return [
             'invoice_id' => Invoice::factory(),
-            'cancellation_date' => now(),
+            'date' => now(),
             'comments' => $this->faker->paragraph()
         ];
     }

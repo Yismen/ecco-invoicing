@@ -43,7 +43,7 @@ class InvoiceCancellationResource extends Resource
                             ->toArray()
                     )
                     ->required(),
-                Forms\Components\DatePicker::make('cancellation_date')
+                Forms\Components\DatePicker::make('date')
                     ->minDate(now()->subMonths(3))
                     ->maxDate(now())
                     ->default(now())
@@ -62,7 +62,7 @@ class InvoiceCancellationResource extends Resource
                 Tables\Columns\TextColumn::make('invoice.number')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cancellation_date')
+                Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -75,7 +75,7 @@ class InvoiceCancellationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('cancellation_date')
+                Tables\Filters\Filter::make('date')
                     ->form([
                         Forms\Components\Grid::make(2)
                         ->schema([
@@ -88,11 +88,11 @@ class InvoiceCancellationResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): void {
                         if ($data['from']) {
-                            $query->whereDate('cancellation_date', '>=', $data['from']);
+                            $query->whereDate('date', '>=', $data['from']);
                         }
 
                         if ($data['to']) {
-                            $query->whereDate('cancellation_date', '<=', $data['to']);
+                            $query->whereDate('date', '<=', $data['to']);
                         }
                     })
                     ->indicateUsing(function (array $data): array {

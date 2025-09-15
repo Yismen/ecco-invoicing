@@ -14,7 +14,7 @@ it('save correct fields', function () {
 
     $this->assertDatabaseHas(InvoiceCancellation::class, $data->only([
         'invoice_id',
-        'cancellation_date',
+        'date',
         'comments',
     ]));
 });

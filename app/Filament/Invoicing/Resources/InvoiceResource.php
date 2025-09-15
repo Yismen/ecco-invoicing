@@ -434,7 +434,7 @@ class InvoiceResource extends Resource
                         ->color(Color::Red)
                         ->icon('heroicon-s-archive-box-x-mark')
                         ->form([
-                            Forms\Components\DatePicker::make('cancellation_date')
+                            Forms\Components\DatePicker::make('date')
                                 ->required()
                                 ->default(now())
                                 ->minDate(fn (Invoice $record) => $record->date)

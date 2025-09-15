@@ -14,7 +14,7 @@ class InvoiceCancellation extends Model
 
     protected $fillable = [
         'invoice_id',
-        'cancellation_date',
+        'date',
         'comments',
     ];
 

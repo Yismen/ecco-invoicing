@@ -18,7 +18,7 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->dateTime('cancellation_date');
+            $table->dateTime('date');
             $table->text('comments');
             $table->timestamps();
         });
