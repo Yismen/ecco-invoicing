@@ -27,6 +27,7 @@ class UpdateInvoicesStatus extends Command
     {
         \App\Models\Invoice::query()
             ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
+            ->with(['cancellation'])
             ->get()
             ->each
             ->touch();
