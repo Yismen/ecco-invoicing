@@ -79,7 +79,7 @@ describe('Invoice Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             InvoiceResource::getNavigationSort()
-        )->toBe(6);
+        )->toBe(1);
         // ->and(
         //     InvoiceResource::getNavigationGroup()
         // )->toBe('Invoicing')
