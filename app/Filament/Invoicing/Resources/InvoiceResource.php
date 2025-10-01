@@ -423,6 +423,7 @@ class InvoiceResource extends Resource
                     Tables\Actions\ViewAction::make()
                         ->openUrlInNewTab(),
                     Tables\Actions\EditAction::make()
+                        ->visible(fn ($record) => $record->status !== InvoiceStatuses::Paid)
                         ->modalWidth('7xl')
                         ->stickyModalHeader()
                         ->closeModalByClickingAway(false)

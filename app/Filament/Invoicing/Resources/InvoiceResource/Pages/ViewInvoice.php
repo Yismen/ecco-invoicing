@@ -2,11 +2,12 @@
 
 namespace App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 
-use App\Filament\Actions\DownloadInvoiceAction;
-use App\Filament\Actions\PayInvoiceAction;
-use App\Filament\Invoicing\Resources\InvoiceResource;
 use Filament\Actions;
+use App\Enums\InvoiceStatuses;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Actions\PayInvoiceAction;
+use App\Filament\Actions\DownloadInvoiceAction;
+use App\Filament\Invoicing\Resources\InvoiceResource;
 
 class ViewInvoice extends ViewRecord
 {
@@ -15,7 +16,8 @@ class ViewInvoice extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Actions\EditAction::make()
+                ->visible(fn ($record) => $record->status !== InvoiceStatuses::Paid),
             PayInvoiceAction::make(),
             DownloadInvoiceAction::make(),
 
