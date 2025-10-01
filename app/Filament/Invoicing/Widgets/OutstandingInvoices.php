@@ -2,24 +2,25 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use App\Enums\InvoiceStatuses;
-use App\Filament\Exports\InvoiceExporter;
+use Filament\Forms;
+use Filament\Tables;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
-use App\Services\ModelListService;
-use Filament\Forms;
-use Filament\Support\Colors\Color;
-use Filament\Tables;
-use Filament\Tables\Columns\Summarizers\Summarizer;
-use Filament\Tables\Concerns\CanPaginateRecords;
 use Filament\Tables\Table;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Arr;
+use App\Enums\InvoiceStatuses;
 use Illuminate\Support\Number;
+use App\Services\ModelListService;
+use Filament\Support\Colors\Color;
+use App\Filament\Exports\InvoiceExporter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Tables\Concerns\CanPaginateRecords;
+use Filament\Tables\Columns\Summarizers\Summarizer;
+use App\Filament\Invoicing\Resources\InvoiceResource;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class OutstandingInvoices extends BaseWidget
 {
@@ -92,7 +93,7 @@ class OutstandingInvoices extends BaseWidget
                     ->label('View')
                     ->color('primary')
                     ->icon('heroicon-o-eye')
-                    ->url(fn (Invoice $record): string => route('filament.invoicing.resources.invoices.view', ['record' => $record->id]))
+                    ->url(fn (Invoice $record): string => InvoiceResource::getUrl('view', ['record' => $record->getRouteKey()]))
                     ->openUrlInNewTab(),
             ])
             ->filtersFormColumns(2)
