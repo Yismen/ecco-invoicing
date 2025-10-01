@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Services\Filament\Filters\InvoiceTableFilters;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
+use Spatie\Activitylog\Contracts\Activity;
 
 class InvoiceResource extends Resource
 {
@@ -555,7 +556,7 @@ class InvoiceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\ActivitiesRelationManager::class,
         ];
     }
 
