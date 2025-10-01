@@ -7,32 +7,29 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Contracts\View\View;
 
 class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'activities';
 
-    // public function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             Forms\Components\TextInput::make('Changes')
-    //                 ->required()
-    //                 ->maxLength(255),
-    //         ]);
-    // }
-
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('Changes')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('Changes')
-                    ->getStateUsing(function ($record) {
-                        return $record->changes;
-                    }),
+                    // ->getStateUsing(function ($record) {
+                    //     dd($record);
+                    //     return $record->changes;
+                    // })
+                    ->formatStateUsing(fn (\Illuminate\Database\Eloquent\Model $record): View => view('filament.partials.invoice-activities-column', [
+                        'activity' => $record->load([
+                            'causer'
+                            ])
+                        ]))
+                    ,
             ])
             ->filters([
                 //
