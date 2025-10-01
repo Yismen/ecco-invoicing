@@ -2,7 +2,6 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Enums\InvoiceStatuses;
 use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
@@ -15,12 +14,16 @@ use App\Models\Campaign;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\InvoiceItem;
+use App\Enums\InvoiceStatuses;
 use Illuminate\Support\Number;
 use Filament\Resources\Resource;
 use App\Services\ModelListService;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Notifications\Notification;
 use App\Filament\Exports\InvoiceExporter;
+use App\Rules\UniqueByParentRelationship;
+use Filament\Pages\SubNavigationPosition;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\Filament\Forms\ProjectForm;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,10 +32,9 @@ use App\Filament\Actions\DownloadInvoiceAction;
 use App\Services\Filament\Forms\InvoicePaymentForm;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Services\Filament\Filters\InvoiceTableFilters;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use App\Rules\UniqueByParentRelationship;
-use App\Services\Filament\Filters\InvoiceTableFilters;
 
 class InvoiceResource extends Resource
 {
@@ -40,9 +42,13 @@ class InvoiceResource extends Resource
 
     // protected static ?string $navigationGroup = 'Invoicing';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?string $cluster = \App\Filament\Invoicing\Clusters\InvoicesCluster::class;
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function form(Form $form): Form
     {

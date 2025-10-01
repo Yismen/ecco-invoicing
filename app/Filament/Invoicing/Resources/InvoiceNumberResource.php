@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Filament\Invoicing\Resources;
+
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Invoice;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Pages\SubNavigationPosition;
+
+class InvoiceNumberResource extends Resource
+{
+    protected static ?string $model = Invoice::class;
+
+    protected static ?string $navigationLabel = 'Invoice Numbers';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $cluster = \App\Filament\Invoicing\Clusters\InvoicesCluster::class;
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Placeholder::make('number')
+                    ->label('Original Invoice Number')
+                    ->content(fn (?Invoice $record): string => $record->number),
+                Forms\Components\TextInput::make('number')
+                    ->label('New Invoice Number')
+                    ->required()
+                    ->unique(ignorable: fn ($record) => $record)
+                    ->minLength(5)
+                    ->maxLength(255),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('number')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('project.name')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('agent.name')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('campaign.name')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('balance_pending')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->formatStateUsing(fn ($state) => $state->getLabel())
+                    ->badge()
+                    ->sortable()
+                    ->color(fn ($state) => $state->getColor()),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+            ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => \App\Filament\Invoicing\Resources\InvoiceResource\Pages\ManageInvoiceNumbers::route('/'),
+        ];
+    }
+}

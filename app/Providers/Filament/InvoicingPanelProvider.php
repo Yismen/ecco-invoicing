@@ -43,6 +43,7 @@ class InvoicingPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Invoicing/Widgets'), for: 'App\\Filament\\Invoicing\\Widgets')
+            ->discoverClusters(in: app_path('Filament/Invoicing/Clusters'), for: 'App\\Filament\\Invoicing\\Clusters')
             ->databaseNotifications()
             ->widgets([
                 Widgets\AccountWidget::class,
