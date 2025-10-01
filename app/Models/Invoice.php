@@ -4,23 +4,24 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Enums\InvoiceStatuses;
+use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Model;
 use App\Services\GenerateInvoiceNumberService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
     use \App\Traits\Models\InteracstsWithModelCaching;
 
-    /** @use HasFactory<\Database\Factories\InvoiceFactory> */
-    use HasFactory;
-    use SoftDeletes;
+    /** @use Illuminate\Database\Eloquent\Factories\HasFactory<\Database\Factories\InvoiceFactory> */
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
+    use \Illuminate\Database\Eloquent\SoftDeletes;
+    use \Spatie\Activitylog\Traits\LogsActivity;
+
 
     protected $fillable = [
         'number',
@@ -163,5 +164,23 @@ class Invoice extends Model
         return Attribute::make(
             get: fn ($value) => $value ?: GenerateInvoiceNumberService::generate($this->project),
         );
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'number',
+                'date',
+                'project_id',
+                'agent_id',
+                'campaign_id',
+                'total_amount',
+                'balance_pending',
+                'status',
+                'due_date',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }
