@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Enums\InvoiceStatuses;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GenerateInvoiceNumberService;
@@ -182,5 +183,14 @@ class Invoice extends Model
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    public function cancel(string $reason): Cancellation
+    {
+        return Cancellation::create([
+            'invoice_id' => $this->id,
+            'date' => now(),
+            'comments' => $reason,
+        ]);
     }
 }

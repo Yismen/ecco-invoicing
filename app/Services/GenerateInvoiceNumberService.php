@@ -18,7 +18,15 @@ class GenerateInvoiceNumberService
                     config('app.company.short_name'),
                     $project->client->invoiceNamePrefix(3),
                     $project->invoiceNamePrefix(),
-                    str($project->invoices()->count() + 1)->padLeft(config('app.company.invoice_length', 4), 0),
+                    str(
+                        $project
+                            ->invoices()
+                            ->withTrashed()
+                            ->count() + 1
+                    )->padLeft(
+                        length: config('app.company.invoice_length', 4),
+                        pad: 0
+                    ),
                 ]);
 
             }

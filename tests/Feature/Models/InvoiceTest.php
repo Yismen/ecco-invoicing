@@ -294,6 +294,64 @@ it('can have a cancellation', function () {
     );
 });
 
+it('increase invoice number even if an invoice has a cancelled', function () {
+    config()->set('app.company.short_name', 'ECC');
+    config()->set('app.company.invoice_length', 8);
+    $project = Project::factory()
+        ->state(['name' => 'Project Name one'])
+        ->for(
+            Client::factory()
+                ->state(['name' => 'cLIENT number one'])
+        )
+        ->create();
+
+    $invoice1 = Invoice::factory()
+        ->for(
+            $project
+        )
+        ->create();
+
+    $invoice1->cancel('client did not like the work');
+
+    $invoice2 = Invoice::factory()
+        ->for($project)
+        ->create();
+
+    expect($invoice1->number)
+        ->toBe('ECC-CLI-PROJECT-00000001');
+    expect($invoice2->number)
+        ->toBe('ECC-CLI-PROJECT-00000002');
+});
+
+it('increase invoice number even if an invoice has been trashed', function () {
+    config()->set('app.company.short_name', 'ECC');
+    config()->set('app.company.invoice_length', 8);
+    $project = Project::factory()
+        ->state(['name' => 'Project Name one'])
+        ->for(
+            Client::factory()
+                ->state(['name' => 'cLIENT number one'])
+        )
+        ->create();
+
+    $invoice1 = Invoice::factory()
+        ->for(
+            $project
+        )
+        ->create();
+
+    $invoice1->delete();
+
+    $invoice2 = Invoice::factory()
+        ->for($project)
+        ->create();
+
+    expect($invoice1->number)
+        ->toBe('ECC-CLI-PROJECT-00000001');
+    expect($invoice2->number)
+        ->toBe('ECC-CLI-PROJECT-00000002');
+});
+
 it('allows partial payments and calculates total paid', function () {
     $invoice = Invoice::factory()
         ->create();
@@ -491,7 +549,3 @@ it('retrieves the price as a float', function () {
     $this->assertEquals(300.00, $invoice->total_paid);
     $this->assertEquals(0.00, $invoice->balance_pending);
 });
-
-// invoice have a canncellation
-
-// status change when cancelled
