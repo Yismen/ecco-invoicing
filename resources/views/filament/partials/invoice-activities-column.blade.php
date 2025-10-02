@@ -1,4 +1,4 @@
-<div class="flex gap-2">
+<div class="flex gap-2 justify-start items-start">
     {{-- {{ dd($activity->changes['old']) }} --}}
     <p>
         <small class="text-gray-500">
@@ -26,7 +26,12 @@
             @endphp
             @if ($item['old_value'] !== $item['new_value'])
                 <div class="bg-gray-100 p-2 rounded border border-gray-300 text-xs text-wrap ">
-                    <strong>{{ $item['field'] }}</strong>: {{ $item['old_value'] }} &rarr; {{ $item['new_value'] }}
+                    <strong>
+                        {{ $item['field'] }}:
+                     </strong>
+                    <span class="text-wrap" style="color: rgb(170, 10, 10);">{{ $item['old_value'] }}</span>
+                    &rarr;
+                    <span class="text-wrap" style="color: rgb(9, 81, 9);">{{ $item['new_value'] }}</span>
                 </div>
             @endif
         @endforeach
