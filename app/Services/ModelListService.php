@@ -9,8 +9,8 @@ class ModelListService
 {
     public static function get(
         string|Builder $model,
-        string $key_field,
-        string $value_field,
+        string $key_field = 'id',
+        string $value_field = 'name',
         array $conditions = []
     ): array {
         if (filled($conditions) && isset($conditions[0]) && ! is_array($conditions[0])) {
