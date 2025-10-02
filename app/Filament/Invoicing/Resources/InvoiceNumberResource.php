@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Pages\SubNavigationPosition;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Services\Filament\Filters\InvoiceTableFilters;
 
 class InvoiceNumberResource extends Resource
 {
@@ -85,9 +86,10 @@ class InvoiceNumberResource extends Resource
                     ->sortable()
                     ->color(fn ($state) => $state->getColor()),
             ])
-            ->filters([
-                //
-            ])
+            ->filtersFormColumns(2)
+            ->deferFilters()
+            ->filters(InvoiceTableFilters::make())
+
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
