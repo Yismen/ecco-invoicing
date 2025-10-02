@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Pages\SubNavigationPosition;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class InvoiceNumberResource extends Resource
 {
@@ -43,6 +45,7 @@ class InvoiceNumberResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('date', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('date')
                     ->date()
@@ -50,18 +53,26 @@ class InvoiceNumberResource extends Resource
                 Tables\Columns\TextColumn::make('number')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('project.client.name')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('project.name')
                     ->numeric()
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('agent.name')
                     ->numeric()
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('campaign.name')
                     ->numeric()
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable(),
@@ -89,5 +100,14 @@ class InvoiceNumberResource extends Resource
         return [
             'index' => \App\Filament\Invoicing\Resources\InvoiceResource\Pages\ManageInvoiceNumbers::route('/'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with('project.client', 'agent', 'campaign')
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

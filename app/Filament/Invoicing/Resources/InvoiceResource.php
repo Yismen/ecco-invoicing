@@ -19,7 +19,6 @@ use Illuminate\Support\Number;
 use Filament\Resources\Resource;
 use App\Services\ModelListService;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Notifications\Notification;
 use App\Filament\Exports\InvoiceExporter;
 use App\Rules\UniqueByParentRelationship;
@@ -35,7 +34,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Services\Filament\Filters\InvoiceTableFilters;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use App\Filament\Invoicing\Resources\InvoiceResource\Pages;
-use Spatie\Activitylog\Contracts\Activity;
 
 class InvoiceResource extends Resource
 {
@@ -358,8 +356,26 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('project.client.name')
+                    ->label('Client')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('project.name')
+                    ->label('Project')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('campaign.name')
+                    ->label('Campaign')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('agent.name')
-                    ->sortable(),
+                    ->label('Agent')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('subtotal_amount')
                     ->numeric()
                     ->money()
@@ -396,13 +412,13 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('project.client.invoice_template')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('project.invoice_notes')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('project.invoice_terms')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('project.client.invoice_template')
+                //     ->searchable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('project.invoice_notes')
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('project.invoice_terms')
+                //     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -481,7 +497,9 @@ class InvoiceResource extends Resource
                                 ->send();
                         }),
                     DownloadInvoiceAction::make(),
-                ]),
+                ])
+                ->icon('heroicon-o-bars-3-center-left')
+                ->tooltip('Actions'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -573,6 +591,7 @@ class InvoiceResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with('project.client', 'agent', 'campaign')
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
