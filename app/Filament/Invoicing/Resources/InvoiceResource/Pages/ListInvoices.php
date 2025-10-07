@@ -2,13 +2,14 @@
 
 namespace App\Filament\Invoicing\Resources\InvoiceResource\Pages;
 
-use App\Enums\InvoiceStatuses;
-use App\Filament\Invoicing\Resources\InvoiceResource;
-use App\Models\Invoice;
 use Filament\Actions;
+use App\Models\Invoice;
+use App\Enums\InvoiceStatuses;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Invoicing\Resources\InvoiceResource;
 
 class ListInvoices extends ListRecords
 {
@@ -22,6 +23,11 @@ class ListInvoices extends ListRecords
                 ->url(InvoiceResource::getUrl('create'))
                 ->openUrlInNewTab(),
         ];
+    }
+
+    public function getMaxContentWidth(): MaxWidth | string | null
+    {
+        return MaxWidth::Full;
     }
 
     public function getTabs(): array
