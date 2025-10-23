@@ -2,16 +2,18 @@
 
 namespace App\Filament\Invoicing\Pages;
 
+use App\Models\Client;
 use Filament\Forms\Form;
 use App\Services\ModelListService;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Pages\Dashboard as BaseDashboard;
 use App\Filament\Invoicing\Widgets\MonthlyIncomes;
+use Filament\Pages\Dashboard\Actions\FilterAction;
 use App\Filament\Invoicing\Widgets\IncomeByProject;
 use App\Filament\Invoicing\Widgets\InvoicesSummary;
 use App\Filament\Invoicing\Widgets\OutstandingInvoices;
-use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 
 class Dashboard extends BaseDashboard
@@ -38,6 +40,18 @@ class Dashboard extends BaseDashboard
                     DatePicker::make('endDate')
                         ->default(now()->endOfMonth())
                         ->maxDate(now()->endOfMonth()),
+                    Select::make('client')
+                        ->label('Client')
+                        ->options(
+                            ModelListService::get(
+                                model: Client::query(),
+                                key_field: 'id',
+                                value_field: 'name'
+                            )
+                        )
+                        ->multiple()
+                        ->searchable()
+                        ->preload(),
                     Select::make('project')
                         ->label('Project Name')
                         ->searchable()

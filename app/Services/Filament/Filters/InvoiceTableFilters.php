@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\InvoiceStatuses;
+use App\Models\Client;
 
 class InvoiceTableFilters
 {
@@ -51,6 +52,33 @@ class InvoiceTableFilters
 
                         return $indicators;
                     }),
+                Tables\Filters\SelectFilter::make('client_id')
+                    ->label('Client')
+                    ->query(
+                        function($query, $state): Builder {
+                            $selectedClientIds = $state['values'];
+
+                            return $query
+                                ->when(
+                                    $selectedClientIds && count($selectedClientIds) > 0,
+                                    function($query) use ($selectedClientIds) {
+                                        $query->whereHas('project', function($projectQuery) use ($selectedClientIds) {
+                                            $projectQuery->whereIn('client_id', $selectedClientIds);
+                                        });
+                                    }
+                                );
+                        }
+                    )
+                    ->options(
+                        ModelListService::get(
+                            model: Client::query(),
+                            key_field: 'id',
+                            value_field: 'name'
+                        )
+                    )
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label('Project')
                     ->options(

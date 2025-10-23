@@ -8,34 +8,30 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InvoiceQueryService
 {
-    protected array $filters;
-
     /**
      * InvoiceQueryService constructor.
      */
-    public function __construct(InvoicingDashboardFilterDTO $filters)
+    public function __construct(public InvoicingDashboardFilterDTO $filters)
     {
-        $this->filters = [
-            'startDate' => $filters->startDate,
-            'endDate' => $filters->endDate,
-            'project' => $filters->project,
-        ];
     }
 
     public function getFilteredQuery(): Builder
     {
         return Invoice::query()
-            ->when($this->filters['project'] ?? null, function ($query) {
-                $query->whereIn('project_id', (array) $this->filters['project']);
+            ->when($this->filters->client ?? null, function ($query) {
+                $query->whereHas('project', fn ($projectQury) => $projectQury->where('client_id', $this->filters->client));
+            })
+            ->when($this->filters->project ?? null, function ($query) {
+                $query->whereIn('project_id', (array) $this->filters->project);
             })
             ->when(
-                $this->filters['startDate'] ?? null,
+                $this->filters->startDate ?? null,
                 function ($query) {
-                    $query->whereDate('date', '>=', $this->filters['startDate']);
+                    $query->whereDate('date', '>=', $this->filters->startDate);
                 }
             )
-            ->when($this->filters['endDate'] ?? null, function ($query) {
-                $query->whereDate('date', '<=', $this->filters['endDate']);
+            ->when($this->filters->endDate ?? null, function ($query) {
+                $query->whereDate('date', '<=', $this->filters->endDate);
             });
     }
 }

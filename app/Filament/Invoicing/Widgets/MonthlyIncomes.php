@@ -24,6 +24,17 @@ class MonthlyIncomes extends ChartWidget
 
         $data = Trend::query(
             Invoice::query()
+                ->when(
+                    $filters->client,
+                    function ($query) use ($filters) {
+                        $query->whereHas(
+                            'project',
+                            function($projectQuery) use ($filters) {
+                                $projectQuery->whereIn('client_id', $filters->client);
+                            }
+                        );
+                    }
+                )
                 ->when($filters->project, fn ($query) => $query->whereIn('project_id', $filters->project))
         )
             ->between(
