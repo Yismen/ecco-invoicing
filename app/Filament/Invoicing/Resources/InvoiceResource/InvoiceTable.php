@@ -88,13 +88,6 @@ class InvoiceTable
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('project.client.invoice_template')
-                //     ->searchable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
-                // Tables\Columns\TextColumn::make('project.invoice_notes')
-                //     ->toggleable(isToggledHiddenByDefault: true),
-                // Tables\Columns\TextColumn::make('project.invoice_terms')
-                //     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -109,8 +102,8 @@ class InvoiceTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersFormColumns(2)
-            ->deferFilters()
             ->filters(InvoiceTableFilters::make())
+            ->deferFilters()
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
