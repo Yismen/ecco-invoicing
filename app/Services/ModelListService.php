@@ -17,30 +17,40 @@ use Illuminate\Support\Facades\Cache;
  */
 class ModelListService
 {
+    public static self $instance;
+    public string|Builder $model;
+    public string $key_field;
+    public string $value_field;
+    public array $conditions = [];
+
     public static function get(
         string|Builder $model,
         string $key_field = 'id',
         string $value_field = 'name',
         array $conditions = []
     ): array {
+
         if (filled($conditions) && isset($conditions[0]) && ! is_array($conditions[0])) {
             throw new \InvalidArgumentException('Conditions must be an array of arrays.');
         }
 
-        $model = $model instanceof Builder ? $model : $model::query();
+        self::$instance ??= new self();
+        self::$instance->key_field = $key_field;
+        self::$instance->value_field = $value_field;
+        self::$instance->conditions = $conditions;
+        self::$instance->model = $model instanceof Builder ? $model : $model::query();
 
         return Cache::rememberForever(
-            self::getCacheKey($model, $conditions),
-            fn() => self::getResults($model, $key_field, $value_field, $conditions)
+            self::getCacheKey(),
+            fn() => self::getResults()
         );
     }
 
-    private static function getResults( $model, $key_field, $value_field, $conditions) {
-        $model = $model
-            ->orderBy($value_field);
+    private static function getResults() {
+        $model = self::$instance->model
+            ->orderBy(self::$instance->value_field);
 
-        foreach ($conditions as $key => $condition) {
-            \Illuminate\Support\Facades\Log::info($key == 'in');
+        foreach (self::$instance->conditions as $key => $condition) {
             if ($key == 'in') {
                 $model->whereIn($condition[0], $condition[1]);
             } else {
@@ -48,17 +58,17 @@ class ModelListService
             }
         }
 
-        return $model->pluck($value_field, $key_field)
+        return $model->pluck(self::$instance->value_field, self::$instance->key_field)
             ->toArray();
     }
 
-    private static function getCacheKey($model, array $condition): string
+    private static function getCacheKey(): string
     {
-        $conditionsKey = empty($condition) ? '' : json_encode($condition);
+        $conditionsKey = empty(self::$instance->conditions) ? '' : json_encode(self::$instance->conditions);
 
         $key = implode('_', [
             'model_list',
-            str(get_class($model->getModel()))->replace('\\', '')->snake(),
+            str(get_class(self::$instance->model->getModel()))->replace('\\', '')->snake(),
             $conditionsKey,
         ]);
 
