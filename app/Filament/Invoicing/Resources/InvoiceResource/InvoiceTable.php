@@ -101,7 +101,6 @@ class InvoiceTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filtersFormColumns(2)
             ->filters(InvoiceTableFilters::make())
             ->deferFilters()
             ->actions([
