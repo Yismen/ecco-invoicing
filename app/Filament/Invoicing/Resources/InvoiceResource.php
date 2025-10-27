@@ -56,7 +56,7 @@ class InvoiceResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->with('project.client', 'agent', 'campaign')
+            ->with('project.client', 'agent', 'campaign', 'cancellation')
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

@@ -41,7 +41,7 @@ class OutstandingInvoices extends BaseWidget
                         InvoiceStatuses::PartiallyPaid->value,
                         InvoiceStatuses::Overdue->value,
                     ])
-                    ->with('project.client', 'agent', 'campaign')
+                    ->with('project.client', 'agent', 'campaign', 'cancellation')
                     ->where('balance_pending', '>', 0)
             )
             ->columns([

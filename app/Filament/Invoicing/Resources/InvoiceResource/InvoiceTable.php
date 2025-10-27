@@ -11,12 +11,12 @@ use Illuminate\Support\Number;
 use Filament\Support\Colors\Color;
 use Filament\Notifications\Notification;
 use App\Filament\Exports\InvoiceExporter;
+use Illuminate\Database\Eloquent\Collection;
 use App\Filament\Actions\DownloadInvoiceAction;
 use App\Services\Filament\Forms\InvoicePaymentForm;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use App\Services\Filament\Filters\InvoiceTableFilters;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Database\Eloquent\Collection;
 
 class InvoiceTable
 {
@@ -123,7 +123,7 @@ class InvoiceTable
                             $record->payments()->create($data);
                         }),
                     Tables\Actions\Action::make('Cancel')
-                        ->visible(fn ($record) => $record->total_paid == 0 && !$record->cancellation()->exists())
+                        ->visible(fn ($record) => $record->total_paid == 0 && $record->cancellation === null)
                         ->color(Color::Red)
                         ->icon('heroicon-s-archive-box-x-mark')
                         ->form([
