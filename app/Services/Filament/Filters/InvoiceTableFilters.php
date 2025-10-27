@@ -11,6 +11,7 @@ use App\Models\Project;
 use Filament\Forms\Get;
 use App\Models\Campaign;
 use App\Enums\InvoiceStatuses;
+use App\Services\ModelList\Conditions\WhereInCondition;
 use App\Services\ModelListService;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Select;
@@ -64,12 +65,18 @@ class InvoiceTableFilters
                         Select::make('project_id')
                             ->label('Project')
                             ->live()
-                            ->options(
-                                ModelListService::get(
+                            ->options(function(Get $get) {
+                                return ModelListService::get(
                                     model: Project::query(),
                                     key_field: 'id',
-                                    value_field: 'name'
-                                ))
+                                    value_field: 'name',
+                                    conditions: count($get('client_id')) === 0 ?
+                                        [] :
+                                        [
+                                            new WhereInCondition('client_id', $get('client_id'))
+                                        ]
+                                );
+                            })
                             ->multiple()
                             ->searchable()
                             ->preload(),
@@ -79,19 +86,51 @@ class InvoiceTableFilters
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(ModelListService::get(
-                                model: Agent::query(),
-                                key_field: 'id',
-                                value_field: 'name'
-                            )),
+                            ->options(function(Get $get) {
+                                return ModelListService::get(
+                                    model: Agent::query(),
+                                    key_field: 'id',
+                                    value_field: 'name',
+                                    conditions: count($get('project_id')) === 0 ?
+                                        [] :
+                                        [
+                                            new WhereInCondition('project_id', $get('project_id'))
+                                        ]
+                                );
+                            }),
                         Select::make('campaign_id')
                             ->label('Campaign')
                             ->live()
-                            ->options(ModelListService::get(
-                                model: Campaign::query(),
-                                key_field: 'id',
-                                value_field: 'name'
-                            ))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(function (Get $get) {
+                                return ModelListService::get(
+                                    model: Campaign::query(),
+                                    key_field: 'id',
+                                    value_field: 'name',
+                                    conditions: count($get('agent_id')) === 0 ?
+                                        [] :
+                                        [
+                                            new WhereInCondition('agent_id', $get('agent_id'))
+                                        ]
+                                );
+                            }),
+                        Select::make('invoiceItems')
+                            ->label('Item')
+                            ->live()
+                            ->options(function(Get $get) {
+                                return ModelListService::get(
+                                    model: Item::query(),
+                                    key_field: 'id',
+                                    value_field: 'name',
+                                    conditions: count($get('campaign_id')) === 0 ?
+                                        [] :
+                                        [
+                                            new WhereInCondition('campaign_id', $get('campaign_id'))
+                                        ]
+                                );
+                            })
                             ->multiple()
                             ->searchable()
                             ->preload(),
@@ -102,17 +141,6 @@ class InvoiceTableFilters
                             ->multiple()
                             ->searchable()
                             ->preload(),
-                        Select::make('invoiceItems')
-                            ->label('Item')
-                            ->live()
-                            ->options(ModelListService::get(
-                                model: Item::query(),
-                                key_field: 'id',
-                                value_field: 'name'
-                            ))
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
                     ])
                     ->query(function (Builder $query, array $data): void {
                         $query

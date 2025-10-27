@@ -3,6 +3,8 @@
 use App\Models\Project;
 use App\Services\ModelListService;
 use Illuminate\Support\Facades\Cache;
+use App\Services\ModelList\Conditions\WhereCondition;
+use App\Services\ModelList\Conditions\WhereInCondition;
 
 it('generates the correct key', function () {
     ModelListService::get(
@@ -61,11 +63,40 @@ it('returns the correct values with conditions', function () {
         ->toBe($service);
 });
 
-it('throws an exception if conditions are not an associative array', function () {
-    ModelListService::get(
-        model: \App\Models\Project::query(),
+it('returns the correct values when where condition is passed', function () {
+    Project::factory()->count(3)->create();
+    Project::factory()->create(['name' => 'new condition']);
+
+    $service = ModelListService::get(
+        model: \App\Models\Project::class,
         key_field: 'id',
         value_field: 'name',
-        conditions: ['active'] // This is not an associative array
+        conditions: [
+            new WhereCondition('name', '=', 'new condition'),
+        ]
     );
-})->throws(\InvalidArgumentException::class, 'Conditions must be an array of arrays.');
+
+    $projects = Project::query()->orderBy('name')->where('name', 'new condition')->pluck('name', 'id')->toArray();
+
+    expect($projects)
+        ->toBe($service);
+});
+
+it('returns the correct values when whereIn condition is passed', function () {
+    Project::factory()->count(3)->create();
+    Project::factory()->create(['name' => 'new condition']);
+
+    $service = ModelListService::get(
+        model: \App\Models\Project::class,
+        key_field: 'id',
+        value_field: 'name',
+        conditions: [
+            new WhereInCondition('name', ['new condition']),
+        ]
+    );
+
+    $projects = Project::query()->orderBy('name')->where('name', 'new condition')->pluck('name', 'id')->toArray();
+
+    expect($projects)
+        ->toBe($service);
+});

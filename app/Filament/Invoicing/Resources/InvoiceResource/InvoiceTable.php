@@ -103,6 +103,7 @@ class InvoiceTable
             ])
             ->filters(InvoiceTableFilters::make())
             ->deferFilters()
+            ->filtersFormWidth('lg')
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()

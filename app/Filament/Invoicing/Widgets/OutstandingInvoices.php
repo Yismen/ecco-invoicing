@@ -88,6 +88,7 @@ class OutstandingInvoices extends BaseWidget
             ->filters(
                 \App\Services\Filament\Filters\InvoiceTableFilters::make(except: ['status'])
             )
+            ->filtersFormWidth('lg')
             ->actions([
                 Tables\Actions\Action::make('view')
                     ->label('View')
@@ -96,7 +97,6 @@ class OutstandingInvoices extends BaseWidget
                     ->url(fn (Invoice $record): string => InvoiceResource::getUrl('view', ['record' => $record->getRouteKey()]))
                     ->openUrlInNewTab(),
             ])
-            ->filtersFormColumns(2)
             ->deferFilters()
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

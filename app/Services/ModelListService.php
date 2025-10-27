@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\ModelList\Conditions\WhereCondition;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Builder;
+use App\Services\ModelList\Conditions\WhereInCondition;
 
 /**
  * Service for retrieving lists of models with optional conditions and caching.
@@ -29,11 +31,6 @@ class ModelListService
         string $value_field = 'name',
         array $conditions = []
     ): array {
-
-        if (filled($conditions) && isset($conditions[0]) && ! is_array($conditions[0])) {
-            throw new \InvalidArgumentException('Conditions must be an array of arrays.');
-        }
-
         self::$instance ??= new self();
         self::$instance->key_field = $key_field;
         self::$instance->value_field = $value_field;
@@ -51,11 +48,21 @@ class ModelListService
             ->orderBy(self::$instance->value_field);
 
         foreach (self::$instance->conditions as $key => $condition) {
+            if ($condition instanceof WhereInCondition) {
+                $model->whereIn($condition->field, $condition->values);
+                continue;
+            }
+
+            if ($condition instanceof WhereCondition) {
+                $model->where($condition->field, $condition->operator, $condition->value);
+                continue;
+            }
+
             if ($key == 'in') {
                 $model->whereIn($condition[0], $condition[1]);
-            } else {
-                $model->where($condition);
+                continue;
             }
+            $model->where($condition);
         }
 
         return $model->pluck(self::$instance->value_field, self::$instance->key_field)
