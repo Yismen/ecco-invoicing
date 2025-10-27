@@ -37,6 +37,28 @@ class InvoiceTableFilters
                             $indicators['to'] = 'To ' . date('M j, Y', strtotime($data['to']));
                         }
 
+                        if ($data['client_id'] ?? null) {
+                            $indicators['client_id'] = 'Client: ' . \join(', ', ModelListService::get(
+                                model: Client::query(),
+                                key_field: 'id',
+                                value_field: 'name',
+                                conditions: [
+                                    new WhereInCondition('id', $data['client_id'])
+                                ]
+                            )   );
+                        }
+
+                        if ($data['project_id'] ?? null) {
+                            $indicators['project_id'] = 'Project: ' . \join(', ', ModelListService::get(
+                                model: Project::query(),
+                                key_field: 'id',
+                                value_field: 'name',
+                                conditions: [
+                                    new WhereInCondition('id', $data['project_id'])
+                                ]
+                            ));
+                        }
+
                         return $indicators;
                     })
                     ->form([
@@ -145,19 +167,19 @@ class InvoiceTableFilters
                     ->query(function (Builder $query, array $data): void {
                         $query
                             ->when(
-                                $data['from'],
+                                $data['from'] ?? null,
                                 function($query) use ($data) {
                                     $query->whereDate('date', '>=', $data['from']);
                                 }
                             )
                             ->when(
-                                $data['to'],
+                                $data['to'] ?? null,
                                 function($query) use ($data) {
                                     $query->whereDate('date', '<=', $data['to']);
                                 }
                             )
                             ->when(
-                                $data['client_id'] && count($data['client_id']) > 0,
+                                $data['client_id'] ?? null && count($data['client_id']) > 0,
                                 function($query) use ($data) {
                                     $query->whereHas('project', function($query) use ($data) {
                                         $query->whereIn('client_id', $data['client_id']);
@@ -165,31 +187,31 @@ class InvoiceTableFilters
                                 }
                             )
                             ->when(
-                                $data['project_id'] && count($data['project_id']) > 0,
+                                $data['project_id'] ?? null && count($data['project_id']) > 0,
                                 function($query) use ($data) {
                                     $query->whereIn('project_id', $data['project_id']);
                                 }
                             )
                             ->when(
-                                $data['agent_id'] && count($data['agent_id']) > 0,
+                                $data['agent_id'] ?? null && count($data['agent_id']) > 0,
                                 function($query) use ($data) {
                                     $query->whereIn('agent_id', $data['agent_id']);
                                 }
                             )
                             ->when(
-                                $data['campaign_id'] && count($data['campaign_id']) > 0,
+                                $data['campaign_id'] ?? null && count($data['campaign_id']) > 0,
                                 function($query) use ($data) {
                                     $query->whereIn('campaign_id', $data['campaign_id']);
                                 }
                             )
                             ->when(
-                                $data['status'] && count($data['status']) > 0,
+                                $data['status'] ?? null && count($data['status']) > 0,
                                 function($query) use ($data) {
                                     $query->whereIn('status', $data['status']);
                                 }
                             )
                             ->when(
-                                $data['invoiceItems'] && count($data['invoiceItems']) > 0,
+                                $data['invoiceItems'] ?? null && count($data['invoiceItems']) > 0,
                                 function($query) use ($data) {
                                     $query->whereHas('invoiceItems', function($query) use ($data) {
                                         $query->whereIn('item_id', $data['invoiceItems']);
@@ -198,18 +220,26 @@ class InvoiceTableFilters
                             );
                     }),
                 ];
-            // $mergedFilters = [];
-            // dd($filters);
-            // foreach ($filters as $filter) {
-            //     dd($filter);
-            //     foreach ($filter as $value) {
-            //         $mergedFilters[$key] = $value;
-            //     }
-            // }
-            // dd($mergedFilters);
 
-        return array_filter($filters, function ($filter) use ($except) {
-            return ! in_array($filter->getName(), $except);
-        });
+            if (count($except) === 0) {
+                return $filters;
+            }
+
+        // filter out the excepted filters from the options filters
+        $filteredFilters = [];
+        foreach ($filters as $filter) {
+            if (!in_array($filter->getName(), $except)) {
+                $filteredFilters[$filter->getName()] = $filter;
+            }
+            $schemas = \array_filter($filter->getFormSchema(), function ($component) use ($except) {
+                if (method_exists($component, 'getName')) {
+                    return !in_array($component->getName(), $except);
+                }
+                return true;
+            });
+            $filteredFilters[$filter->getName()]->form($schemas);
+        }
+
+        return $filteredFilters;
     }
 }
