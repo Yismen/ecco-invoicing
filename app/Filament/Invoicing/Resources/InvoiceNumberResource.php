@@ -86,8 +86,8 @@ class InvoiceNumberResource extends Resource
                     ->sortable()
                     ->color(fn ($state) => $state->getColor()),
             ])
-            ->filtersFormColumns(2)
             ->deferFilters()
+            ->filtersFormWidth('lg')
             ->filters(InvoiceTableFilters::make())
 
             ->actions([
