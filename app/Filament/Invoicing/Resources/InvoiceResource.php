@@ -40,6 +40,7 @@ class InvoiceResource extends Resource
     {
         return [
             \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\ActivitiesRelationManager::class,
+            \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\PaymentsRelationManager::class,
         ];
     }
 
