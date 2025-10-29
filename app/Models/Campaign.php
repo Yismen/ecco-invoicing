@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Campaign extends Model
 {
     use \App\Traits\Models\InteracstsWithModelCaching;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     /** @use HasFactory<\Database\Factories\CampaignFactory> */
     use HasFactory;

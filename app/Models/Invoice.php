@@ -4,8 +4,6 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Enums\InvoiceStatuses;
-use Illuminate\Support\Carbon;
-use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GenerateInvoiceNumberService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,8 +19,7 @@ class Invoice extends Model
     /** @use Illuminate\Database\Eloquent\Factories\HasFactory<\Database\Factories\InvoiceFactory> */
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use \Illuminate\Database\Eloquent\SoftDeletes;
-    use \Spatie\Activitylog\Traits\LogsActivity;
-
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     protected $fillable = [
         'number',
@@ -165,24 +162,6 @@ class Invoice extends Model
         return Attribute::make(
             get: fn ($value) => $value ?: GenerateInvoiceNumberService::generate($this->project),
         );
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logOnly([
-                'number',
-                'date',
-                'project_id',
-                'agent_id',
-                'campaign_id',
-                'total_amount',
-                'balance_pending',
-                'status',
-                'due_date',
-            ])
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
     }
 
     public function cancel(string $reason): Cancellation

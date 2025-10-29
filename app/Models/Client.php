@@ -18,6 +18,7 @@ class Client extends Model
 
     use HasNamePrefix;
     use SoftDeletes;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     protected $fillable = [
         'name',

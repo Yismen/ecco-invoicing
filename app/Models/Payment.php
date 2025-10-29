@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Payment extends Model
 {
     use \App\Traits\Models\InteracstsWithModelCaching;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;

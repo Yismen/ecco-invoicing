@@ -14,6 +14,7 @@ class InvoiceItem extends Model
     use InteracstsWithModelCaching;
     use SoftDeletes;
     use HasFactory;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     public $table = 'invoice_item';
 

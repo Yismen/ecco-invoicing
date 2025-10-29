@@ -18,6 +18,7 @@ class Project extends Model
     use HasNamePrefix;
     use InteracstsWithModelCaching;
     use SoftDeletes;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     protected $fillable = [
         'name',

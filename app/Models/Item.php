@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Item extends Model
 {
     use \App\Traits\Models\InteracstsWithModelCaching;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     /** @use HasFactory<\Database\Factories\ItemFactory> */
     use HasFactory;

@@ -14,6 +14,7 @@ class Cancellation extends Model
     use SoftDeletes;
     /** @use HasFactory<\Database\Factories\CancellationFactory> */
     use HasFactory;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     protected $fillable = [
         'invoice_id',

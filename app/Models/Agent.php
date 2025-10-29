@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Agent extends Model
 {
     use \App\Traits\Models\InteracstsWithModelCaching;
+    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     /** @use HasFactory<\Database\Factories\AgentFactory> */
     use HasFactory;
