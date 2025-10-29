@@ -47,6 +47,8 @@ class OutstandingInvoices extends BaseWidget
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->label('Invoice Number')
+                    ->copyable()
+                    ->wrap()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
