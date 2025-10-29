@@ -79,8 +79,8 @@ class GenerateInvoiceController extends Controller
         // Then send email to party with link
 
         // And return invoice itself to browser or have a different view
-        return $pdf->stream();
-        // return $invoice->download();
+        // return $pdf->stream();
+        return $pdf->download();
 
     }
 }
