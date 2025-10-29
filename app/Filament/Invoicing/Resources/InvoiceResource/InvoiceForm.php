@@ -62,12 +62,14 @@ class InvoiceForm
                                         Forms\Components\TextInput::make('name')
                                             ->required()
                                             ->rules([
-                                                function($livewire) {
+                                                function($livewire, $record) {
+                                                    $parentId = $livewire->data['project_id'] ?? $livewire->mountedActionsData[0]['project_id'] ?? $record->project_id;
+
                                                     return new UniqueByParentRelationship(
                                                         table: Agent::class,
                                                         uniqueField: 'name',
                                                         parentField: 'project_id',
-                                                        parentId: $livewire->data['project_id'],
+                                                        parentId: $parentId,
                                                     );
                                                 },
                                             ])
@@ -111,12 +113,14 @@ class InvoiceForm
                                     ->required()
                                     ->validationAttribute('name')
                                     ->rules([
-                                        function($livewire) {
+                                        function($livewire, $record) {
+                                            $agentId = $livewire->data['agent_id'] ?? $livewire->mountedActionsData[0]['agent_id'] ?? $record->agent_id;
+
                                             return new UniqueByParentRelationship(
                                                 table: Campaign::class,
                                                 uniqueField: 'name',
                                                 parentField: 'agent_id',
-                                                parentId: $livewire->data['agent_id'],
+                                                parentId: $agentId,
                                             );
                                         },
                                     ])

@@ -18,11 +18,13 @@ class AgentForm
                     'string',
                     'max:255',
                     function($livewire, $record) {
+                        $projectId = $livewire->data['project_id'] ?? $livewire->mountedActionsData[0]['project_id'] ?? $record->project_id;
+
                         return new UniqueByParentRelationship(
                             table: Agent::class,
                             uniqueField: 'name',
                             parentField: 'project_id',
-                            parentId: $livewire->data['project_id'],
+                            parentId: $projectId,
                             recordToIgnore: $record
                         );
                     },
