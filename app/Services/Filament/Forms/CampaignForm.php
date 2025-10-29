@@ -19,7 +19,7 @@ class CampaignForm
                     'string',
                     'max:255',
                     function($livewire, $record) {
-                        $parentId = $livewire->data['agent_id'] ?? $livewire->mountedActionsData[0]['agent_id'] ?? $record->agent_id;
+                        $parentId = $livewire->data['agent_id'] ?? $livewire->mountedActionsData[0]['agent_id'] ?? $record->agent_id ?? null;
 
                         return new UniqueByParentRelationship(
                             table: Campaign::class,
