@@ -19,9 +19,11 @@ class ListInvoices extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Create Invoice')
-                ->url(InvoiceResource::getUrl('create'))
-                ->openUrlInNewTab(),
+                ->modalWidth('7xl')
+                // ->label('Create Invoice')
+                // ->url(InvoiceResource::getUrl('create'))
+                // ->openUrlInNewTab()
+                ,
         ];
     }
 

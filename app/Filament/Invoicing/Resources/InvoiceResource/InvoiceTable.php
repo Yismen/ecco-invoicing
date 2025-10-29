@@ -23,7 +23,7 @@ class InvoiceTable
     public static function make(Table $table): Table
     {
         return $table
-            ->defaultSort('date', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->copyable()
@@ -172,9 +172,6 @@ class InvoiceTable
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
-                    // Tables\Actions\ForceDeleteBulkAction::make(),
-                    // Tables\Actions\RestoreBulkAction::make(),
 
                 ]),
                 Tables\Actions\ExportBulkAction::make()
@@ -189,14 +186,10 @@ class InvoiceTable
                     ->color(Color::Teal)
                     ->icon('heroicon-s-credit-card')
                     ->size('xs')
-                    // ->requiresConfirmation()
                     ->deselectRecordsAfterCompletion()
                     ->modalDescription(
                         'This action will pay the all selected invoices fully using the pending balance. It only pays invoices with any pending amount. Are you sure?'
                     )
-                    // ->checkIfRecordIsSelectableUsing(
-                    //     fn (Invoice $record): bool => $record->balance_pending > 0,
-                    // )
                     ->form([
                         Forms\Components\Grid::make(2)
                             ->schema([
