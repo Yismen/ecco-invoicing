@@ -3,7 +3,7 @@
     <p>
         <small class="text-gray-500">
             @if ($activity->causer)
-                Edited by {{ $activity->causer->name ?? 'Unknown User' }}
+                {{ $activity->description == 'created' ? 'Created' : 'Updated' }} by {{ $activity->causer->name ?? 'Unknown User' }}
             @else
                 System
             @endif
@@ -15,25 +15,27 @@
     </p>
     {{-- {{ html_entity_decode($activity->changes) }} --}}
 
-    <div class="flex flex-wrap gap-2">
-        @foreach ($activity->changes['old'] as $key => $value)
-            @php
-                $item = [
-                    'field' => ucwords(str_replace('_', ' ', $key)),
-                    'old_value' => $value,
-                    'new_value' => $activity->changes['attributes'][$key] ?? null,
-                ];
-            @endphp
-            @if ($item['old_value'] !== $item['new_value'])
-                <div class="bg-gray-100 p-2 rounded border border-gray-300 text-xs text-wrap ">
-                    <strong>
-                        {{ $item['field'] }}:
-                     </strong>
-                    <span class="text-wrap" style="color: rgb(170, 10, 10);">{{ $item['old_value'] }}</span>
-                    &rarr;
-                    <span class="text-wrap" style="color: rgb(9, 81, 9);">{{ $item['new_value'] }}</span>
-                </div>
-            @endif
-        @endforeach
-    </div>
+    @if ($activity->changes['old'] ?? null)
+        <div class="flex flex-wrap gap-2">
+            @foreach ($activity->changes['old'] as $key => $value)
+                @php
+                    $item = [
+                        'field' => ucwords(str_replace('_', ' ', $key)),
+                        'old_value' => $value,
+                        'new_value' => $activity->changes['attributes'][$key] ?? null,
+                    ];
+                @endphp
+                @if ($item['old_value'] !== $item['new_value'])
+                    <div class="bg-gray-100 p-2 rounded border border-gray-300 text-xs text-wrap ">
+                        <strong>
+                            {{ $item['field'] }}:
+                        </strong>
+                        <span class="text-wrap" style="color: rgb(170, 10, 10);">{{ $item['old_value'] }}</span>
+                        &rarr;
+                        <span class="text-wrap" style="color: rgb(9, 81, 9);">{{ $item['new_value'] }}</span>
+                    </div>
+                @endif
+            @endforeach
+        </div>
+    @endif
 </div>
