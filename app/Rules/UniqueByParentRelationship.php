@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Validate that a given field is unique within the scope of a parent relationship.
+ * For example, ensure that an agent's name is unique within a specific project.
+ *
+ * Usage: new UniqueByParentRelationship(
+ *    table: Agent::class || 'agents' || Agent::query(),
+ *    uniqueField: 'name',
+ *    parentField: 'project_id',
+ *    parentId: $projectId,
+ *    recordToIgnore: $record, // optional
+ * )
+ */
 class UniqueByParentRelationship implements ValidationRule
 {
     public function __construct(
@@ -29,16 +41,16 @@ class UniqueByParentRelationship implements ValidationRule
             return;
         }
 
-        $record_exists = DB::table($this->getTable())
+        $recordFound = DB::table($this->getTable())
             ->where($this->uniqueField, 'like', $value)
             ->where($this->parentField, $this->parentId)
-            ->when($this->recordToIgnore, function ($query) {
-                return $query
-                    ->where('id', '!=', $this->recordToIgnore->id);
-            })
-            ->exists();
+            ->first();
 
-        if ($record_exists) {
+        if ($this->recordToIgnore && $recordFound && $recordFound->id === $this->recordToIgnore->id) {
+            $recordFound = null;
+        }
+
+        if ($recordFound) {
             $fail("The name {$value} already exits for this {$this->parentField}.");
         }
     }

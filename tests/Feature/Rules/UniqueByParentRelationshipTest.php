@@ -49,14 +49,14 @@ it('parses the table and unique field correctly when query builder instance is p
     expect($rule->getTable())->toBe('agents');
 });
 
-it('fails when duplicated on the same parent', function () {
+it('fails when parent ID is null', function () {
     expect(Validator::make(
         ['name' => 'Test Agent'],
         ['name' => new UniqueByParentRelationship(
             table: 'agents', // || 'agents
             uniqueField: 'name',
             parentField: 'project_id',
-            parentId: $this->agent->project_id,
+            parentId: null,
         )]
     )->fails())
         ->toBeTrue();
@@ -72,6 +72,19 @@ it('passes when not duplicated', function () {
             parentId: $this->agent->project_id,
         )]
     )->passes())
+        ->toBeTrue();
+});
+
+it('fails when duplicated on the same parent', function () {
+    expect(Validator::make(
+        ['name' => 'Test Agent'],
+        ['name' => new UniqueByParentRelationship(
+            table: 'agents', // || 'agents
+            uniqueField: 'name',
+            parentField: 'project_id',
+            parentId: $this->agent->project_id,
+        )]
+    )->fails())
         ->toBeTrue();
 });
 
@@ -103,14 +116,20 @@ it('passes when duplicated but the record is the same', function () {
         ->toBeTrue();
 });
 
-it('fails when parent ID is null', function () {
+it('fails when duplicated and the record is different', function () {
+    $anotherAgent = Agent::factory()->create([
+        'name' => 'Test Agent',
+        'project_id' => $this->agent->project_id,
+    ]);
+
     expect(Validator::make(
         ['name' => 'Test Agent'],
         ['name' => new UniqueByParentRelationship(
             table: 'agents', // || 'agents
             uniqueField: 'name',
             parentField: 'project_id',
-            parentId: null,
+            parentId: $this->agent->project_id,
+            recordToIgnore: $anotherAgent
         )]
     )->fails())
         ->toBeTrue();

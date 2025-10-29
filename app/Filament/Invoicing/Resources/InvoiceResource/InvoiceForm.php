@@ -63,7 +63,10 @@ class InvoiceForm
                                             ->required()
                                             ->rules([
                                                 function($livewire, $record) {
-                                                    $parentId = $livewire->data['project_id'] ?? $livewire->mountedActionsData[0]['project_id'] ?? $record->project_id ?? null;
+                                                    $parentId = $livewire->data['project_id'] ??
+                                                        $livewire->mountedActionsData[0]['project_id'] ??
+                                                        $livewire->mountedTableActionsData[0]['project_id'] ??
+                                                        null;
 
                                                     return new UniqueByParentRelationship(
                                                         table: Agent::class,
@@ -114,13 +117,16 @@ class InvoiceForm
                                     ->validationAttribute('name')
                                     ->rules([
                                         function($livewire, $record) {
-                                            $agentId = $livewire->data['agent_id'] ?? $livewire->mountedActionsData[0]['agent_id'] ?? $record->agent_id ?? null;
+                                        $parentId = $livewire->data['agent_id'] ??
+                                            $livewire->mountedActionsData[0]['agent_id'] ??
+                                            $livewire->mountedTableActionsData[0]['agent_id'] ??
+                                            null;
 
                                             return new UniqueByParentRelationship(
                                                 table: Campaign::class,
                                                 uniqueField: 'name',
                                                 parentField: 'agent_id',
-                                                parentId: $agentId,
+                                                parentId: $parentId,
                                             );
                                         },
                                     ])
