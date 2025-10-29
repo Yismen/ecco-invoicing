@@ -102,3 +102,16 @@ it('passes when duplicated but the record is the same', function () {
     )->passes())
         ->toBeTrue();
 });
+
+it('fails when parent ID is null', function () {
+    expect(Validator::make(
+        ['name' => 'Test Agent'],
+        ['name' => new UniqueByParentRelationship(
+            table: 'agents', // || 'agents
+            uniqueField: 'name',
+            parentField: 'project_id',
+            parentId: null,
+        )]
+    )->fails())
+        ->toBeTrue();
+});

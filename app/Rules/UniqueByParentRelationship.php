@@ -14,7 +14,7 @@ class UniqueByParentRelationship implements ValidationRule
         protected string|Builder $table,
         protected string $uniqueField,
         protected string $parentField,
-        protected string $parentId,
+        protected null|string|int $parentId,
         protected Model|null $recordToIgnore = null,
     ) {}
     /**
@@ -24,6 +24,11 @@ class UniqueByParentRelationship implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        if (is_null($this->parentId)) {
+            $fail("The parent ID for {$this->parentField} is not set.");
+            return;
+        }
+
         $record_exists = DB::table($this->getTable())
             ->where($this->uniqueField, 'like', $value)
             ->where($this->parentField, $this->parentId)
