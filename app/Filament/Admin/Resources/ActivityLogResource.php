@@ -2,13 +2,18 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\ActivityLogResource\Pages;
-use App\Models\ActivityLog;
+use Dom\Text;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ActivityLog;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\KeyValueEntry;
+use App\Filament\Admin\Resources\ActivityLogResource\Pages;
 
 class ActivityLogResource extends Resource
 {
@@ -18,24 +23,31 @@ class ActivityLogResource extends Resource
 
     protected static ?string $navigationGroup = 'System';
 
-    public static function form(Form $form): Form
+    public static function infolist(Infolist $infolist): Infolist
     {
-        return $form
+        return $infolist
             ->schema([
-                Forms\Components\TextInput::make('log_name')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description'),
-                Forms\Components\TextInput::make('subject_type')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('subject_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('causer_type')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('causer.name'),
-                Forms\Components\Placeholder::make('properties')
-                    ->content(fn (ActivityLog $record): string => $record->properties->toJson()),
-                Forms\Components\TextInput::make('event')
-                    ->maxLength(255),
+                Section::make('Activity Details')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('log_name'),
+                        TextEntry::make('description'),
+                        TextEntry::make('subject_type'),
+                        TextEntry::make('subject_id'),
+                        TextEntry::make('causer_type'),
+                        TextEntry::make('causer.name'),
+                        TextEntry::make('event'),
+                        TextEntry::make('created_at')
+                            ->dateTime(),
+                        TextEntry::make('updated_at')
+                            ->dateTime(),
+                        TextEntry::make('properties')
+                            ->state(function (ActivityLog $record) {
+                                return \view('filament.partials.infolists.json', [
+                                    'json' => $record->properties,
+                                ]);
+                            })
+                    ]),
             ]);
     }
 
