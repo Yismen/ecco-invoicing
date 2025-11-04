@@ -22,6 +22,23 @@ pest()
 
 /*
 |--------------------------------------------------------------------------
+| Architecture Tests
+|--------------------------------------------------------------------------
+| Here you can define your architecture tests. These tests help ensure that your
+| application adheres to certain architectural rules and conventions.
+|
+*/
+
+arch('models')
+    ->expect('App\Models')
+    ->toUseTrait('App\Traits\Models\InteracstsWithModelCaching')
+    ->toUseTrait('Illuminate\Database\Eloquent\SoftDeletes')
+    ->ignoring([
+        'App\Models\ActivityLog',
+    ]);
+
+/*
+|--------------------------------------------------------------------------
 | Expectations
 |--------------------------------------------------------------------------
 |
