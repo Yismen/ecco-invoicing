@@ -37,6 +37,7 @@ class PayBulkInvoicesAction
                 'amount_info' => $records->sum('balance_pending'),
                 'selected_invoices' => $records
                     ->filter(fn ($record) => $record->balance_pending > 0)
+                    ->sortByDesc('date')
                     ->pluck( 'balance_pending', 'number')
                     ->toArray(),
             ])
