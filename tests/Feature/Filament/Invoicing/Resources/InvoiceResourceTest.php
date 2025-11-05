@@ -17,8 +17,6 @@ describe('Invoice Resource', function () {
 
         $this->routes = [
             'index' => InvoiceResource::getUrl('index'),
-            'create' => InvoiceResource::getUrl('create'),
-            // 'edit' => InvoiceResource::getUrl('edit', ['record' => $this->model->getRouteKey()]),
             'view' => InvoiceResource::getUrl('view', ['record' => $this->model->getRouteKey()]),
         ];
     });
@@ -28,8 +26,6 @@ describe('Invoice Resource', function () {
             ->assertRedirect(route('filament.invoicing.auth.login'));
     })->with([
         'index',
-        'create',
-        // 'edit',
         'view',
     ]);
 
@@ -39,8 +35,6 @@ describe('Invoice Resource', function () {
             ->assertForbidden();
     })->with([
         'index',
-        'create',
-        // 'edit',
         'view',
     ]);
 
@@ -49,8 +43,6 @@ describe('Invoice Resource', function () {
 
             $permissions = [
                 'index' => 'viewAny',
-                'create' => 'create',
-                // 'edit' => 'update',
                 'view' => 'view',
             ];
 
@@ -70,8 +62,6 @@ describe('Invoice Resource', function () {
                 ->assertOk();
         })->with([
             'index',
-            'create',
-            // 'edit',
             'view',
         ]);
     });
