@@ -39,8 +39,9 @@ class InvoiceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\ActivitiesRelationManager::class,
             \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\PaymentsRelationManager::class,
+            \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\CancellationsRelationManager::class,
+            \App\Filament\Invoicing\Resources\InvoiceResource\RelationManagers\ActivitiesRelationManager::class,
         ];
     }
 
