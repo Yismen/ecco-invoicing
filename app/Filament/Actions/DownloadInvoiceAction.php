@@ -12,7 +12,6 @@ class DownloadInvoiceAction
         return Action::make(__('Pdf'))
             ->color('success')
             ->icon('heroicon-s-document-arrow-down')
-            ->visible(fn (Invoice $record) => $record->items()->count())
             ->url(fn (Invoice $record) => route('generate-invoice', $record))
             ->openUrlInNewTab();
     }

@@ -47,12 +47,10 @@ class DownloadBulInvoicesAction
                         $createdFilesPath = [];
 
                         foreach ($records as $record) {
-                            if ($record->items()->count()) {
-                                $pdf = $invoiceService
-                                    ->generate($record);
+                            $pdf = $invoiceService
+                                ->generate($record);
 
-                                $createdFilesPath[] = \public_path('storage/' . $pdf->pdf->filename);
-                            }
+                            $createdFilesPath[] = \public_path('storage/' . $pdf->pdf->filename);
                         }
 
                         if (count($createdFilesPath) === 0) {
