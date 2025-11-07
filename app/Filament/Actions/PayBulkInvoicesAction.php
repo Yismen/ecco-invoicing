@@ -77,7 +77,7 @@ class PayBulkInvoicesAction
                             'amount' => $record->balance_pending,
                         ]);
 
-                        $paidInvoices[] = $record->number;
+                        $paidInvoices[] = '</br>' . $record->number;
                     }
                 }
 

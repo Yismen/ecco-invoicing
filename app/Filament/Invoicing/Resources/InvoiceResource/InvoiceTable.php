@@ -7,6 +7,7 @@ use Filament\Tables;
 use App\Models\Invoice;
 use Filament\Tables\Table;
 use App\Enums\InvoiceStatuses;
+use App\Filament\Actions\DownloadBulInvoicesAction;
 use Illuminate\Support\Number;
 use Filament\Support\Colors\Color;
 use Filament\Notifications\Notification;
@@ -183,6 +184,7 @@ class InvoiceTable
                     ->deselectRecordsAfterCompletion()
                     ->exporter(InvoiceExporter::class),
                 PayBulkInvoicesAction::make(),
+                DownloadBulInvoicesAction::make(),
             ]);
     }
 }
