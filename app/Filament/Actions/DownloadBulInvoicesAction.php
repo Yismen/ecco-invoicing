@@ -54,17 +54,18 @@ class DownloadBulInvoicesAction
                         }
 
                         if (count($createdFilesPath) === 0) {
-                        Notification::make('No files selected')
-                            ->danger()
-                            ->title('None of the selected files is downloadable! They may not have items')
-                            ->send();
+                            Notification::make('No files selected')
+                                ->danger()
+                                ->title('None of the selected files is downloadable! They may not have items')
+                                ->send();
 
                             return false;
                         }
 
                         return $zipService
-                            ->createZip($createdFilesPath)
-                            ->download();
+                            ->createZip(files: $createdFilesPath, removeFilesAfterCompletion: true)
+                            ->download()
+                            ->deleteFileAfterSend(true);
                     }
             );
     }
