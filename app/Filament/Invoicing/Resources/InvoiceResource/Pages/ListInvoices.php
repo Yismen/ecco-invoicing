@@ -32,17 +32,17 @@ class ListInvoices extends ListRecords
         return MaxWidth::Full;
     }
 
-    public function getTabs(): array
-    {
-        $filters = [];
-        $filters['all'] = Tab::make();
+    // public function getTabs(): array
+    // {
+    //     $filters = [];
+    //     $filters['all'] = Tab::make();
 
-        foreach (InvoiceStatuses::cases() as $status) {
-            $filters[$status->name] = Tab::make()
-                ->badge(Invoice::query()->where('status', $status)->count())
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', $status));
-        }
+    //     foreach (InvoiceStatuses::cases() as $status) {
+    //         $filters[$status->name] = Tab::make()
+    //             ->badge(Invoice::query()->where('status', $status)->count())
+    //             ->modifyQueryUsing(fn (Builder $query) => $query->where('status', $status));
+    //     }
 
-        return $filters;
-    }
+    //     return $filters;
+    // }
 }
