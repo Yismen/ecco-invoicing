@@ -2,33 +2,63 @@
 
 namespace App\Services;
 
-use App\Models\Invoice as ModelsInvoice;
-use LaravelDaily\Invoices\Invoice;
+use App\Models\Invoice;
+use LaravelDaily\Invoices\Classes\InvoiceItem as PrintItem;
+use LaravelDaily\Invoices\Classes\Party;
+use LaravelDaily\Invoices\Facades\Invoice as LaravelDailyInvoice;
 
-class GenerateInvoiceService extends Invoice
+class GenerateInvoiceService
 {
-    public array $extra_data;
+    public $pdf;
 
-    public ModelsInvoice $model;
+    public Invoice $invoice;
 
-    public function __construct($name = '')
+    public function generate(Invoice $invoice, string $disk = 'public'): self
     {
-        parent::__construct($name);
+        $this->invoice = $invoice;
+        $this->invoice->load(['invoiceItems.item', 'agent', 'project.client', 'payments']);
 
-        $this->extra_data = [];
-    }
+        $customer = new Party([
+            'name' => $this->invoice->agent->name,
+            'company' => $this->invoice->project->name,
+            'address' => $this->invoice->project->address,
+        ]);
 
-    public function extraData(array $extra_data): self
-    {
-        $this->extra_data = $extra_data;
+        $items = [];
+        foreach ($this->invoice->invoiceItems as $invoiceItem) {
+            $items[] = PrintItem::make($invoiceItem->item->name)
+                ->pricePerUnit($invoiceItem->item_price)
+                ->quantity($invoiceItem->quantity);
+        }
+
+        $this->pdf = LaravelDailyInvoice::make('Invoice')
+            ->series($this->invoice->number)
+            ->setCustomData(['model' => $this->invoice])
+            ->status($this->invoice->status->value)
+            ->buyer($customer)
+            ->date($this->invoice->date)
+            ->currencySymbol('$')
+            ->currencyCode('USD')
+            ->currencyFormat('{SYMBOL}{VALUE}')
+            ->currencyThousandsSeparator(',')
+            ->currencyDecimalPoint('.')
+            ->filename($this->invoice->number)
+            ->addItems($items)
+            ->template($this->invoice->project->client->invoice_template)
+            ->logo(public_path(config('app.company.logo')))
+            // You can additionally save generated invoice to configured disk
+            ->save($disk);
 
         return $this;
     }
 
-    public function model(ModelsInvoice $model): self
+    public function toStream()
     {
-        $this->model = $model;
+        return $this->pdf->stream();
+     }
 
-        return $this;
-    }
+     public function toFile()
+     {
+        return $this->pdf->download();
+     }
 }
