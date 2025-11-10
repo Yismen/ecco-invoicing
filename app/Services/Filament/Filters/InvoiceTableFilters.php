@@ -59,6 +59,43 @@ class InvoiceTableFilters
                             ));
                         }
 
+                        if ($data['agent_id'] ?? null) {
+                            $indicators['agent_id'] = 'Agent: ' . \join(', ', ModelListService::get(
+                                model: Agent::query(),
+                                key_field: 'id',
+                                value_field: 'name',
+                                conditions: [
+                                    new WhereInCondition('id', $data['agent_id'])
+                                ]
+                            ));
+                        }
+
+                        if ($data['campaign_id'] ?? null) {
+                            $indicators['campaign_id'] = 'Campaign: ' . \join(', ', ModelListService::get(
+                                model: Campaign::query(),
+                                key_field: 'id',
+                                value_field: 'name',
+                                conditions: [
+                                    new WhereInCondition('id', $data['campaign_id'])
+                                ]
+                            ));
+                        }
+
+                        if ($data['invoiceItems'] ?? null) {
+                            $indicators['invoiceItems'] = 'Item: ' . \join(', ', ModelListService::get(
+                                model: Item::query(),
+                                key_field: 'id',
+                                value_field: 'name',
+                                conditions: [
+                                    new WhereInCondition('id', $data['invoiceItems'])
+                                ]
+                            ));
+                        }
+
+                        if ($data['status'] ?? null) {
+                            $indicators['status'] = 'Status: ' . \join(', ', $data['status']);
+                        }
+
                         return $indicators;
                     })
                     ->form([
