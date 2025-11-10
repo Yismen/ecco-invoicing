@@ -7,10 +7,11 @@ use Filament\Tables;
 use App\Models\Invoice;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Cancellation;
 use App\Enums\InvoiceStatuses;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
-use App\Models\Cancellation;
+use Filament\Pages\SubNavigationPosition;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Invoicing\Resources\CancellationResource\Pages;
 
@@ -18,11 +19,14 @@ class CancellationResource extends Resource
 {
     protected static ?string $model = Cancellation::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationIcon = 'heroicon-o-folder-open';
     protected static ?int $navigationSort = 7;
 
-    protected static ?string $label = 'Cancellations';
+    protected static ?string $navigationLabel = 'Cancellations';
+
+    protected static ?string $cluster = \App\Filament\Invoicing\Clusters\InvoicesCluster::class;
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function form(Form $form): Form
     {

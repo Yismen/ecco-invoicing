@@ -2,16 +2,17 @@
 
 namespace App\Filament\Invoicing\Resources;
 
-use App\Filament\Invoicing\Resources\PaymentResource\Pages;
-use App\Models\Payment;
-use App\Rules\PreventOverpayment;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Payment;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Rules\PreventOverpayment;
+use Filament\Pages\SubNavigationPosition;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Invoicing\Resources\PaymentResource\Pages;
 
 class PaymentResource extends Resource
 {
@@ -19,9 +20,17 @@ class PaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
+    protected static ?string $navigationLabel = 'Payments';
+
+    protected static ?string $title = 'Invoice Payments';
+
     // protected static ?string $navigationGroup = 'Invoicing';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?string $cluster = \App\Filament\Invoicing\Clusters\InvoicesCluster::class;
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

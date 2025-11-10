@@ -10,6 +10,8 @@ class ManageInvoiceNumbers extends ManageRecords
 {
     protected static string $resource = InvoiceNumberResource::class;
 
+    protected static ?string $title = "Invoice Numbers";
+
     protected function getHeaderActions(): array
     {
         return [

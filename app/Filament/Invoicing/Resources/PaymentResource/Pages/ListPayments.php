@@ -10,6 +10,8 @@ class ListPayments extends ListRecords
 {
     protected static string $resource = PaymentResource::class;
 
+    protected static ?string $title = 'Invoice Payments';
+
     protected function getHeaderActions(): array
     {
         return [

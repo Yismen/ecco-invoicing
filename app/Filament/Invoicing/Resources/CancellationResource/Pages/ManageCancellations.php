@@ -10,6 +10,8 @@ class ManageCancellations extends ManageRecords
 {
     protected static string $resource = CancellationResource::class;
 
+    protected static ?string $title = 'Invoice Cancellations';
+
     protected function getHeaderActions(): array
     {
         return [

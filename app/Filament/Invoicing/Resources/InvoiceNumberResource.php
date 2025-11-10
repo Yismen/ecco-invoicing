@@ -17,15 +17,17 @@ class InvoiceNumberResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static ?string $navigationLabel = 'Invoice Numbers';
+    protected static ?int $navigationSort = 8;
 
-    protected static ?int $navigationSort = 2;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-hashtag';
 
     protected static ?string $cluster = \App\Filament\Invoicing\Clusters\InvoicesCluster::class;
 
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    protected static ?string $navigationLabel = 'Numbers';
+
+    protected static ?string $gridLabel = 'sdfadsf';
 
     public static function form(Form $form): Form
     {

@@ -22,7 +22,7 @@ class InvoiceResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder-open';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
