@@ -3,7 +3,7 @@
 namespace App\Filament\Actions;
 
 use App\Models\Invoice;
-use Filament\Actions\Action;
+use Filament\Tables\Actions\Action;
 
 class DownloadInvoiceAction
 {
@@ -12,6 +12,7 @@ class DownloadInvoiceAction
         return Action::make(__('Pdf'))
             ->color('success')
             ->icon('heroicon-s-document-arrow-down')
+            ->button()
             ->url(fn (Invoice $record) => route('generate-invoice', $record))
             ->openUrlInNewTab();
     }
