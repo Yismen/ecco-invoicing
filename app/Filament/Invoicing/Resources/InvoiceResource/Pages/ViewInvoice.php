@@ -19,6 +19,7 @@ class ViewInvoice extends ViewRecord
     {
         return [
             Actions\EditAction::make()
+                ->modalWidth('7xl')
                 ->visible(fn ($record) => $record->status !== InvoiceStatuses::Paid),
             Action::make('Pay')
                 ->visible(fn ($record) => $record->balance_pending > 0)

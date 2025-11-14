@@ -1,4 +1,4 @@
-<div class="w-full bg-white rounded-lg overflow-hidden flex flex-col sm:flex-row content-between justify-between">
+<div class="w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col sm:flex-row content-between justify-between">
     <!-- Company Info -->
     <div class="px-6 py-4">
       <h2 class="text-xl font-semibold text-gray-800 mb-2">

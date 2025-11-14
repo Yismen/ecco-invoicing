@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg overflow-hidden flex flex-col items-end justify-end">
+<div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col items-end justify-end">
     <table>
         <tbody class="text-right mb-4">
             <tr class="text-right">
