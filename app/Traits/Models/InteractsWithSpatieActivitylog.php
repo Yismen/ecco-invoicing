@@ -15,6 +15,7 @@ trait InteractsWithSpatieActivitylog
     protected static $recordEvents = [
         'updated',
         'deleted',
+        'created',
     ];
 
     public function getActivitylogOptions(): LogOptions
