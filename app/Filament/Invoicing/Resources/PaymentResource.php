@@ -86,7 +86,13 @@ class PaymentResource extends Resource
                     ->disk('local')
                     ->stacked(),
                 Tables\Columns\TextColumn::make('reference')
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(25)
+                    ->tooltip(fn (string $state) => $state),
+                Tables\Columns\TextColumn::make('description')
+                    ->searchable()
+                    ->limit(25)
+                    ->tooltip(fn (string $state) => $state),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

@@ -45,8 +45,12 @@ class PaymentsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('date'),
                 Tables\Columns\TextColumn::make('amount')->money('usd', true),
-                Tables\Columns\TextColumn::make('reference'),
-                Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('reference')
+                    ->limit(25)
+                    ->tooltip(fn ($state) => $state),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(25)
+                    ->tooltip(fn ($state) => $state),
                 Tables\Columns\ImageColumn::make('images')
                     // ->multiple()
                     ->label('Attachments')

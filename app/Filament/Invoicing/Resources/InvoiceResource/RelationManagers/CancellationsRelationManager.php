@@ -18,7 +18,9 @@ class CancellationsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('invoice.number'),
                 Tables\Columns\TextColumn::make('date')
                     ->date(),
-                Tables\Columns\TextColumn::make('comments'),
+                Tables\Columns\TextColumn::make('comments')
+                    ->limit(25)
+                    ->tooltip(fn ($state) => $state),
 
             ])
             ->filters([
