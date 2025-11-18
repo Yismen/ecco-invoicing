@@ -88,11 +88,11 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('reference')
                     ->searchable()
                     ->limit(25)
-                    ->tooltip(fn (string $state) => $state),
+                    ->tooltip(fn (?string $state) => $state),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable()
                     ->limit(25)
-                    ->tooltip(fn (string $state) => $state),
+                    ->tooltip(fn (?string $state) => $state),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()

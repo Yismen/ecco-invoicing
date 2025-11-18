@@ -20,7 +20,7 @@ class CancellationsRelationManager extends RelationManager
                     ->date(),
                 Tables\Columns\TextColumn::make('comments')
                     ->limit(25)
-                    ->tooltip(fn ($state) => $state),
+                    ->tooltip(fn (?string $state) => $state),
 
             ])
             ->filters([

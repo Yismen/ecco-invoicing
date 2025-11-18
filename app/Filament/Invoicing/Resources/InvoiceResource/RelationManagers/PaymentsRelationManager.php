@@ -47,10 +47,10 @@ class PaymentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('amount')->money('usd', true),
                 Tables\Columns\TextColumn::make('reference')
                     ->limit(25)
-                    ->tooltip(fn ($state) => $state),
+                    ->tooltip(fn (?string $state) => $state),
                 Tables\Columns\TextColumn::make('description')
                     ->limit(25)
-                    ->tooltip(fn ($state) => $state),
+                    ->tooltip(fn (?string $state) => $state),
                 Tables\Columns\ImageColumn::make('images')
                     // ->multiple()
                     ->label('Attachments')
