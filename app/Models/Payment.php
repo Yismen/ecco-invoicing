@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use App\Casts\AsMoney;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Exceptions\InvoiceOverpaymentException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payment extends Model
 {
@@ -46,7 +47,7 @@ class Payment extends Model
             $attempt = $totalPaid + $payment->amount;
 
             if ($attempt > $invoice->total_amount) {
-                throw new \Exception('Payment exceeds invoice total');
+                throw new InvoiceOverpaymentException('Payment exceeds invoice total');
             }
         });
 

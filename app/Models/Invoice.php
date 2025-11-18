@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Enums\InvoiceStatuses;
+use App\Exceptions\InvoiceWithNegativeTotalAmountException;
+use App\Exceptions\InvoiceWithZeroTotalAmountException;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GenerateInvoiceNumberService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -102,6 +104,14 @@ class Invoice extends Model
                     ])->toArray(),
                 ],
             ]);
+
+            if ($invoice->invoiceItems->count() && $invoice->subtotal_amount < 0) {
+                throw new InvoiceWithNegativeTotalAmountException('Invoice created with a negative amount of ' . $invoice->total_amount . ' is not allowed!');
+            };
+
+            if ($invoice->invoiceItems->count() && $invoice->subtotal_amount == 0) {
+                throw new InvoiceWithZeroTotalAmountException('Invoice created with a amount of 0 is not allowed!');
+            };
         });
     }
 

@@ -1,13 +1,15 @@
 <?php
 
-use App\Enums\InvoiceStatuses;
+use App\Models\Item;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\Cancellation;
-use App\Models\InvoiceItem;
-use App\Models\Item;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\InvoiceItem;
+use App\Models\Cancellation;
+use App\Enums\InvoiceStatuses;
+use App\Exceptions\InvoiceWithZeroTotalAmountException;
+use App\Exceptions\InvoiceWithNegativeTotalAmountException;
 
 it('save correct fields', function () {
     $data = Invoice::factory()->make();
@@ -470,6 +472,32 @@ it('has status partially paid when payment is created but invoice still have som
 
     expect($invoice->fresh()->status)->toBe(InvoiceStatuses::PartiallyPaid);
 });
+
+it('prevents invoices from being created with a negative amount', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => -300]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+})->throws(InvoiceWithNegativeTotalAmountException::class);
+
+it('prevent invoices from being created with a total amount of zero', function () {
+    $invoice = Invoice::factory()
+        ->create();
+    $item = Item::factory()->create(['price' => 0]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item->id,
+        'quantity' => 1,
+        'item_price' => $item->price,
+    ]);
+})->throws(InvoiceWithZeroTotalAmountException::class);
 
 it('has status paid when payment is created and balance is 0', function () {
     $invoice = Invoice::factory()

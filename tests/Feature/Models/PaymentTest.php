@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\InvoiceOverpaymentException;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
@@ -71,3 +72,11 @@ it('retrieves the price as a float', function () {
 
     $this->assertEquals(200.00, $payment->refresh()->amount);
 });
+
+it('prevents overpayments', function () {
+    $payment = Payment::factory()->create([
+        'invoice_id' => $this->invoice->id,
+        'amount' => 3000.00,
+    ]);
+})->throws(InvoiceOverpaymentException::class);
+
