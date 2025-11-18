@@ -106,7 +106,7 @@ describe('Payment Resource', function () {
     it('shows correct navigation sort', function () {
         expect(
             PaymentResource::getNavigationSort()
-        )->toBe(7);
+        )->toBe(2);
         // ->and(
         //     PaymentResource::getNavigationGroup()
         // )->toBe('Invoicing')
