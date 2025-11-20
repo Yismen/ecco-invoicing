@@ -473,7 +473,7 @@ it('has status partially paid when payment is created but invoice still have som
     expect($invoice->fresh()->status)->toBe(InvoiceStatuses::PartiallyPaid);
 });
 
-it('prevents invoices from being created with a negative amount', function () {
+it('prevents invoices from being created with negative amount', function () {
     $invoice = Invoice::factory()
         ->create();
     $item = Item::factory()->create(['price' => -300]);
@@ -502,20 +502,37 @@ it('prevent invoices from being created with a total amount of zero', function (
 it('has status paid when payment is created and balance is 0', function () {
     $invoice = Invoice::factory()
         ->create();
-    $item = Item::factory()->create(['price' => 300]);
+    $item1 = Item::factory()->create(['price' => 9]);
+    $item2 = Item::factory()->create(['price' => 6]);
+    $item3 = Item::factory()->create(['price' => 1]);
 
     InvoiceItem::create([
         'invoice_id' => $invoice->id,
-        'item_id' => $item->id,
-        'quantity' => 1,
-        'item_price' => $item->price,
+        'item_id' => $item1->id,
+        'quantity' => 10306.5355445666,
+        'item_price' => $item1->price,
+    ]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item2->id,
+        'quantity' => 392,
+        'item_price' => $item2->price,
+    ]);
+
+    InvoiceItem::create([
+        'invoice_id' => $invoice->id,
+        'item_id' => $item3->id,
+        'quantity' => 6241,
+        'item_price' => $item3->price,
     ]);
 
     Payment::factory()->create([
         'invoice_id' => $invoice->id,
-        'amount' => 300,
+        'amount' => $invoice->fresh()->balance_pending,
     ]);
 
+    expect($invoice->balance_pending)->toEqual(0);
     expect($invoice->fresh()->status)->toBe(InvoiceStatuses::Paid);
 });
 
