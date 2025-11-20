@@ -50,23 +50,27 @@ class GenerateInvoiceService
             ->addItems($items)
             ->template($this->invoice->project->client->invoice_template)
             ->logo(public_path(config('app.company.logo')))
-            // You can additionally save generated invoice to configured disk
             ->save($this->disk);
+
+        $this->unlinkFile();
 
         return $this;
     }
 
+    public function toHtml()
+    {
+        return $this->pdf->toHtml();
+
+    }
+
+
     public function toStream()
     {
-        $this->unlinkFile();
-
         return $this->pdf->stream();
      }
 
      public function toFile()
      {
-        $this->unlinkFile();
-
         return $this->pdf->download();
      }
 
