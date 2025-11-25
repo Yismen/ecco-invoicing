@@ -69,17 +69,16 @@ class Invoice extends Model
                 $subtotal_amount += $item->item_price * $item->quantity;
             }
 
-            $tax_amount = round($subtotal_amount * ($invoice->project->tax_rate ?: 0), 10);
-            $total_amount = round($subtotal_amount + $tax_amount, 10);
-            $total_paid = round($invoice->payments->sum('amount'), 10);
-
+            $tax_amount = round($subtotal_amount * ($invoice->project->tax_rate ?: 0), 6);
+            $total_amount = round($subtotal_amount + $tax_amount, 6);
+            $total_paid = round($invoice->payments->sum('amount'), 6);
 
             $invoice->updateQuietly([
                 'subtotal_amount' => $subtotal_amount,
                 'tax_amount' => $tax_amount,
                 'total_amount' => $total_amount,
                 'total_paid' => $total_paid,
-                'balance_pending' => \bcsub($total_amount, $total_paid, 15),
+                'balance_pending' => $total_amount - $total_paid,
                 'due_date' => $invoice->date->addDays($invoice->project->invoice_net_days ?: 0),
             ]);
 
