@@ -21,7 +21,9 @@ trait InteractsWithSpatieActivitylog
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logAll()
+            ->logOnly(
+                $this->getTrackableAttributes()
+            )
             ->dontLogIfAttributesChangedOnly($this->getIgnoredChangedAttributes())
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
@@ -30,5 +32,21 @@ trait InteractsWithSpatieActivitylog
     protected function getIgnoredChangedAttributes(): array
     {
         return static::$ignoreChangedAttributes ?? [];
+    }
+
+    protected function getTrackableAttributes(): array
+    {
+        $attributes = \array_keys($this->attributes);
+
+        $attributes = \array_filter($attributes, function ($value) {
+            return in_array(strtolower($value), static::$ignoreChangedAttributes) == false;
+        });
+
+        return \array_map(function ($value) {
+            $split = \explode('_id', $value);
+            return count($split) > 1 ?
+                $split[0] . '.name' :
+                $split[0];
+        }, $attributes);
     }
 }
