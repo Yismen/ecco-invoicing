@@ -35,7 +35,7 @@ class InvoiceTemplatesService
                 'root' => $this->path,
             ])->allFiles('') as $file) {
                 $file = str($file)->before('.blade.php')->toString();
-                $files[$file] = $file;
+                $files[$file] = str($file)->headline()->toString();
             }
 
             return $files;
