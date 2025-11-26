@@ -8,7 +8,7 @@ use App\Services\ModelList\Conditions\WhereInCondition;
 
 it('generates the correct key', function () {
     ModelListService::get(
-        model: \App\Models\Project::class,
+        model: Project::class,
         key_field: 'id',
         value_field: 'name'
     );
@@ -19,7 +19,7 @@ it('generates the correct key', function () {
 
 it('generates the correct key when conditions are provided', function () {
     ModelListService::get(
-        model: \App\Models\Project::class,
+        model: Project::class,
         key_field: 'id',
         value_field: 'name',
         conditions: ['status' => 'active']
@@ -33,7 +33,7 @@ it('returns the correct values', function () {
     Project::factory()->count(3)->create();
 
     $service = ModelListService::get(
-        model: \App\Models\Project::class,
+        model: Project::class,
         key_field: 'id',
         value_field: 'name'
     );
@@ -49,7 +49,7 @@ it('returns the correct values with conditions', function () {
     Project::factory()->create(['name' => 'new condition']);
 
     $service = ModelListService::get(
-        model: \App\Models\Project::class,
+        model: Project::class,
         key_field: 'id',
         value_field: 'name',
         conditions: [
@@ -68,7 +68,7 @@ it('returns the correct values when where condition is passed', function () {
     Project::factory()->create(['name' => 'new condition']);
 
     $service = ModelListService::get(
-        model: \App\Models\Project::class,
+        model: Project::class,
         key_field: 'id',
         value_field: 'name',
         conditions: [
@@ -87,7 +87,7 @@ it('returns the correct values when whereIn condition is passed', function () {
     Project::factory()->create(['name' => 'new condition']);
 
     $service = ModelListService::get(
-        model: \App\Models\Project::class,
+        model: Project::class,
         key_field: 'id',
         value_field: 'name',
         conditions: [
