@@ -8,37 +8,40 @@ use Illuminate\Support\Facades\Storage;
 class InvoiceTemplatesService
 {
     public $path;
+    public string $disk;
 
-    public function __construct(?string $path = null)
+    public function __construct(?string $path = null, string $disk = 'local')
     {
         if ($path) {
             $this->path = $path;
         }
 
         $this->path = $this->path ?: resource_path('views/vendor/invoices/templates');
+        $this->disk = $disk;
     }
 
-    public static function make(?string $path = null): array
+    public static function make(?string $path = null, string $disk = 'local'): array
     {
-        $static = new static($path);
+        $static = new static($path, $disk);
 
         return $static->getFiles();
     }
 
     public function getFiles(): array
     {
-        return Cache::remember('invoice_template_services', now()->addMinutes(15), function () {
-            $files = [];
-
-            foreach (Storage::build([
-                'driver' => 'local',
+        return Cache::rememberForever('invoice_template_services', function () {
+            $returnFiles = [];
+            $files = Storage::build([
+                'driver' => $this->disk,
                 'root' => $this->path,
-            ])->allFiles('') as $file) {
+            ])->allFiles('');
+
+            foreach ($files as $file) {
                 $file = str($file)->before('.blade.php')->toString();
-                $files[$file] = str($file)->headline()->toString();
+                $returnFiles[$file] = str($file)->headline()->toString();
             }
 
-            return $files;
+            return $returnFiles;
         });
     }
 }
