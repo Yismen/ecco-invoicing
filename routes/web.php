@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\GenerateInvoiceController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GenerateInvoiceController;
+use Jeffgreco13\FilamentBreezy\Livewire\SanctumTokens;
+
+Livewire::component('sanctum_tokens', SanctumTokens::class);
 
 Route::get('/', function () {
     return view('welcome');

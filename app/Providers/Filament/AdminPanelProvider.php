@@ -60,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                \AchyutN\FilamentLogViewer\FilamentLogViewer::make()
+                FilamentLogViewer::make()
                     ->authorize(fn () => auth()->check())
                     ->navigationGroup('System')
                     ->navigationIcon('heroicon-o-document-text')
@@ -70,7 +70,12 @@ class AdminPanelProvider extends PanelProvider
                     ->pollingTime(null),
                 EnvironmentIndicatorPlugin::make(),
                 FilamentShieldPlugin::make(),
-                BreezeCoreService::make(),
+                BreezeCoreService::make()
+                    ->enableTwoFactorAuthentication()
+                    ->enableSanctumTokens(
+                        permissions: ['read:invoices']
+                    )
+                    ,
                 DebuggerPlugin::make()
                     ->navigationGroup(label: 'System')
                     ->telescopeNavigation(
