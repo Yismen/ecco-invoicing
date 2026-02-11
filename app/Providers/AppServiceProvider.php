@@ -25,5 +25,9 @@ class AppServiceProvider extends ServiceProvider
         // Model::preventSilentlyDiscardingAttributes(! app()->isProduction());
 
         // FilamentShield::prohibitDestructiveCommands(app()->isProduction());
+
+
+
+        \Livewire\Livewire::component('sanctum_tokens', \Jeffgreco13\FilamentBreezy\Livewire\SanctumTokens::class);
     }
 }
