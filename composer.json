@@ -22,7 +22,6 @@
         "malzariey/filament-daterangepicker-filter": "~4.0",
         "pxlrbt/filament-environment-indicator": "~3.0",
         "spatie/laravel-activitylog": "^4.10",
-        "stephenjude/filament-debugger": "~4.0",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.2"
     },

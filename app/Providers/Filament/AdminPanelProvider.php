@@ -9,10 +9,12 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -38,6 +40,15 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Indigo,
             ])
+            ->navigationItems([
+                NavigationItem::make()
+                // ->navigationGroup('System')
+                    ->group('System')
+                    ->label('Telescope')
+                    ->icon(Heroicon::OutlinedSparkles)
+                    ->url('/telescope')
+                    ->openUrlInNewTab(),
+            ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -60,30 +71,15 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                FilamentLogViewer::make()
-                    ->authorize(fn () => auth()->check())
-                    ->navigationGroup('System')
-                    ->navigationIcon('heroicon-o-document-text')
-                    ->navigationLabel('Log Viewer')
-                    // ->navigationSort(10)
-                    ->navigationUrl('/logs')
-                    ->pollingTime(null),
-                EnvironmentIndicatorPlugin::make(),
+                FilamentLogViewer::make(),
+                EnvironmentIndicatorPlugin::make()
+                    ->visible(fn () => config('app.env') !== 'production'),
                 FilamentShieldPlugin::make(),
                 BreezeCoreService::make()
                     ->enableTwoFactorAuthentication()
                     ->enableSanctumTokens(
                         permissions: ['read:invoices']
                     ),
-                DebuggerPlugin::make()
-                    ->navigationGroup(label: 'System')
-                    ->telescopeNavigation(
-                        condition: config('telescope.enabled', true),
-                        url: config('telescope.path', 'telescope'),
-                        openInNewTab: fn () => true,
-                    )
-                    ->horizonNavigation(false)
-                    ->pulseNavigation(false),
             ])
             ->authMiddleware([
                 Authenticate::class,
