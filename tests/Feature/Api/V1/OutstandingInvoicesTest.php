@@ -1,13 +1,12 @@
 <?php
 
-use App\Models\User;
+use App\Enums\InvoiceStatuses;
 use App\Models\Agent;
+use App\Models\Campaign;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
-use App\Models\Campaign;
-use App\Enums\InvoiceStatuses;
-use Laravel\Sanctum\Sanctum;
+use App\Models\User;
 
 beforeEach(function () {
     // Create test data
@@ -96,7 +95,7 @@ it('returns all outstanding invoices with valid authentication', function () {
                     'balance_pending',
                     'created_at',
                     'updated_at',
-                ]
+                ],
             ],
             'message',
             'count',

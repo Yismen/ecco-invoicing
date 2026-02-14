@@ -1,15 +1,15 @@
 <?php
 
-use App\Models\Item;
+use App\Enums\InvoiceStatuses;
+use App\Exceptions\InvoiceWithNegativeTotalAmountException;
+use App\Exceptions\InvoiceWithZeroTotalAmountException;
+use App\Models\Cancellation;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\Item;
 use App\Models\Payment;
 use App\Models\Project;
-use App\Models\InvoiceItem;
-use App\Models\Cancellation;
-use App\Enums\InvoiceStatuses;
-use App\Exceptions\InvoiceWithZeroTotalAmountException;
-use App\Exceptions\InvoiceWithNegativeTotalAmountException;
 
 it('save correct fields', function () {
     $data = Invoice::factory()->make();

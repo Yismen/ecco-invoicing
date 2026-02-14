@@ -1,10 +1,10 @@
 <?php
 
 use App\Models\Project;
-use App\Services\ModelListService;
-use Illuminate\Support\Facades\Cache;
 use App\Services\ModelList\Conditions\WhereCondition;
 use App\Services\ModelList\Conditions\WhereInCondition;
+use App\Services\ModelListService;
+use Illuminate\Support\Facades\Cache;
 
 it('generates the correct key', function () {
     ModelListService::get(

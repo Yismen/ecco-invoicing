@@ -1,14 +1,14 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * Test script for Outstanding Invoices API
  * Usage: php test-api.php <base_url> <token>
  */
-
 $baseUrl = $argv[1] ?? 'http://localhost:8000';
 $token = $argv[2] ?? '';
 
-if (!$token) {
+if (! $token) {
     echo "Error: Token is required\n";
     echo "Usage: php test-api.php <base_url> <token>\n";
     exit(1);
@@ -46,16 +46,16 @@ echo "========================================\n";
 echo "Outstanding Invoices API Test\n";
 echo "========================================\n";
 echo "Base URL: $baseUrl\n";
-echo "Token: " . substr($token, 0, 20) . "...\n";
+echo 'Token: '.substr($token, 0, 20)."...\n";
 echo "========================================\n\n";
 
 foreach ($tests as $test) {
     echo "Test: {$test['name']}\n";
-    echo str_repeat('-', 50) . "\n";
+    echo str_repeat('-', 50)."\n";
 
-    $url = $baseUrl . $test['endpoint'];
-    if (!empty($test['params'])) {
-        $url .= '?' . http_build_query($test['params']);
+    $url = $baseUrl.$test['endpoint'];
+    if (! empty($test['params'])) {
+        $url .= '?'.http_build_query($test['params']);
     }
 
     $ch = curl_init($url);
@@ -79,10 +79,10 @@ foreach ($tests as $test) {
         if ($httpCode === 200) {
             $data = json_decode($response, true);
             if ($data) {
-                echo "Success: " . ($data['success'] ? 'true' : 'false') . "\n";
-                echo "Count: " . ($data['count'] ?? 0) . "\n";
-                echo "Message: " . ($data['message'] ?? '') . "\n";
-                if (!empty($data['data'])) {
+                echo 'Success: '.($data['success'] ? 'true' : 'false')."\n";
+                echo 'Count: '.($data['count'] ?? 0)."\n";
+                echo 'Message: '.($data['message'] ?? '')."\n";
+                if (! empty($data['data'])) {
                     echo "First Invoice (sample):\n";
                     $first = $data['data'][0];
                     echo "  - Number: {$first['number']}\n";
@@ -92,7 +92,7 @@ foreach ($tests as $test) {
                 }
             }
         } else {
-            echo "Response: " . substr($response, 0, 200) . "\n";
+            echo 'Response: '.substr($response, 0, 200)."\n";
         }
     }
 

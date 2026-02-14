@@ -2,22 +2,22 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use Filament\Widgets\ChartWidget;
-use App\Services\InvoiceQueryService;
 use App\DTOs\InvoicingDashboardFilterDTO;
+use App\Services\InvoiceQueryService;
+use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class IncomeByProject extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Projects Income';
+    protected ?string $heading = 'Projects Income';
 
-    protected static ?string $pollingInterval = '600s';
+    protected ?string $pollingInterval = '600s';
 
     protected function getData(): array
     {
-        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO($this->filters));
+        $service = new InvoiceQueryService(new InvoicingDashboardFilterDTO($this->pageFilters));
 
         $data = $service->getFilteredQuery()
             ->select('project_id')

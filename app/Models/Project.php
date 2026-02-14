@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\Models\HasNamePrefix;
 use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,13 +14,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProjectFactory> */
+    /** @use HasFactory<ProjectFactory> */
     use HasFactory;
 
     use HasNamePrefix;
     use InteracstsWithModelCaching;
+    use InteractsWithSpatieActivitylog;
     use SoftDeletes;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     protected $fillable = [
         'name',

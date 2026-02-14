@@ -1,10 +1,9 @@
 <?php
 
-use App\Filament\Invoicing\Resources\AgentResource;
+use App\Filament\Invoicing\Resources\Agents\AgentResource;
 use App\Models\Agent;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Spatie\Permission\Models\Permission;
 
 describe('Agent Resource', function () {
     beforeEach(function () {
@@ -12,7 +11,7 @@ describe('Agent Resource', function () {
             Filament::getPanel('invoicing')
         );
 
-        // $this->user = User::factory()->create();
+        $this->user = User::factory()->create();
         $this->model = Agent::factory()->create();
 
         $this->routes = [
@@ -34,7 +33,6 @@ describe('Agent Resource', function () {
     ]);
 
     it('forbids unauthorized users to access', function ($route) {
-        // dd('$this->user');
         $this->actingAs($this->user)
             ->get($this->routes[$route])
             ->assertForbidden();
@@ -55,14 +53,7 @@ describe('Agent Resource', function () {
                 // 'view' => 'view',
             ];
 
-            foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('Agent')->snake()->toString();
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'web',
-                ]);
-                $this->user->givePermissionTo($permission);
-            }
+            $this->user = $this->userWithPermission(array_values($permissions), 'agent');
         });
 
         it('can access client resource endpoints', function ($route) {

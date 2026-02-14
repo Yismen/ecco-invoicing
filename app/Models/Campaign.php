@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Traits\Models\HasNamePrefix;
+use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\CampaignFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,13 +14,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Campaign extends Model
 {
-    use \App\Traits\Models\InteracstsWithModelCaching;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
-
-    /** @use HasFactory<\Database\Factories\CampaignFactory> */
+    /** @use HasFactory<CampaignFactory> */
     use HasFactory;
-
     use HasNamePrefix;
+
+    use InteracstsWithModelCaching;
+
+    use InteractsWithSpatieActivitylog;
     use SoftDeletes;
 
     protected $fillable = [

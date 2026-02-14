@@ -11,9 +11,7 @@ class InvoiceQueryService
     /**
      * InvoiceQueryService constructor.
      */
-    public function __construct(public InvoicingDashboardFilterDTO $filters)
-    {
-    }
+    public function __construct(public InvoicingDashboardFilterDTO $filters) {}
 
     public function getFilteredQuery(): Builder
     {

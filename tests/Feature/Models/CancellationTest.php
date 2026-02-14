@@ -35,7 +35,7 @@ it('belogns to an invoice', function () {
     );
 });
 
-it('change invoice status when created', function() {
+it('change invoice status when created', function () {
     $invoice = Invoice::factory()
         ->create();
 
@@ -43,7 +43,7 @@ it('change invoice status when created', function() {
         ->toBe(InvoiceStatuses::Pending);
 
     Cancellation::factory()->create([
-        'invoice_id' => $invoice->id
+        'invoice_id' => $invoice->id,
     ]);
 
     expect($invoice->fresh()->status)
@@ -51,20 +51,20 @@ it('change invoice status when created', function() {
 
 });
 
-it('prevents cancelling invoices with payments', function() {
+it('prevents cancelling invoices with payments', function () {
     $invoice = Invoice::factory()
         ->has(InvoiceItem::factory())
         ->create();
 
-        $invoice->touch();
+    $invoice->touch();
 
     Payment::factory()->create([
         'invoice_id' => $invoice->id,
-        'amount' => 5
+        'amount' => 5,
     ]);
 
     Cancellation::factory()->create([
-        'invoice_id' => $invoice->id
+        'invoice_id' => $invoice->id,
     ]);
 
 })->throws(PreventCancellingInvoiceWithPaymentException::class, 'Invoice has payments already!');

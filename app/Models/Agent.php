@@ -2,20 +2,24 @@
 
 namespace App\Models;
 
+use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\AgentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Agent extends Model
 {
-    use \App\Traits\Models\InteracstsWithModelCaching;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
-
-    /** @use HasFactory<\Database\Factories\AgentFactory> */
+    /** @use HasFactory<AgentFactory> */
     use HasFactory;
+    use InteracstsWithModelCaching;
 
-    use \Illuminate\Database\Eloquent\SoftDeletes;
+    use InteractsWithSpatieActivitylog;
+
+    use SoftDeletes;
 
     protected $fillable = [
         'name',

@@ -2,17 +2,17 @@
 
 namespace App\Filament\Actions;
 
-use Filament\Forms\Get;
-use Illuminate\Support\Number;
-use Filament\Support\Colors\Color;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
+use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Collection;
 
 class PayBulkInvoicesAction
@@ -22,7 +22,7 @@ class PayBulkInvoicesAction
         return BulkAction::make('Pay Fully')
             ->label('Pay Multiple Invoices')
             ->color(Color::Teal)
-            ->icon('heroicon-s-credit-card')
+            ->icon(Heroicon::OutlinedCreditCard)
             ->size('xs')
             // ->checkIfRecordIsSelectableUsing(
             //     fn (\Illuminate\Database\Eloquent\Model $record): bool => $record->amount_pending > 0,
@@ -32,16 +32,16 @@ class PayBulkInvoicesAction
                 'This action will pay the all selected invoices fully using the pending balance. It only pays invoices with any pending amount. Are you sure?'
             )
             ->deselectRecordsAfterCompletion()
-            ->fillForm(fn(Collection $records): array => [
+            ->fillForm(fn (Collection $records): array => [
                 'date' => now(),
                 'amount_info' => $records->sum('balance_pending'),
                 'selected_invoices' => $records
                     ->filter(fn ($record) => $record->balance_pending > 0)
                     ->sortByDesc('date')
-                    ->pluck( 'balance_pending', 'number')
+                    ->pluck('balance_pending', 'number')
                     ->toArray(),
             ])
-            ->form([
+            ->schema([
                 Grid::make(2)
                     ->schema([
                         DatePicker::make('date')
@@ -60,9 +60,9 @@ class PayBulkInvoicesAction
                         Placeholder::make('selected_invoices')
                             ->label('Selected Invoices')
                             ->content(fn (Get $get) => \view('filament.partials.invoices-selected-for-payment', [
-                                    'selectedInvoices' => $get('selected_invoices'),
-                                ])
-                            )
+                                'selectedInvoices' => $get('selected_invoices'),
+                            ])
+                            ),
                     ]),
             ])
             ->action(function (Collection $records, array $data): void {
@@ -77,14 +77,14 @@ class PayBulkInvoicesAction
                             'amount' => $record->balance_pending,
                         ]);
 
-                        $paidInvoices[] = '</br>' . $record->number;
+                        $paidInvoices[] = '</br>'.$record->number;
                     }
                 }
 
                 Notification::make()
                     ->title('Bulk Payment Successful')
                     ->success()
-                    ->body('Payments have been fully applied for the selected invoices: ' . implode(', ', $paidInvoices))
+                    ->body('Payments have been fully applied for the selected invoices: '.implode(', ', $paidInvoices))
                     ->send();
             });
     }

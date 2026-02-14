@@ -1,16 +1,11 @@
 <?php
 
-use App\Filament\Admin\Resources\UserResource;
+use App\Filament\Admin\Resources\Users\UserResource;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Permission;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class)->in('Feature/Filament');
 
 beforeEach(function () {
     $this->resource = new UserResource;
-    // $this->user = User::factory()->create();
+    $this->user = User::factory()->create();
 });
 
 describe('guest user', function () {
@@ -59,12 +54,7 @@ describe('authorized user with permission', function () {
             // 'delete_any_user',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-
-        // Assign permissions to user
-        $this->user->givePermissionTo($permissions);
+        $this->user = $this->superAdminUser();
     });
 
     it('allows authorized users to access index endpoint', function () {

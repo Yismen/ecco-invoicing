@@ -3,19 +3,22 @@
 namespace App\Models;
 
 use App\Casts\AsMoney;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Exceptions\InvoiceOverpaymentException;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use \App\Traits\Models\InteracstsWithModelCaching;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
-
-    /** @use HasFactory<\Database\Factories\PaymentFactory> */
+    /** @use HasFactory<PaymentFactory> */
     use HasFactory;
+    use InteracstsWithModelCaching;
+
+    use InteractsWithSpatieActivitylog;
 
     use SoftDeletes;
 

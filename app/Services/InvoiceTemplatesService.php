@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class InvoiceTemplatesService
 {
     public $path;
+
     public string $disk;
 
     public function __construct(?string $path = null, string $disk = 'local')

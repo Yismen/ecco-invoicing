@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,10 +12,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceItem extends Model
 {
-    use InteracstsWithModelCaching;
-    use SoftDeletes;
     use HasFactory;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
+    use InteracstsWithModelCaching;
+    use InteractsWithSpatieActivitylog;
+    use SoftDeletes;
 
     public $table = 'invoice_item';
 

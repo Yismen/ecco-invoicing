@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Invoice;
 use App\Enums\InvoiceStatuses;
-use App\Http\Resources\InvoiceResource;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\InvoiceResource;
+use App\Models\Invoice;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
@@ -18,14 +19,11 @@ class InvoiceController extends Controller
      * - client_id: Filter by client ID
      * - campaign_id: Filter by campaign ID
      * - date: Single date or comma-separated date range (YYYY-MM-DD or YYYY-MM-DD,YYYY-MM-DD)
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function outstanding(Request $request): JsonResponse
     {
         // Check token ability
-        if (!$request->user()->tokenCan('read:invoices')) {
+        if (! $request->user()->tokenCan('read:invoices')) {
             return response()->json([
                 'success' => false,
                 'data' => [],
@@ -77,11 +75,11 @@ class InvoiceController extends Controller
                 'message' => 'Outstanding invoices retrieved successfully',
                 'count' => $invoices->count(),
             ], 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => [],
-                'message' => 'An error occurred while retrieving outstanding invoices: ' . $e->getMessage(),
+                'message' => 'An error occurred while retrieving outstanding invoices: '.$e->getMessage(),
                 'count' => 0,
             ], 500);
         }

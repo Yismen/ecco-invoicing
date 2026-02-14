@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
+use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use BezhanSalleh\PanelSwitch\PanelSwitch;
 
 class FilamentServiceProvider extends ServiceProvider
 {

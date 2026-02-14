@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Traits\Models\HasNamePrefix;
+use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,14 +14,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
 {
-    use \App\Traits\Models\InteracstsWithModelCaching;
-
-    /** @use HasFactory<\Database\Factories\ClientFactory> */
+    /** @use HasFactory<ClientFactory> */
     use HasFactory;
 
     use HasNamePrefix;
+
+    use InteracstsWithModelCaching;
+    use InteractsWithSpatieActivitylog;
     use SoftDeletes;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
 
     protected $fillable = [
         'name',

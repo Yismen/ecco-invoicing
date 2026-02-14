@@ -3,9 +3,10 @@
 namespace App\Filament\Actions;
 
 use App\Models\Invoice;
-use Filament\Support\Colors\Color;
-use Filament\Tables\Actions\Action;
 use App\Services\Filament\Forms\InvoicePaymentForm;
+use Filament\Actions\Action;
+use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 
 class PayInvoiceAction
 {
@@ -14,9 +15,9 @@ class PayInvoiceAction
         return Action::make('Pay')
             ->visible(fn ($record) => $record->balance_pending > 0)
             ->color(Color::Purple)
-            ->icon('heroicon-s-credit-card')
+            ->icon(Heroicon::OutlinedCreditCard)
             ->button()
-            ->form(InvoicePaymentForm::make())
+            ->schema(InvoicePaymentForm::make())
             ->action(function (array $data, Invoice $record): void {
                 $record->payments()->create($data);
             });

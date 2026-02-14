@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,10 +27,12 @@ class AppServiceProvider extends ServiceProvider
         Model::preventAccessingMissingAttributes(! app()->isProduction());
         // Model::preventSilentlyDiscardingAttributes(! app()->isProduction());
 
-        // FilamentShield::prohibitDestructiveCommands(app()->isProduction());
+        FilamentShield::prohibitDestructiveCommands(app()->isProduction());
 
+        // \Livewire\Livewire::component('sanctum_tokens', \Jeffgreco13\FilamentBreezy\Livewire\SanctumTokens::class);
 
-
-        \Livewire\Livewire::component('sanctum_tokens', \Jeffgreco13\FilamentBreezy\Livewire\SanctumTokens::class);
+        Gate::before(function (User $user) {
+            return true;
+        });
     }
 }

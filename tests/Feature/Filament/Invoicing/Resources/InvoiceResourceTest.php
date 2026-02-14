@@ -1,10 +1,9 @@
 <?php
 
-use App\Filament\Invoicing\Resources\InvoiceResource;
+use App\Filament\Invoicing\Resources\Invoices\InvoiceResource;
 use App\Models\Invoice;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Spatie\Permission\Models\Permission;
 
 describe('Invoice Resource', function () {
     beforeEach(function () {
@@ -12,7 +11,7 @@ describe('Invoice Resource', function () {
             Filament::getPanel('invoicing')
         );
 
-        // $this->user = User::factory()->create();
+        $this->user = User::factory()->create();
         $this->model = Invoice::factory()->create();
 
         $this->routes = [
@@ -46,14 +45,7 @@ describe('Invoice Resource', function () {
                 'view' => 'view',
             ];
 
-            foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('Invoice')->snake()->toString();
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'web',
-                ]);
-                $this->user->givePermissionTo($permission);
-            }
+            $this->user = $this->userWithPermission(array_values($permissions), 'invoice');
         });
 
         it('can access client resource endpoints', function ($route) {

@@ -79,4 +79,3 @@ it('prevents overpayments', function () {
         'amount' => 3000.00,
     ]);
 })->throws(InvoiceOverpaymentException::class);
-

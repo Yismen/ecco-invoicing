@@ -1,0 +1,10 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+/* @import "../../../../vendor/bezhansalleh/filament-panel-switch/"; */
+/* @import "../../../../vendor/bezhansalleh/filament-shield/"; */
+@source '../../../../vendor/bezhansalleh/filament-panel-switch/resources/views/';
+@source '../../../../vendor/bezhansalleh/filament-language-switch/resources/views/';
+@source '../../../../vendor/jeffgreco13/filament-breezy/resources/views/';
+@source '../../../../vendor/achyutn/filament-log-viewer/resources/views/';
+
+@source '../../../../app/Filament/Admin/**/*';
+@source '../../../../resources/views/**/*';

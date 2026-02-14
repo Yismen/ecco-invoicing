@@ -3,23 +3,24 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\Models\InteracstsWithModelCaching;
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\Notifiable;
-use Filament\Models\Contracts\FilamentUser;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\Models\InteracstsWithModelCaching;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory;
-
     use HasApiTokens;
+
+    /** @use HasFactory<UserFactory> */
+    use HasFactory;
     use HasRoles;
     use InteracstsWithModelCaching;
     use Notifiable;
@@ -62,13 +63,25 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if (!app()->isProduction()) {
-            return true;
+        if ($panel->getId() === 'admin') {
+            return $this->isSuperAdmin();
         }
 
-        return $this->hasAnyRole(['super_admin', 'Super Admin', 'super admin']) ?
-            true :
-            str_ends_with($this->email, '@ecco.com.do') || str_ends_with($this->email, '@eccocorpbpo.do')
-            ;
+        if ($panel->getId() === 'invoicing') {
+            return $this->isSuperAdmin() ||
+                str_ends_with($this->email, '@ecco.com.do') ||
+                str_ends_with($this->email, '@eccocorpbpo.do');
+        }
+
+        return true;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->hasAnyRole([
+            'super_admin',
+            'Super Admin',
+            'super admin',
+        ]);
     }
 }

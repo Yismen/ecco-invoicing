@@ -63,19 +63,18 @@ class GenerateInvoiceService
 
     }
 
-
     public function toStream()
     {
         return $this->pdf->stream();
-     }
+    }
 
-     public function toFile()
-     {
+    public function toFile()
+    {
         return $this->pdf->download();
-     }
+    }
 
-     protected function unlinkFile()
-     {
+    protected function unlinkFile()
+    {
         if (Storage::disk($this->disk)->exists($this->pdf->filename)) {
             Storage::disk($this->disk)->delete($this->pdf->filename);
         }

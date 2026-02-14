@@ -7,23 +7,22 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "achyutn/filament-log-viewer": "^0.5.2",
-        "bezhansalleh/filament-panel-switch": "^1.0",
-        "bezhansalleh/filament-shield": "^3.3",
-        "filament/filament": "^3.3",
+        "achyutn/filament-log-viewer": "~0.5",
+        "bezhansalleh/filament-panel-switch": "~2.0",
+        "bezhansalleh/filament-shield": "~4.0",
+        "filament/filament": "~4.0",
         "flowframe/laravel-trend": "^0.4.0",
-        "geo-sot/filament-env-editor": "^0.0.7",
-        "jeffgreco13/filament-breezy": "^2.6",
+        "jeffgreco13/filament-breezy": "~3.0",
         "laravel/framework": "^12.0",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.3",
         "laravel/telescope": "^5.7",
         "laravel/tinker": "^2.10.1",
         "laraveldaily/laravel-invoices": "^4.1",
-        "malzariey/filament-daterangepicker-filter": "^3.3",
-        "pxlrbt/filament-environment-indicator": "^2.1",
+        "malzariey/filament-daterangepicker-filter": "~4.0",
+        "pxlrbt/filament-environment-indicator": "~3.0",
         "spatie/laravel-activitylog": "^4.10",
-        "stephenjude/filament-debugger": "^4.0",
+        "stephenjude/filament-debugger": "~4.0",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.2"
     },
@@ -31,6 +30,7 @@
         "barryvdh/laravel-debugbar": "^3.15",
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
+        "filament/upgrade": "^4.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
@@ -57,7 +57,7 @@
             "@php artisan package:discover --ansi",
             "@php artisan filament:upgrade",
             "@php artisan shield:generate --all --panel=* --option=permissions",
-            "@php artisan invoices:update"
+            "@php artisan invoices:update -n"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

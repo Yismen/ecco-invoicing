@@ -4,9 +4,10 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
 /**
  * Validate that a given field is unique within the scope of a parent relationship.
@@ -27,17 +28,19 @@ class UniqueByParentRelationship implements ValidationRule
         protected string $uniqueField,
         protected string $parentField,
         protected null|string|int $parentId,
-        protected Model|null $recordToIgnore = null,
+        protected ?Model $recordToIgnore = null,
     ) {}
+
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string, ?string=):PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (is_null($this->parentId)) {
             $fail("The parent ID for {$this->parentField} is not set.");
+
             return;
         }
 

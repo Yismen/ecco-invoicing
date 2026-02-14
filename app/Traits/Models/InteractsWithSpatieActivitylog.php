@@ -3,10 +3,11 @@
 namespace App\Traits\Models;
 
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 trait InteractsWithSpatieActivitylog
 {
-    use \Spatie\Activitylog\Traits\LogsActivity;
+    use LogsActivity;
 
     protected static $ignoreChangedAttributes = [
         'updated_at',
@@ -44,8 +45,9 @@ trait InteractsWithSpatieActivitylog
 
         return \array_map(function ($value) {
             $split = \explode('_id', $value);
+
             return count($split) > 1 ?
-                $split[0] . '.name' :
+                $split[0].'.name' :
                 $split[0];
         }, $attributes);
     }

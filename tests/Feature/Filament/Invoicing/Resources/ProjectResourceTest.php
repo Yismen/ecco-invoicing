@@ -1,9 +1,9 @@
 <?php
 
-use App\Filament\Invoicing\Resources\ProjectResource;
+use App\Filament\Invoicing\Resources\Projects\ProjectResource;
 use App\Models\Project;
+use App\Models\User;
 use Filament\Facades\Filament;
-use Spatie\Permission\Models\Permission;
 
 describe('Project Resource', function () {
     beforeEach(function () {
@@ -11,6 +11,8 @@ describe('Project Resource', function () {
             Filament::getPanel('invoicing')
         );
         $this->model = Project::factory()->create();
+
+        $this->user = User::factory()->create();
 
         $this->routes = [
             'index' => ProjectResource::getUrl('index'),
@@ -50,14 +52,7 @@ describe('Project Resource', function () {
                 // 'view' => 'view',
             ];
 
-            foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('Project')->snake()->toString();
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'web',
-                ]);
-                $this->user->givePermissionTo($permission);
-            }
+            $this->user = $this->userWithPermission(array_values($permissions), 'project');
         });
 
         it('can access client resource endpoints', function ($route) {

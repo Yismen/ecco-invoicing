@@ -3,8 +3,8 @@
 use App\Models\Agent;
 use App\Models\Project;
 use App\Rules\UniqueByParentRelationship;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 
 uses(RefreshDatabase::class);
 
@@ -28,7 +28,7 @@ it('parses the table and unique field correctly when the table name is passed', 
 });
 
 it('parses the table and unique field correctly when the model class is passed', function () {
-     $rule = new UniqueByParentRelationship(
+    $rule = new UniqueByParentRelationship(
         table: Agent::class, // || 'agents
         uniqueField: 'name',
         parentField: 'project_id',
@@ -39,7 +39,7 @@ it('parses the table and unique field correctly when the model class is passed',
 });
 
 it('parses the table and unique field correctly when query builder instance is passed', function () {
-     $rule = new UniqueByParentRelationship(
+    $rule = new UniqueByParentRelationship(
         table: Agent::query(), // || 'agents
         uniqueField: 'name',
         parentField: 'project_id',

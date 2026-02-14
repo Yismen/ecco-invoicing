@@ -7,7 +7,6 @@ use App\Services\GenerateInvoiceService;
 
 class GenerateInvoiceController extends Controller
 {
-
     public function __invoke(Invoice $invoice, GenerateInvoiceService $invoiceService)
     {
 

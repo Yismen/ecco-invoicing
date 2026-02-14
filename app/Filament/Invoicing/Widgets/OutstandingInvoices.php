@@ -2,25 +2,27 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Enums\InvoiceStatuses;
+use App\Filament\Exports\InvoiceExporter;
+use App\Filament\Invoicing\Resources\Invoices\InvoiceResource;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
-use Filament\Tables\Table;
-use Illuminate\Support\Arr;
-use App\Enums\InvoiceStatuses;
-use Illuminate\Support\Number;
-use App\Services\ModelListService;
+use App\Services\Filament\Filters\InvoiceTableFilters;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ExportBulkAction;
 use Filament\Support\Colors\Color;
-use App\Filament\Exports\InvoiceExporter;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Tables\Concerns\CanPaginateRecords;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Summarizer;
-use App\Filament\Invoicing\Resources\InvoiceResource;
-use Illuminate\Database\Query\Builder as QueryBuilder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\CanPaginateRecords;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Number;
 
 class OutstandingInvoices extends BaseWidget
 {
@@ -45,17 +47,17 @@ class OutstandingInvoices extends BaseWidget
                     ->where('balance_pending', '>', 0)
             )
             ->columns([
-                Tables\Columns\TextColumn::make('number')
+                TextColumn::make('number')
                     ->label('Invoice Number')
                     ->copyable()
                     ->wrap()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('date')
+                TextColumn::make('date')
                     ->label('Date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->sortable()
                     ->formatStateUsing(fn ($state) => $state->getLabel())
                     ->badge()
@@ -65,34 +67,34 @@ class OutstandingInvoices extends BaseWidget
                 //     ->label('Client')
                 //     ->searchable()
                 //     ->sortable(),
-                Tables\Columns\TextColumn::make('project.name')
+                TextColumn::make('project.name')
                     ->label('Project')
                     ->wrap()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('agent.name')
+                TextColumn::make('agent.name')
                     ->label('Agent')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('balance_pending')
+                TextColumn::make('balance_pending')
                     ->label('Balance Pending')
                     ->numeric()
                     ->color(Color::Red)
-                    ->formatStateUsing(fn ($state) => Number::currency((-1) * $state , 'USD'))
+                    ->formatStateUsing(fn ($state) => Number::currency((-1) * $state, 'USD'))
                     ->summarize(Summarizer::make()->using(fn (QueryBuilder $query) => Number::currency($query->sum('balance_pending') / 100)))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('due_date')
+                TextColumn::make('due_date')
                     ->label('Expired')
                     ->date()
                     ->formatStateUsing(fn ($state) => $state?->diffForHumans())
                     ->sortable(),
             ])
             ->filters(
-                \App\Services\Filament\Filters\InvoiceTableFilters::make(except: ['status'])
+                InvoiceTableFilters::make(except: ['status'])
             )
             ->filtersFormWidth('lg')
-            ->actions([
-                Tables\Actions\Action::make('view')
+            ->recordActions([
+                Action::make('view')
                     ->label('View')
                     ->color('primary')
                     ->icon('heroicon-o-eye')
@@ -100,12 +102,12 @@ class OutstandingInvoices extends BaseWidget
                     ->openUrlInNewTab(),
             ])
             ->deferFilters()
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\ExportBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    ExportBulkAction::make()
                         ->exporter(InvoiceExporter::class)
                         ->label('Export Invoices')
-                        ->icon('heroicon-o-download'),
+                        ->icon(Heroicon::OutlinedFolder),
                 ]),
             ]);
     }

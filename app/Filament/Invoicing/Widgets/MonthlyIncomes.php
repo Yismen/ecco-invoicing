@@ -2,25 +2,25 @@
 
 namespace App\Filament\Invoicing\Widgets;
 
-use Carbon\Carbon;
+use App\DTOs\InvoicingDashboardFilterDTO;
 use App\Models\Invoice;
+use Carbon\Carbon;
+use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Filament\Widgets\ChartWidget;
-use App\DTOs\InvoicingDashboardFilterDTO;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class MonthlyIncomes extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $pollingInterval = '600s';
+    protected ?string $pollingInterval = '600s';
 
-    protected static ?string $heading = 'Monthly Incomes';
+    protected ?string $heading = 'Monthly Incomes';
 
     protected function getData(): array
     {
-        $filters = new InvoicingDashboardFilterDTO($this->filters);
+        $filters = new InvoicingDashboardFilterDTO($this->pageFilters);
 
         $data = Trend::query(
             Invoice::query()
@@ -29,7 +29,7 @@ class MonthlyIncomes extends ChartWidget
                     function ($query) use ($filters) {
                         $query->whereHas(
                             'project',
-                            function($projectQuery) use ($filters) {
+                            function ($projectQuery) use ($filters) {
                                 $projectQuery->whereIn('client_id', $filters->client);
                             }
                         );
@@ -38,8 +38,8 @@ class MonthlyIncomes extends ChartWidget
                 ->when($filters->project, fn ($query) => $query->whereIn('project_id', $filters->project))
         )
             ->between(
-                start: isset($this->filters['startDate']) && $this->filters['startDate'] ? Carbon::parse($this->filters['startDate']) : now()->startOfMonth()->subMonths(5),
-                end: isset($this->filters['endDate']) && $this->filters['endDate'] ? Carbon::parse($this->filters['endDate']) : now()->endOfMonth(),
+                start: isset($this->pageFilters['startDate']) && $this->pageFilters['startDate'] ? Carbon::parse($this->pageFilters['startDate']) : now()->startOfMonth()->subMonths(5),
+                end: isset($this->pageFilters['endDate']) && $this->pageFilters['endDate'] ? Carbon::parse($this->pageFilters['endDate']) : now()->endOfMonth(),
             )
             ->perMonth()
             ->dateColumn('date')

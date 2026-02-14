@@ -1,13 +1,12 @@
 <?php
 
-use App\Filament\Invoicing\Resources\PaymentResource;
+use App\Filament\Invoicing\Resources\Payments\PaymentResource;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
 use App\Models\Payment;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Spatie\Permission\Models\Permission;
 
 describe('Payment Resource', function () {
     beforeEach(function () {
@@ -26,7 +25,7 @@ describe('Payment Resource', function () {
             'item_price' => $item->price,
         ]);
 
-        // $this->user = User::factory()->create();
+        $this->user = User::factory()->create();
         $this->model = Payment::factory()->create([
             'invoice_id' => $invoice->id,
             'amount' => 200.00,
@@ -71,14 +70,7 @@ describe('Payment Resource', function () {
                 // 'view' => 'view',
             ];
 
-            foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('Payment')->snake()->toString();
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'web',
-                ]);
-                $this->user->givePermissionTo($permission);
-            }
+            $this->user = $this->userWithPermission(array_values($permissions), 'payment');
         });
 
         it('can access client resource endpoints', function ($route) {

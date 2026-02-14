@@ -6,22 +6,28 @@ use App\Casts\AsMoney;
 use App\Enums\InvoiceStatuses;
 use App\Exceptions\InvoiceWithNegativeTotalAmountException;
 use App\Exceptions\InvoiceWithZeroTotalAmountException;
-use Illuminate\Database\Eloquent\Model;
 use App\Services\GenerateInvoiceNumberService;
+use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
-    use \App\Traits\Models\InteracstsWithModelCaching;
+    /** @use HasFactory<InvoiceFactory> */
+    use HasFactory;
 
-    /** @use Illuminate\Database\Eloquent\Factories\HasFactory<\Database\Factories\InvoiceFactory> */
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
-    use \Illuminate\Database\Eloquent\SoftDeletes;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
+    use InteracstsWithModelCaching;
+
+    use InteractsWithSpatieActivitylog;
+    use SoftDeletes;
 
     protected $fillable = [
         'number',
@@ -106,12 +112,12 @@ class Invoice extends Model
             ]);
 
             if ($invoice->invoiceItems->count() && $invoice->subtotal_amount < 0) {
-                throw new InvoiceWithNegativeTotalAmountException('Invoice created with a negative amount of ' . $invoice->total_amount . ' is not allowed!');
-            };
+                throw new InvoiceWithNegativeTotalAmountException('Invoice created with a negative amount of '.$invoice->total_amount.' is not allowed!');
+            }
 
             if ($invoice->invoiceItems->count() && $invoice->subtotal_amount == 0) {
                 throw new InvoiceWithZeroTotalAmountException('Invoice created with a amount of 0 is not allowed!');
-            };
+            }
         });
     }
 

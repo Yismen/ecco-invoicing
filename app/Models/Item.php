@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Casts\AsMoney;
+use App\Traits\Models\InteracstsWithModelCaching;
+use App\Traits\Models\InteractsWithSpatieActivitylog;
+use Database\Factories\ItemFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,11 +15,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Item extends Model
 {
-    use \App\Traits\Models\InteracstsWithModelCaching;
-    use \App\Traits\Models\InteractsWithSpatieActivitylog;
-
-    /** @use HasFactory<\Database\Factories\ItemFactory> */
+    /** @use HasFactory<ItemFactory> */
     use HasFactory;
+    use InteracstsWithModelCaching;
+
+    use InteractsWithSpatieActivitylog;
 
     use SoftDeletes;
 
@@ -32,7 +36,7 @@ class Item extends Model
     ];
 
     protected $casts = [
-        'price' => \App\Casts\AsMoney::class,
+        'price' => AsMoney::class,
     ];
 
     public function name(): Attribute

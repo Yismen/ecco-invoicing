@@ -1,13 +1,12 @@
 <?php
 
-use App\Filament\Invoicing\Resources\CancellationResource;
+use App\Filament\Invoicing\Resources\Cancellations\CancellationResource;
+use App\Models\Cancellation;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Item;
-use App\Models\Cancellation;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Spatie\Permission\Models\Permission;
 
 describe('Cancellation Resource', function () {
     beforeEach(function () {
@@ -26,7 +25,7 @@ describe('Cancellation Resource', function () {
             'item_price' => $item->price,
         ]);
 
-        // $this->user = User::factory()->create();
+        $this->user = User::factory()->create();
         $this->model = Cancellation::factory()->create([
             'invoice_id' => $invoice->id,
         ]);
@@ -70,14 +69,7 @@ describe('Cancellation Resource', function () {
                 // 'view' => 'view',
             ];
 
-            foreach ($permissions as $route => $permission) {
-                // $permission = str($permission)->append('Cancellation')->snake()->toString();
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'web',
-                ]);
-                $this->user->givePermissionTo($permission);
-            }
+            $this->user = $this->userWithPermission(array_values($permissions), 'cancellation');
         });
 
         it('can access client resource endpoints', function ($route) {

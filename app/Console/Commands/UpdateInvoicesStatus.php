@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\InvoiceStatuses;
+use App\Models\Invoice;
 use Illuminate\Console\Command;
 
 class UpdateInvoicesStatus extends Command
@@ -25,8 +27,8 @@ class UpdateInvoicesStatus extends Command
      */
     public function handle()
     {
-        \App\Models\Invoice::query()
-            ->where('status', '!=', \App\Enums\InvoiceStatuses::Paid)
+        Invoice::query()
+            ->where('status', '!=', InvoiceStatuses::Paid)
             ->with(['cancellation'])
             ->get()
             ->each

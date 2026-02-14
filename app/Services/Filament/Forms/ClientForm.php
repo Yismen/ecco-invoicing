@@ -3,31 +3,32 @@
 namespace App\Services\Filament\Forms;
 
 use App\Services\InvoiceTemplatesService;
-use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 
 class ClientForm
 {
     public static function make(): array
     {
         return [
-            Forms\Components\TextInput::make('name')
+            TextInput::make('name')
                 ->autofocus()
                 ->unique(ignoreRecord: true)
                 ->required()
                 ->maxLength(255),
-            Forms\Components\Select::make('invoice_template')
+            Select::make('invoice_template')
                 ->options(InvoiceTemplatesService::make())
                 ->searchable()
                 ->preload()
                 ->label('Invoice Template')
                 ->required()
                 ->default('default'),
-            Forms\Components\TextInput::make('template_date_field_name')
+            TextInput::make('template_date_field_name')
                 ->label('Date Field Name')
                 ->required()
                 ->default('File Sent At')
                 ->placeholder('File Sent At'),
-            Forms\Components\TextInput::make('template_project_field_name')
+            TextInput::make('template_project_field_name')
                 ->label('Project Field Name')
                 ->required()
                 ->default('Publication')

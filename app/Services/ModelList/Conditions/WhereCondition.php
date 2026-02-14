@@ -8,8 +8,7 @@ class WhereCondition
         public string $field,
         public $value,
         public string $operator = '=',
-    )
-    {
+    ) {
         //
     }
 }

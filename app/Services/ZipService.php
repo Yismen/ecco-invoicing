@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use ZipArchive;
 
 class ZipService
@@ -21,24 +22,23 @@ class ZipService
         string $zipFileName = '',
         string $zipFilePath = '',
         bool $removeFilesAfterCompletion = false
-    ): self
-    {
+    ): self {
         $this->files = $files;
-        $this->zipFileName = $zipFileName ?: 'downloads_' . now()->format('YmdHis') . '.zip';
+        $this->zipFileName = $zipFileName ?: 'downloads_'.now()->format('YmdHis').'.zip';
         $this->zipFilePath = $zipFilePath ?: storage_path('app/public/temp/');
         $this->removeFilesAfterCompletion = $removeFilesAfterCompletion;
-        $this->zipFullFilename = $this->zipFilePath . $this->zipFileName;
+        $this->zipFullFilename = $this->zipFilePath.$this->zipFileName;
 
         if (is_dir($this->zipFilePath) === false) {
             mkdir($this->zipFilePath, 0777, true);
         }
 
-        if(\count($files) === 0 || empty($files)) {
-            throw new \Exception('No files added...');
+        if (\count($files) === 0 || empty($files)) {
+            throw new Exception('No files added...');
         }
 
-        $zip = new ZipArchive();
-        if ($zip->open($this->zipFullFilename, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+        $zip = new ZipArchive;
+        if ($zip->open($this->zipFullFilename, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
             foreach ($this->files as $filePath) {
                 $zip->addFile($filePath, \basename($filePath));
             }

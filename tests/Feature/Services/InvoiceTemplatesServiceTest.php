@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Cache;
 use App\Services\InvoiceTemplatesService;
+use Illuminate\Support\Facades\Cache;
 
 describe('InvoiceTemplatesService', function () {
     beforeEach(function () {
@@ -14,8 +14,8 @@ describe('InvoiceTemplatesService', function () {
         ];
 
         foreach ($this->files as $file) {
-            $full_path = $this->temp_path . $file;
-            if (!is_dir(dirname($full_path))) {
+            $full_path = $this->temp_path.$file;
+            if (! is_dir(dirname($full_path))) {
                 mkdir(dirname($full_path), 0777, true);
             }
             file_put_contents($full_path, 'content');
@@ -24,7 +24,7 @@ describe('InvoiceTemplatesService', function () {
 
     afterEach(function () {
         foreach ($this->files as $file) {
-            $full_path = $this->temp_path . '/' . $file;
+            $full_path = $this->temp_path.'/'.$file;
             if (file_exists($full_path)) {
                 unlink($full_path);
             }

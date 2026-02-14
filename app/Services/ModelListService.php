@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Services\ModelList\Conditions\WhereCondition;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Database\Eloquent\Builder;
 use App\Services\ModelList\Conditions\WhereInCondition;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Service for retrieving lists of models with optional conditions and caching.
@@ -20,9 +20,13 @@ use App\Services\ModelList\Conditions\WhereInCondition;
 class ModelListService
 {
     public static self $instance;
+
     public string|Builder $model;
+
     public string $key_field;
+
     public string $value_field;
+
     public array $conditions = [];
 
     public static function get(
@@ -31,7 +35,7 @@ class ModelListService
         string $value_field = 'name',
         array $conditions = []
     ): array {
-        self::$instance ??= new self();
+        self::$instance ??= new self;
         self::$instance->key_field = $key_field;
         self::$instance->value_field = $value_field;
         self::$instance->conditions = $conditions;
@@ -39,27 +43,31 @@ class ModelListService
 
         return Cache::rememberForever(
             self::getCacheKey(),
-            fn() => self::getResults()
+            fn () => self::getResults()
         );
     }
 
-    private static function getResults() {
+    private static function getResults()
+    {
         $model = self::$instance->model
             ->orderBy(self::$instance->value_field);
 
         foreach (self::$instance->conditions as $key => $condition) {
             if ($condition instanceof WhereInCondition) {
                 $model->whereIn($condition->field, $condition->values);
+
                 continue;
             }
 
             if ($condition instanceof WhereCondition) {
                 $model->where($condition->field, $condition->operator, $condition->value);
+
                 continue;
             }
 
             if ($key == 'in') {
                 $model->whereIn($condition[0], $condition[1]);
+
                 continue;
             }
             $model->where($condition);

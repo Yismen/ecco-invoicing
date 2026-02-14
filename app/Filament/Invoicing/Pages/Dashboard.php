@@ -2,25 +2,26 @@
 
 namespace App\Filament\Invoicing\Pages;
 
-use App\Models\Client;
-use Filament\Forms\Form;
-use App\Services\ModelListService;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Pages\Dashboard as BaseDashboard;
-use App\Filament\Invoicing\Widgets\MonthlyIncomes;
-use Filament\Pages\Dashboard\Actions\FilterAction;
 use App\Filament\Invoicing\Widgets\IncomeByProject;
 use App\Filament\Invoicing\Widgets\InvoicesSummary;
+use App\Filament\Invoicing\Widgets\MonthlyIncomes;
 use App\Filament\Invoicing\Widgets\OutstandingInvoices;
+use App\Models\Client;
+use App\Models\Project;
+use App\Services\ModelListService;
+use BackedEnum;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Dashboard\Actions\FilterAction;
+use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
+use Filament\Support\Icons\Heroicon;
 
 class Dashboard extends BaseDashboard
 {
     use HasFiltersAction;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
     public function persistsFiltersInSession(): bool
     {
@@ -32,7 +33,7 @@ class Dashboard extends BaseDashboard
         return [
             FilterAction::make()
                 ->slideOver(false)
-                ->form([
+                ->schema([
 
                     DatePicker::make('startDate')
                         ->default(now()->subMonths(6)->startOfMonth())
@@ -59,7 +60,7 @@ class Dashboard extends BaseDashboard
                         ->multiple()
                         ->options(function () {
                             return ModelListService::get(
-                                model: \App\Models\Project::query(),
+                                model: Project::query(),
                                 key_field: 'id',
                                 value_field: 'name'
                             );
@@ -69,7 +70,6 @@ class Dashboard extends BaseDashboard
                 ]),
         ];
     }
-
 
     /**
      * @return array<class-string<Widget> | WidgetConfiguration>

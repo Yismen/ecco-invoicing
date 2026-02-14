@@ -2,28 +2,27 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Pages;
-use Filament\Panel;
-use Filament\Widgets;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use App\Services\BreezeCoreService;
-use Filament\Http\Middleware\Authenticate;
-use Illuminate\Session\Middleware\StartSession;
 use AchyutN\FilamentLogViewer\FilamentLogViewer;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Stephenjude\FilamentDebugger\DebuggerPlugin;
-use Filament\Http\Middleware\AuthenticateSession;
+use App\Services\BreezeCoreService;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use GeoSot\FilamentEnvEditor\FilamentEnvEditorPlugin;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Vormkracht10\FilamentMails\Facades\FilamentMails;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\Authenticate;
+use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Filament\Pages\Dashboard;
+use Filament\Panel;
+use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use Stephenjude\FilamentDebugger\DebuggerPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -33,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->favicon(asset('img/favicon.png'))
             ->login()
             ->colors([
@@ -41,12 +41,12 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -74,8 +74,7 @@ class AdminPanelProvider extends PanelProvider
                     ->enableTwoFactorAuthentication()
                     ->enableSanctumTokens(
                         permissions: ['read:invoices']
-                    )
-                    ,
+                    ),
                 DebuggerPlugin::make()
                     ->navigationGroup(label: 'System')
                     ->telescopeNavigation(
@@ -85,31 +84,6 @@ class AdminPanelProvider extends PanelProvider
                     )
                     ->horizonNavigation(false)
                     ->pulseNavigation(false),
-                FilamentEnvEditorPlugin::make()
-                    ->navigationGroup('System')
-                    ->navigationLabel('Env Editor')
-                    ->navigationIcon('heroicon-o-document-text')
-                    ->navigationSort(1)
-                    ->hideKeys(
-                        'APP_KEY',
-                        'APP_URL',
-                        'DB_PASSWORD',
-                        'DB_DATABASE',
-                        'DB_HOST',
-                        'DB_USERNAME',
-                        'DB_CONNECTION',
-                        'DB_HOST',
-                        'DB_PORT',
-                        'MAIL_PASSWORD',
-                        'MAIL_USERNAME',
-                        'MAIL_HOST',
-                        'MAIL_PORT',
-                        'MAIL_ENCRYPTION',
-                        'MAIL_FROM_ADDRESS',
-                        'MAIL_FROM_NAME',
-                        'MAIL_MAILER',
-                        'MAIL_ENCRYPTION',
-                    ),
             ])
             ->authMiddleware([
                 Authenticate::class,

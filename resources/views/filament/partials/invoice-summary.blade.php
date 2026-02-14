@@ -2,7 +2,7 @@
     <table>
         <tbody class="text-right mb-4">
             <tr class="text-right">
-                <td>Subtotal:</td>
+                {{-- <td>Subtotal:</td> --}}
                 <th>${{ number_format($subtotal, 4) }}</th>
             </tr>
         </tbody>
